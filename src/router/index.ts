@@ -1,4 +1,4 @@
-import { createRouter, createWebHistory } from 'vue-router/auto';
+import { createRouter, createWebHistory } from '@ionic/vue-router';
 import { setupLayouts } from 'virtual:generated-layouts';
 import { useAuthUserStore } from '../stores/authUser';
 import { useToast } from 'vue-toastification';
@@ -20,7 +20,7 @@ const routes = setupLayouts([
 ]);
 
 const router = createRouter({
-  history: createWebHistory("/"),
+  history: createWebHistory(process.env.BASE_URL),
   routes,
 });
 
