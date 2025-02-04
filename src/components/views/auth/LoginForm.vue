@@ -8,7 +8,7 @@
             label="Email"
             prepend-inner-icon="mdi-email-outline"
             :rules="[requiredValidator, emailValidator]"
-          ></v-text-field>
+          />
         </v-col>
 
         <v-col cols="12">
@@ -20,7 +20,7 @@
             :append-inner-icon="isPasswordVisible ? 'mdi-eye-off' : 'mdi-eye'"
             @click:append-inner="isPasswordVisible = !isPasswordVisible"
             :rules="[requiredValidator]"
-          ></v-text-field>
+          />
         </v-col>
       </v-row>
 
@@ -39,7 +39,7 @@
         class="mt-2 v-btn"
         href="#"
         :class="{ 'v-btn--disabled': formAction.formProcess }"
-        @click.prevent="$emit('open-register-dialog')"
+        @click.prevent="openRegisterDialog"
       >
         Register
       </a>
@@ -48,46 +48,57 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, computed, inject } from 'vue';
-import { useAuthUserStore } from '../../stores/authUser';
-import { useToast } from 'vue-toastification';
-import { requiredValidator, emailValidator } from '../../lib/validator';
-import router from '@/router';
+import { ref, computed, inject, defineEmits } from "vue";
+import { useAuthUserStore } from "../../../stores/authUser";
+import { useToast } from "vue-toastification";
+import { requiredValidator, emailValidator } from "../../../lib/validator";
+import router from "@/router";
 
-const loginEmail = ref('');
-const loginPassword = ref('');
+const emit = defineEmits(["open-register-dialog", "close-dialog"]);
+
+const loginEmail = ref("");
+const loginPassword = ref("");
 const isPasswordVisible = ref(false);
 const formAction = ref({ formProcess: false });
 const toast = useToast();
-const isDarkTheme = inject('isDarkTheme', ref(false));
+const isDarkTheme = inject("isDarkTheme", ref(false));
 
-const themeClass = computed(() => (isDarkTheme.value ? 'light-theme' : 'dark-theme'));
+const themeClass = computed(() =>
+  isDarkTheme.value ? "light-theme" : "dark-theme"
+);
 
 const authUserStore = useAuthUserStore();
 
 const onFormSubmit = async () => {
   formAction.value.formProcess = true;
-  
-  /* try {
-    const { error } = await authUserStore.signIn(loginEmail.value, loginPassword.value);
+
+  try {
+    const { error } = await authUserStore.signIn(
+      loginEmail.value,
+      loginPassword.value
+    );
     if (error) {
       throw new Error(error.message);
     }
+    // Navigate to home on successful login
+    router.push("/home");
   } catch (err) {
-      //@ts-ignore
-    toast.error(`Login error: ${err.message || 'An unknown error occurred'}`);
+    // Type assertion to handle the error
+    const errorMessage = (err as Error).message || "An unknown error occurred";
+    toast.error(`Login error: ${errorMessage}`);
   } finally {
     formAction.value.formProcess = false;
-  } */
-
-  router.push("/home");
+  }
+};
+// Emit the event to open the registration dialog
+const openRegisterDialog = () => {
+  emit("open-register-dialog");
 };
 
 // Listen for the registration success event
 const onRegistrationSuccess = () => {
   // Close the dialog
-  //@ts-ignore
-  $emit('close-dialog');
+  emit("close-dialog");
 };
 </script>
 
@@ -95,4 +106,4 @@ const onRegistrationSuccess = () => {
 .v-btn {
   margin-top: 20px;
 }
-</style>  
+</style>

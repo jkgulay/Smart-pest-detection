@@ -3,7 +3,7 @@ import { setupLayouts } from 'virtual:generated-layouts';
 import { useAuthUserStore } from '../stores/authUser';
 import { useToast } from 'vue-toastification';
 
-import Hero from '@/pages/index.vue';
+import Hero from '@/pages/Index.vue';
 import Home from '@/pages/Home.vue';
 import NotFound from '@/pages/NotFound.vue';
 import Admin from '@/pages/Admin.vue';

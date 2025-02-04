@@ -16,6 +16,7 @@
     "lint": "eslint . --fix"
   },
   "dependencies": {
+    "@fontsource/montserrat": "^5.1.1",
     "@mdi/font": "7.4.47",
     "core-js": "^3.37.1",
     "roboto-fontface": "*",
