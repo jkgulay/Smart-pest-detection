@@ -13,8 +13,8 @@ const toast = useToast();
 
 const routes = setupLayouts([
   { path: '/', component: Hero },
-  { path: '/home', component: Home, name: 'Home', meta: { requiresAuth: true, role: 'teacher' } },
-  { path: '/admin', component: Admin, name: 'Admin', meta: { requiresAuth: true, role: 'admin' } },
+  { path: '/home', component: Home, name: 'Home', meta: { requiresAuth: true } },
+  { path: '/admin', component: Admin, name: 'Admin', meta: { requiresAuth: true } },
   { path: '/profiles', component: Profiles, name: 'Profiles', meta: { requiresAuth: true } },
   { path: '/:pathMatch(.*)*', component: NotFound, name: 'NotFound' },
 ]);
@@ -24,44 +24,22 @@ const router = createRouter({
   routes,
 });
 
-// Token check interval every 5 seconds
-let previousToken = localStorage.getItem('access_token'); // Store the previous token
-setInterval(() => {
-  const token = localStorage.getItem('access_token');
-  const currentPath = router.currentRoute.value.path; // Get current route path
+router.beforeEach((to, from, next) => {
+  const isLoggedIn = localStorage.getItem("access_token") !== null;
+  const publicPages = ["/"];
+  const protectedPages = ["/home", "/admin", "/profiles"];
 
-  if (token !== previousToken) { // Check if the token has changed
-    previousToken = token; // Update the previous token
-    if (token === null && currentPath !== '/') {
-      toast.error('Your session has expired.');
-      router.push('/');
-    } else {
-      toast.success('Session refreshed.'); // Notify user of token change
-    }
+  if (to.meta.requiresAuth && !isLoggedIn) {
+    toast.error("Authentication is required to access this page.");
+    return next("/");
   }
-}, 5000);
 
-// router.beforeEach((to, from, next) => {
-//   const isLoggedIn = localStorage.getItem("access_token") !== null;
-//   const userRole = localStorage.getItem("user_type");
-//   const publicPages = ["/"];
+  if (publicPages.includes(to.path) && isLoggedIn) {
+    return next("/home");
+  }
 
-//   if (to.meta.requiresAuth && !isLoggedIn) {
-//     toast.error("Authentication is required to access this page.");
-//     return next("/");
-//   }
-
-//   if (publicPages.includes(to.path) && isLoggedIn) {
-//     return next(userRole === 'admin' ? "/admin" : "/home");
-//   }
-
-//   if (to.meta.role && to.meta.role !== userRole) {
-//    /*  toast.error("You do not have permission to access this page."); */
-//     return next(userRole === 'admin' ? "/admin" : "/home");
-//   }
-
-//   next();
-// });
+  next();
+});
 
 router.onError((err, to) => {
   if (err?.message?.includes?.('Failed to fetch dynamically imported module')) {

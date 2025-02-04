@@ -43,12 +43,6 @@
           ]"
         ></v-text-field>
       </v-col>
-      <v-col cols="12">
-        <v-radio-group v-model="formData.userType" :rules="[requiredValidator]" row>
-          <v-radio label="Teacher" value="teacher"></v-radio>
-          <v-radio label="Admin" value="admin"></v-radio>
-        </v-radio-group>
-      </v-col>
     </v-row>
 
     <v-btn
@@ -80,8 +74,7 @@ const toast = useToast();
 const formData = ref({
   email: '',
   password: '',
-  password_confirmation: '',
-  userType: ''
+  password_confirmation: ''
 });
 const formAction = ref({ formProcess: false });
 const isPasswordVisible = ref(false);
@@ -94,27 +87,27 @@ async function onFormSubmit() {
 
   const { error } = await authUserStore.registerUser(
     formData.value.email,
-    formData.value.password,
-    formData.value.userType
+    formData.value.password
   );
 
   formAction.value.formProcess = false;
 
   if (error) {
+    //@ts-ignore
     toast.error(`Registration error: ${error.message}`, {
-        //@ts-ignore
+      //@ts-ignore
       position: 'top-left',
       timeout: 3000,
       closeOnClick: true,
     });
   } else {
     toast.success('Registration successful', {
-        //@ts-ignore
+      //@ts-ignore
       position: 'top-left',
       timeout: 3000,
       closeOnClick: true,
     });
- 
+    emit('registration-success');
     emit('close-dialog');
   }
 }
