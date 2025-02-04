@@ -8,21 +8,18 @@
       </v-row>
     </v-container>
 
-    <space></space>
-    <space></space>
-    <space></space>
-    <space></space>
-
-    <v-row justify="center">
-      <v-btn class="button button-background" rounded="lg" color="black">
-        Sign In
-      </v-btn>
-    </v-row>
-    <v-row justify="center">
-      <RouterLink to="RegisterView" style="text-decoration: none"
-        ><span class="router">Create an Account</span></RouterLink
-      >
-    </v-row>
+    <v-container style="margin-top: 200px;">
+      <v-row justify="center">
+        <v-btn class="button-background mt-4" rounded="lg" color="black">
+          <span class="button">Sign In</span>
+        </v-btn>
+      </v-row>
+      <v-row justify="center">
+        <RouterLink to="RegisterView" style="text-decoration: none" class="mt-1"
+          ><span class="router">Create an Account</span></RouterLink
+        >
+      </v-row>
+    </v-container>
   </div>
 </template>
 
@@ -30,11 +27,11 @@
 
 <style>
 #background {
-  background-image: url("@/assets/background2.jpg"); /* Replace with your image path */
-  background-size: cover; /* Cover the entire area */
-  background-position: center; /* Center the image */
-  background-repeat: no-repeat; /* Prevent the image from repeating */
-  height: 100vh; /* Set the height to full viewport height */
+  background-image: url("@/assets/background2.jpg");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  height: 100vh;
   position: relative;
   opacity: 0.7;
   background-color: #9edf9c;
@@ -43,7 +40,7 @@
 .text {
   font-family: "Montserrat", sans-serif !important;
   font-weight: 700;
-  font-size: 58px;
+  font-size: 55px;
   color: #ffffff;
   margin-top: 50px;
 }
@@ -51,10 +48,9 @@
 .button {
   font-family: "Roboto", sans-serif !important;
   font-weight: 500;
-  font-size: 250px;
+  font-size: 20px;
   color: #ffffff;
   text-transform: none !important;
-  margin-top: 30px;
 }
 
 .router {
