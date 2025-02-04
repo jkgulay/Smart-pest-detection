@@ -1,22 +1,40 @@
-import { createRouter, createWebHistory } from 'vue-router/auto';
-import { setupLayouts } from 'virtual:generated-layouts';
-import { useAuthUserStore } from '../stores/authUser';
-import { useToast } from 'vue-toastification';
+import { createRouter, createWebHistory } from "vue-router/auto";
+import { setupLayouts } from "virtual:generated-layouts";
+import { useAuthUserStore } from "../stores/authUser";
+import { useToast } from "vue-toastification";
 
-import Hero from '@/pages/Index.vue';
-import Home from '@/pages/Home.vue';
-import NotFound from '@/pages/NotFound.vue';
-import Admin from '@/pages/Admin.vue';
-import Profiles from '@/pages/Profiles.vue';
-
+import Welcome from "@/pages/Index.vue";
+import Home from "@/pages/Home.vue";
+import NotFound from "@/pages/NotFound.vue";
+import Admin from "@/pages/Admin.vue";
+import Profiles from "@/pages/Profiles.vue";
+import Login from "@/components/views/auth/LoginView.vue";
+import Register from "@/components/views/auth/RegisterView.vue";
 const toast = useToast();
 
 const routes = setupLayouts([
-  { path: '/', component: Hero },
-  { path: '/home', component: Home, name: 'Home', meta: { requiresAuth: true, role: 'teacher' } },
-  { path: '/admin', component: Admin, name: 'Admin', meta: { requiresAuth: true, role: 'admin' } },
-  { path: '/profiles', component: Profiles, name: 'Profiles', meta: { requiresAuth: true } },
-  { path: '/:pathMatch(.*)*', component: NotFound, name: 'NotFound' },
+  { path: "/", component: Welcome },
+  {
+    path: "/home",
+    component: Home,
+    name: "Home",
+    meta: { requiresAuth: true, role: "teacher" },
+  },
+  {
+    path: "/admin",
+    component: Admin,
+    name: "Admin",
+    meta: { requiresAuth: true, role: "admin" },
+  },
+  {
+    path: "/profiles",
+    component: Profiles,
+    name: "Profiles",
+    meta: { requiresAuth: true },
+  },
+  { path: "/:pathMatch(.*)*", component: NotFound, name: "NotFound" },
+  { path: "/login", component: Login, name: "Login" },
+  { path: "/register", component: Register, name: "Register" },
 ]);
 
 const router = createRouter({
@@ -25,18 +43,19 @@ const router = createRouter({
 });
 
 // Token check interval every 5 seconds
-let previousToken = localStorage.getItem('access_token'); // Store the previous token
+let previousToken = localStorage.getItem("access_token"); // Store the previous token
 setInterval(() => {
-  const token = localStorage.getItem('access_token');
+  const token = localStorage.getItem("access_token");
   const currentPath = router.currentRoute.value.path; // Get current route path
 
-  if (token !== previousToken) { // Check if the token has changed
+  if (token !== previousToken) {
+    // Check if the token has changed
     previousToken = token; // Update the previous token
-    if (token === null && currentPath !== '/') {
-      toast.error('Your session has expired.');
-      router.push('/');
+    if (token === null && currentPath !== "/") {
+      toast.error("Your session has expired.");
+      router.push("/");
     } else {
-      toast.success('Session refreshed.'); // Notify user of token change
+      toast.success("Session refreshed."); // Notify user of token change
     }
   }
 }, 5000);
@@ -64,13 +83,13 @@ setInterval(() => {
 // });
 
 router.onError((err, to) => {
-  if (err?.message?.includes?.('Failed to fetch dynamically imported module')) {
-    if (!localStorage.getItem('vuetify:dynamic-reload')) {
-      console.log('Reloading page to fix dynamic import error');
-      localStorage.setItem('vuetify:dynamic-reload', 'true');
+  if (err?.message?.includes?.("Failed to fetch dynamically imported module")) {
+    if (!localStorage.getItem("vuetify:dynamic-reload")) {
+      console.log("Reloading page to fix dynamic import error");
+      localStorage.setItem("vuetify:dynamic-reload", "true");
       location.assign(to.fullPath);
     } else {
-      console.error('Dynamic import error, reloading page did not fix it', err);
+      console.error("Dynamic import error, reloading page did not fix it", err);
     }
   } else {
     console.error(err);
@@ -78,7 +97,7 @@ router.onError((err, to) => {
 });
 
 router.isReady().then(() => {
-  localStorage.removeItem('vuetify:dynamic-reload');
+  localStorage.removeItem("vuetify:dynamic-reload");
 });
 
 export default router;
