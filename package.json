@@ -17,10 +17,14 @@
   },
   "dependencies": {
     "@fontsource/montserrat": "^5.1.1",
+    "@ionic/vue": "^8.4.3",
+    "@ionic/vue-router": "^8.4.3",
     "@mdi/font": "7.4.47",
+    "chart.js": "^3.9.1",
     "core-js": "^3.37.1",
     "roboto-fontface": "*",
     "vue": "^3.4.31",
+    "vue-chart-3": "^3.1.8",
     "vue-toastification": "^2.0.0-rc.5",
     "vuetify": "^3.6.14"
   },

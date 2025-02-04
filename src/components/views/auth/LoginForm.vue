@@ -1,109 +1,64 @@
 <template>
-  <v-card class="pa-10" :class="themeClass" elevation="8">
-    <v-form ref="refVForm" @submit.prevent="onFormSubmit">
-      <v-row dense>
-        <v-col cols="12">
-          <v-text-field
-            v-model="loginEmail"
-            label="Email"
-            prepend-inner-icon="mdi-email-outline"
-            :rules="[requiredValidator, emailValidator]"
-          />
-        </v-col>
+  <div>
+    <v-card class="mx-auto pa-12 pb-8 custom-form" elevation="8" max-width="448" rounded="lg">
+      <div class="text-subtitle-1 text-medium-emphasis">Account</div>
 
-        <v-col cols="12">
-          <v-text-field
-            v-model="loginPassword"
-            prepend-inner-icon="mdi-lock-outline"
-            label="Password"
-            :type="isPasswordVisible ? 'text' : 'password'"
-            :append-inner-icon="isPasswordVisible ? 'mdi-eye-off' : 'mdi-eye'"
-            @click:append-inner="isPasswordVisible = !isPasswordVisible"
-            :rules="[requiredValidator]"
-          />
-        </v-col>
-      </v-row>
+      <v-text-field
+        density="compact"
+        placeholder="Email address"
+        prepend-inner-icon="mdi-email-outline"
+        variant="outlined"
+      ></v-text-field>
 
-      <v-btn
-        class="mt-2"
-        type="submit"
-        color="#00A4E5"
-        prepend-icon="mdi-login"
-        :disabled="formAction.formProcess"
-        :loading="formAction.formProcess"
-        block
-      >
-        Login
+      <div class="text-subtitle-1 text-medium-emphasis d-flex align-center justify-space-between">
+        Password
+        <a class="text-caption text-decoration-none text-blue" href="#" rel="noopener noreferrer">
+          Forgot login password?
+        </a>
+      </div>
+
+      <v-text-field
+        :append-inner-icon="visible ? 'mdi-eye-off' : 'mdi-eye'"
+        :type="visible ? 'text' : 'password'"
+        density="compact"
+        placeholder="Enter your password"
+        prepend-inner-icon="mdi-lock-outline"
+        variant="outlined"
+        @click:append-inner="visible = !visible"
+      ></v-text-field>
+
+      <v-card class="mb-12 warning-card" color="surface-variant" variant="tonal">
+        <v-card-text class="text-medium-emphasis text-caption">
+          Warning: After 3 consecutive failed login attempts, your account will be temporarily
+          locked for three hours.
+        </v-card-text>
+      </v-card>
+
+      <v-btn class="mb-8" color="primary" size="large" variant="tonal" block>
+        Log In
       </v-btn>
-      <a
-        class="mt-2 v-btn"
-        href="#"
-        :class="{ 'v-btn--disabled': formAction.formProcess }"
-        @click.prevent="openRegisterDialog"
-      >
-        Register
-      </a>
-    </v-form>
-  </v-card>
+
+      <v-card-text class="text-center">
+        <a class="text-blue text-decoration-none" href="#" rel="noopener noreferrer">
+          Sign up now <v-icon>mdi-chevron-right</v-icon>
+        </a>
+      </v-card-text>
+    </v-card>
+  </div>
 </template>
 
 <script lang="ts" setup>
-import { ref, computed, inject, defineEmits } from "vue";
-import { useAuthUserStore } from "../../../stores/authUser";
-import { useToast } from "vue-toastification";
-import { requiredValidator, emailValidator } from "../../../lib/validator";
-import router from "@/router";
+import { ref } from 'vue';
 
-const emit = defineEmits(["open-register-dialog", "close-dialog"]);
-
-const loginEmail = ref("");
-const loginPassword = ref("");
-const isPasswordVisible = ref(false);
-const formAction = ref({ formProcess: false });
-const toast = useToast();
-const isDarkTheme = inject("isDarkTheme", ref(false));
-
-const themeClass = computed(() =>
-  isDarkTheme.value ? "light-theme" : "dark-theme"
-);
-
-const authUserStore = useAuthUserStore();
-
-const onFormSubmit = async () => {
-  formAction.value.formProcess = true;
-
-  try {
-    const { error } = await authUserStore.signIn(
-      loginEmail.value,
-      loginPassword.value
-    );
-    if (error) {
-      throw new Error(error.message);
-    }
-    // Navigate to home on successful login
-    router.push("/home");
-  } catch (err) {
-    // Type assertion to handle the error
-    const errorMessage = (err as Error).message || "An unknown error occurred";
-    toast.error(`Login error: ${errorMessage}`);
-  } finally {
-    formAction.value.formProcess = false;
-  }
-};
-// Emit the event to open the registration dialog
-const openRegisterDialog = () => {
-  emit("open-register-dialog");
-};
-
-// Listen for the registration success event
-const onRegistrationSuccess = () => {
-  // Close the dialog
-  emit("close-dialog");
-};
+const visible = ref(false);
 </script>
 
-<style scoped>
-.v-btn {
-  margin-top: 20px;
+<style lang="scss" scoped>
+.custom-form {
+  background-color: #fff;
+}
+
+.warning-card {
+  background-color: #ffebee;
 }
 </style>

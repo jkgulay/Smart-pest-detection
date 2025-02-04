@@ -1,5 +1,5 @@
 <template>
-  <div id="background">
+  <div id="welcome">
     <v-container>
       <!-- Heading -->
       <v-row class="mb-6 mb-sm-10">
@@ -31,10 +31,11 @@
   </div>
 </template>
 
-<script lang="ts" setup></script>
+<script lang="ts" setup>
+</script>
 
 <style>
-#background {
+#welcome {
   background-image: url("@/assets/background2.jpg");
   background-size: cover;
   background-position: center;

@@ -1,138 +1,77 @@
 <template>
-  <v-card class="mx-auto pa-10" max-width="600" elevation="8">
-    <v-icon class="close-icon" @click="emit('close-dialog')" right>
-      mdi-close
-    </v-icon>
-    <v-form ref="refVForm" @submit.prevent="onFormSubmit">
-      <v-row dense>
-        <v-col cols="12">
-          <v-text-field
-            v-model="formData.email"
-            label="Email"
-            prepend-inner-icon="mdi-email-outline"
-            :rules="[requiredValidator, emailValidator]"
-          />
-        </v-col>
+  <div>
+    <v-img
+      class="mx-auto my-6"
+      max-width="228"
+      src="https://cdn.vuetifyjs.com/docs/images/logos/vuetify-logo-v3-slim-text-light.svg"
+    ></v-img>
 
-        <v-col cols="12">
-          <v-text-field
-            v-model="formData.password"
-            prepend-inner-icon="mdi-lock-outline"
-            label="Password"
-            :type="isPasswordVisible ? 'text' : 'password'"
-            :append-inner-icon="isPasswordVisible ? 'mdi-eye-off' : 'mdi-eye'"
-            @click:append-inner="isPasswordVisible = !isPasswordVisible"
-            :rules="[requiredValidator, passwordValidator]"
-          />
-        </v-col>
+    <v-card
+      class="mx-auto pa-12 pb-8"
+      elevation="8"
+      max-width="448"
+      rounded="lg"
+    >
+      <div class="text-subtitle-1 text-medium-emphasis">Account</div>
 
-        <v-col cols="12">
-          <v-text-field
-            v-model="formData.password_confirmation"
-            label="Password Confirmation"
-            :type="isPasswordConfirmVisible ? 'text' : 'password'"
-            :append-inner-icon="isPasswordConfirmVisible ? 'mdi-eye-off' : 'mdi-eye'"
-            @click:append-inner="isPasswordConfirmVisible = !isPasswordConfirmVisible"
-            :rules="[
-              requiredValidator,
-              confirmedValidator(formData.password_confirmation, formData.password)
-            ]"
-          />
-        </v-col>
+      <v-text-field
+        density="compact"
+        placeholder="Email address"
+        prepend-inner-icon="mdi-email-outline"
+        variant="outlined"
+      ></v-text-field>
 
-        <v-col cols="12">
-          <v-radio-group
-            v-model="formData.userType"
-            :rules="[requiredValidator]"
-            row
-          >
-            <v-radio label="Teacher" value="teacher" />
-            <v-radio label="Admin" value="admin" />
-          </v-radio-group>
-        </v-col>
-      </v-row>
+      <div class="text-subtitle-1 text-medium-emphasis d-flex align-center justify-space-between">
+        Password
+        <a
+          class="text-caption text-decoration-none text-blue"
+          href="#"
+          rel="noopener noreferrer"
+          target="_blank"
+        >
+          Forgot login password?
+        </a>
+      </div>
 
-      <v-btn
-        class="mt-2"
-        type="submit"
-        color="#00A4E5"
-        prepend-icon="mdi-account-plus"
-        :disabled="formAction.formProcess"
-        :loading="formAction.formProcess"
-        block
-      >
-        Register
+      <v-text-field
+        :append-inner-icon="visible ? 'mdi-eye-off' : 'mdi-eye'"
+        :type="visible ? 'text' : 'password'"
+        density="compact"
+        placeholder="Enter your password"
+        prepend-inner-icon="mdi-lock-outline"
+        variant="outlined"
+        @click:append-inner="visible = !visible"
+      ></v-text-field>
+
+      <v-card class="mb-12" color="surface-variant" variant="tonal">
+        <v-card-text class="text-medium-emphasis text-caption">
+          Warning: After 3 consecutive failed login attempts, your account will
+          be temporarily locked for three hours. If you must login now, you
+          can also click "Forgot login password?" below to reset the login
+          password.
+        </v-card-text>
+      </v-card>
+
+      <v-btn class="mb-8" color="blue" size="large" variant="tonal" block>
+        Log In
       </v-btn>
-    </v-form>
-  </v-card>
+
+      <v-card-text class="text-center">
+        <a
+          class="text-blue text-decoration-none"
+          href="#"
+          rel="noopener noreferrer"
+          target="_blank"
+        >
+          Sign up now <v-icon icon="mdi-chevron-right"></v-icon>
+        </a>
+      </v-card-text>
+    </v-card>
+  </div>
 </template>
 
 <script lang="ts" setup>
-import { ref } from "vue";
-import {
-  requiredValidator,
-  emailValidator,
-  passwordValidator,
-  confirmedValidator,
-} from "../../../lib/validator";
-import { useAuthUserStore } from "../../../stores/authUser";
-import { useToast } from "vue-toastification";
+import { ref } from 'vue';
 
-// Define the emit function for the component
-const emit = defineEmits(["registration-success", "close-dialog"]);
-
-const toast = useToast();
-
-const formData = ref({
-  email: "",
-  password: "",
-  password_confirmation: "",
-  userType: "",
-});
-const formAction = ref({ formProcess: false });
-const isPasswordVisible = ref(false);
-const isPasswordConfirmVisible = ref(false);
-
-const authUserStore = useAuthUserStore();
-
-async function onFormSubmit() {
-  formAction.value.formProcess = true;
-
-  try {
-    const { error } = await authUserStore.registerUser (
-      formData.value.email,
-      formData.value.password,
-      formData.value.userType
-    );
-
-    if (error) {
-      throw new Error(error.message || 'Registration failed');
-    }
-
-    toast.success("Registration successful", {
-      timeout: 3000,
-      closeOnClick: true,
-    });
-
-    emit("registration-success");
-    emit("close-dialog");
-  } catch (err) {
-    const errorMessage = (err as Error).message || 'An unknown error occurred';
-    toast.error(`Registration error: ${errorMessage}`, {
-      timeout: 3000,
-      closeOnClick: true,
-    });
-  } finally {
-    formAction.value.formProcess = false;
-  }
-}
+const visible = ref(false); 
 </script>
-
-<style scoped>
-.close-icon {
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  cursor: pointer;
-}
-</style>

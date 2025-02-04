@@ -1,8 +1,7 @@
-import { createRouter, createWebHistory } from "vue-router/auto";
+import { createRouter, createWebHistory } from "@ionic/vue-router";
 import { setupLayouts } from "virtual:generated-layouts";
-import { useAuthUserStore } from "../stores/authUser";
+import { useAuthUserStore } from "../stores/authUser"; // Ensure this is used if needed
 import { useToast } from "vue-toastification";
-
 import Welcome from "@/pages/Index.vue";
 import Home from "@/pages/Home.vue";
 import NotFound from "@/pages/NotFound.vue";
@@ -38,7 +37,7 @@ const routes = setupLayouts([
 ]);
 
 const router = createRouter({
-  history: createWebHistory("/"),
+  history: createWebHistory(),
   routes,
 });
 
