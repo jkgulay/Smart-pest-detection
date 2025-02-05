@@ -1,6 +1,6 @@
 <template>
   <v-card class="pa-10" :class="themeClass" elevation="8">
-    <v-form ref="refVForm" @submit.prevent="onFormSubmit">
+    <v-form  @submit.prevent="onFormSubmit">
       <v-row dense>
         <v-col cols="12">
           <v-text-field
@@ -67,32 +67,36 @@ const authUserStore = useAuthUserStore();
 
 const onFormSubmit = async () => {
   formAction.value.formProcess = true;
-  
-  /* try {
+
+  try {
     const { error } = await authUserStore.signIn(loginEmail.value, loginPassword.value);
     if (error) {
-      throw new Error(error.message);
+     
+      throw new Error(typeof error === 'object' && 'message' in error ? error.message : error);
     }
+
+    
+    toast.success('Login successful', {
+    
+      timeout: 3000,
+      closeOnClick: true,
+    });
+    router.push("/home");
   } catch (err) {
-      //@ts-ignore
-    toast.error(`Login error: ${err.message || 'An unknown error occurred'}`);
+    
+    const errorMessage = err instanceof Error ? err.message : 'An unknown error occurred';
+    toast.error(`Login error: ${errorMessage}`);
   } finally {
     formAction.value.formProcess = false;
-  } */
-
-  router.push("/home");
+  }
 };
 
 // Listen for the registration success event
-const onRegistrationSuccess = () => {
-  // Close the dialog
-  //@ts-ignore
-  $emit('close-dialog');
-};
+
 </script>
 
 <style scoped>
 .v-btn {
   margin-top: 20px;
 }
-</style>  
+</style>

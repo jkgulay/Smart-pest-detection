@@ -1,29 +1,34 @@
 <template>
-  <v-app-bar>
-    <v-toolbar-title class="text-h6 title">Smart-Pest-Detection</v-toolbar-title>
-    <!-- <v-icon class="me-5" @click="toggleTheme">{{ themeIcon }}</v-icon> -->
+  <v-app-bar app>
+    <v-container fluid>
+      <v-row align="center" class="d-flex">
+        <v-col class="d-flex align-center">
+          <v-img
+          class="logo pt-1"
+            src="@/assets/5-removebg-preview.png"
+           max-width="100"
+          ></v-img>
+          <v-app-bar-title class="title">
+           PESTLENS
+          </v-app-bar-title>
+        </v-col>
+      </v-row>
+    </v-container>
   </v-app-bar>
 </template>
 
+
 <script lang="ts" setup>
-import { computed, provide, onMounted } from 'vue';
-import { useTheme } from 'vuetify';
+import { computed, provide, onMounted } from "vue";
+import { useTheme } from "vuetify";
 
 const theme = useTheme();
 const isDarkTheme = computed(() => theme.global.current.value.dark);
 
-provide('isDarkTheme', isDarkTheme);
-
-const themeIcon = computed(() => (isDarkTheme.value ? 'mdi-weather-sunny' : 'mdi-weather-night'));
-
-function toggleTheme() {
-  const newTheme = isDarkTheme.value ? 'light' : 'dark';
-  theme.global.name.value = newTheme;
-  localStorage.setItem('theme', newTheme);
-}
+provide("isDarkTheme", isDarkTheme);
 
 onMounted(() => {
-  const savedTheme = localStorage.getItem('theme');
+  const savedTheme = localStorage.getItem("theme");
   if (savedTheme) {
     theme.global.name.value = savedTheme;
   }
@@ -32,7 +37,14 @@ onMounted(() => {
 
 <style scoped>
 .title {
- color: #00A4E5;
+  color: #526e48;
+  font-family: "Montserrat", sans-serif !important;
+  font-weight: 900;
+  margin-left: 0;
+}
+
+.logo {
+  margin-right: 0;
+  margin-top: 9px;
 }
 </style>
-

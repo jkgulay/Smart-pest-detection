@@ -57,8 +57,8 @@
 <script lang="ts" setup>
 import { computed } from 'vue';
 import { useTheme } from 'vuetify';
-// import { doLogout } from '@/lib/supabase';
-import { useUserInfo } from '@/composables/userInfo'; // Adjust the path as necessary
+import { doLogout } from '@/lib/supabase';
+import { useUserInfo } from '@/composables/userInfo'; 
 import router from '@/router';
 
 const theme = useTheme();
@@ -74,7 +74,7 @@ function toggleTheme() {
 const {userEmail } = useUserInfo();
 
 function handleLogoutClick() {
- /*  doLogout(); */
+  doLogout();
  router.push('/');
 }
 </script>
