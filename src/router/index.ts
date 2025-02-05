@@ -3,11 +3,12 @@ import { setupLayouts } from 'virtual:generated-layouts';
 import { useAuthUserStore } from '../stores/authUser';
 import { useToast } from 'vue-toastification';
 
-import Hero from '@/pages/index.vue';
+import Hero from '@/pages/Index.vue';
 import Home from '@/pages/Home.vue';
 import NotFound from '@/pages/NotFound.vue';
 import Admin from '@/pages/Admin.vue';
 import Profiles from '@/pages/Profiles.vue';
+import LoginForm from '@/components/auth/LoginForm.vue';
 
 const toast = useToast();
 
@@ -17,6 +18,7 @@ const routes = setupLayouts([
   { path: '/admin', component: Admin, name: 'Admin', meta: { requiresAuth: true } },
   { path: '/profiles', component: Profiles, name: 'Profiles', meta: { requiresAuth: true } },
   { path: '/:pathMatch(.*)*', component: NotFound, name: 'NotFound' },
+  { path: '/:login', component: LoginForm, name: 'Login'}
 ]);
 
 const router = createRouter({

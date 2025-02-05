@@ -1,66 +1,69 @@
 <template>
-    <Bar :data="chartData" :options="chartOptions" />
-  </template>
-  
-  <script setup lang="ts">
-  import { ref } from "vue";
-  import {
-    Chart as ChartJS,
-    Title,
-    Tooltip,
-    Legend,
-    BarElement,
-    CategoryScale,
-    LinearScale,
-  } from "chart.js";
-  
-  ChartJS.register(Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale);
-  
-  const chartData = ref({
-    labels: ["11/28", "11/30", "12/2", "12/6", "12/14"],
-    datasets: [
-      {
-        label: "Scanned",
-        backgroundColor: "#4CAF50",
-        borderRadius: 8,
-        data: [5, 8, 12, 20, 6],
-      },
-    ],
-  });
-  
-  const chartOptions = ref({
-    responsive: true,
-    maintainAspectRatio: false,
-    plugins: {
-      legend: {
-        display: false,
-      },
-    },
-    scales: {
-      y: {
-        beginAtZero: true,
-        grid: {
-          color: "rgba(255, 255, 255, 0.1)",
-        },
-        ticks: {
-          color: "#fff",
-        },
-      },
-      x: {
-        grid: {
-          display: false,
-        },
-        ticks: {
-          color: "#fff",
-        },
-      },
-    },
-  });
-  </script>
-  
-  <style scoped>
-  .chart-container {
-    width: 100%;
-    height: 300px;
+  <div class="bar-chart">
+    <canvas ref="chartCanvas"></canvas>
+  </div>
+</template>
+
+<script setup lang="ts">
+import { ref, onMounted, watch } from "vue";
+import { Chart, registerables } from "chart.js";
+
+// Register all Chart.js components
+Chart.register(...registerables);
+
+const props = defineProps<{
+  chartData: {
+    labels: string[];
+    datasets: { label: string; backgroundColor: string; data: number[] }[];
+  };
+}>();
+
+const chartCanvas = ref<HTMLCanvasElement | null>(null);
+let chartInstance: Chart | null = null;
+
+// Function to render the chart
+const renderChart = () => {
+  if (chartInstance) {
+    chartInstance.destroy(); // Destroy the previous instance to prevent memory leaks
   }
-  </style>
+
+  if (chartCanvas.value) {
+    chartInstance = new Chart(chartCanvas.value, {
+      type: "bar",
+      data: props.chartData,
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+          y: { beginAtZero: true },
+          x: { grid: { display: false } },
+        },
+        plugins: {
+          legend: { display: false },
+        },
+      },
+    });
+  }
+};
+
+// Watch for changes in chartData and update chart
+watch(() => props.chartData, renderChart, { deep: true });
+
+onMounted(renderChart);
+
+onMounted(() => {
+  window.addEventListener("resize", renderChart);
+});
+
+onBeforeUnmount(() => {
+  window.removeEventListener("resize", renderChart);
+});
+</script>
+
+<style scoped>
+.bar-chart {
+  width: 100%;
+  height: 150px;
+  position: relative;
+}
+</style>

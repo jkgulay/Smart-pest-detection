@@ -72,8 +72,8 @@
 
 .button-background {
   opacity: 0.7;
-  width: 296px; 
-  height: 52px;
+  width: 250px; 
+  height: 60px;
 }
 
 
