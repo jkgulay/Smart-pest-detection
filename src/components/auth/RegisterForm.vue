@@ -7,7 +7,7 @@
         >
           mdi-close
         </v-icon>
-        <v-form ref="refVForm" @submit.prevent="onFormSubmit">
+        <v-form  @submit.prevent="onFormSubmit">
     <v-row dense>
       <v-col cols="12">
         <v-text-field

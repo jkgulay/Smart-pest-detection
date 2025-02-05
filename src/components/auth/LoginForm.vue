@@ -1,6 +1,6 @@
 <template>
   <v-card class="pa-10" :class="themeClass" elevation="8">
-    <v-form ref="refVForm" @submit.prevent="onFormSubmit">
+    <v-form  @submit.prevent="onFormSubmit">
       <v-row dense>
         <v-col cols="12">
           <v-text-field
