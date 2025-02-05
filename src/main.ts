@@ -1,25 +1,36 @@
 /**
  * main.ts
  *
- * Bootstraps Vuetify and other plugins then mounts the App`
+ * Bootstraps Vuetify and other plugins then mounts the App
  */
 
 // Plugins
-import { registerPlugins } from '@/plugins'
+import { registerPlugins } from "@/plugins";
 import "vue-toastification/dist/index.css";
-import { IonicVue } from '@ionic/vue';
+import { IonicVue } from "@ionic/vue";
+import "@ionic/vue/css/core.css";
+import "@ionic/vue/css/normalize.css";
+import "@ionic/vue/css/structure.css";
+import "@ionic/vue/css/typography.css";
+import "@ionic/vue/css/padding.css";
+import "@ionic/vue/css/float-elements.css";
+import "@ionic/vue/css/text-alignment.css";
+import "@ionic/vue/css/text-transformation.css";
+import "@ionic/vue/css/flex-utils.css";
+import "@ionic/vue/css/display.css";
+import vuetify from "./plugins/vuetify";
+import router from './router'; // Add this line
 import Toast from "vue-toastification"; // Add this line
 
 // Components
-import App from './App.vue'
-import router from './router';
+import App from "./App.vue";
 
 // Composables
-import { createApp } from 'vue'
+import { createApp } from "vue";
 
 const app = createApp(App).use(IonicVue).use(router).use(Toast); // Modify this line
 
-app.config.warnHandler = () => {};
+app.config.warnHandler = () => {}; 
 
 registerPlugins(app)
 
