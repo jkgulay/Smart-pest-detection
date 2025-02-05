@@ -19,8 +19,8 @@ import "@ionic/vue/css/text-transformation.css";
 import "@ionic/vue/css/flex-utils.css";
 import "@ionic/vue/css/display.css";
 import vuetify from "./plugins/vuetify";
-import router from './router'; // Add this line
-import Toast from "vue-toastification"; // Add this line
+import router from './router';
+import Toast from "vue-toastification";
 
 // Components
 import App from "./App.vue";
@@ -30,7 +30,7 @@ import { createApp } from "vue";
 
 const app = createApp(App).use(IonicVue).use(router).use(Toast); // Modify this line
 
-app.config.warnHandler = () => {}; 
+// app.config.warnHandler = () => {}; 
 
 registerPlugins(app)
 

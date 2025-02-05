@@ -25,6 +25,7 @@
     "@capacitor/haptics": "7.0.0",
     "@capacitor/keyboard": "7.0.0",
     "@capacitor/status-bar": "7.0.0",
+    "@fontsource/montserrat": "^5.1.1",
     "@ionic/vue": "^8.4.3",
     "@ionic/vue-router": "^8.4.3",
     "@mdi/font": "7.4.47",
