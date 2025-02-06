@@ -1,6 +1,5 @@
 import { createRouter, createWebHistory } from '@ionic/vue-router';
 import { setupLayouts } from 'virtual:generated-layouts';
-import { useAuthUserStore } from '../stores/authUser';
 import { useToast } from 'vue-toastification';
 
 import Hero from '@/pages/index.vue';
@@ -8,6 +7,8 @@ import Home from '@/pages/Home.vue';
 import NotFound from '@/pages/NotFound.vue';
 import Admin from '@/pages/Admin.vue';
 import Profiles from '@/pages/Profiles.vue';
+// @ts-ignore
+import Scan from '@/pages/Scan.vue';
 
 const toast = useToast();
 
@@ -16,6 +17,7 @@ const routes = setupLayouts([
   { path: '/home', component: Home, name: 'Home', meta: { requiresAuth: true } },
   { path: '/admin', component: Admin, name: 'Admin', meta: { requiresAuth: true } },
   { path: '/profiles', component: Profiles, name: 'Profiles', meta: { requiresAuth: true } },
+  { path: '/scan', component: Scan, name: 'Scan', meta: { requiresAuth: true } },
   { path: '/:pathMatch(.*)*', component: NotFound, name: 'NotFound' },
 ]);
 
