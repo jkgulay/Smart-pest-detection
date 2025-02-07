@@ -11,8 +11,8 @@
 </template>
 
 <script lang="ts" setup>
-import InnerNavBar from '../components/common/InnerNavBar.vue';
-import ScrollDown from '../components/common/ScrollDown.vue';
+import InnerNavBar from '@/components/common/InnerNavBar.vue';
+import ScrollDown from '@/components/common/ScrollDown.vue';
 </script>
 
 <style scoped>

@@ -5,7 +5,9 @@
     temporary
   >
     <v-list>
-      <v-list-item>
+     
+      <v-list-item style="padding: 8px; margin-top: 10rem;">
+       
         <v-btn
           class="justify-start"
           rounded="0"
@@ -13,18 +15,18 @@
           size="large"
           block
           to="/profiles"
-          style="text-transform: none"
+          style="text-transform: none; font-size: 1.5rem;"
         >
           <v-row align="center" no-gutters>
             <v-col cols="auto">
-              <v-icon class="me-3" left>mdi-account</v-icon>
+              <v-icon class="me-3" left style="font-size: 1.5rem;">mdi-account</v-icon>
             </v-col>
             <v-col> {{ userEmail }} </v-col>
           </v-row>
         </v-btn>
       </v-list-item>
 
-      <v-list-item>
+      <v-list-item style="padding: 8px; ">
         <v-btn
           class="justify-start"
           rounded="0"
@@ -32,18 +34,18 @@
           size="large"
           block
           @click="toggleTheme"
-          style="text-transform: none"
+          style="text-transform: none; font-size: 1.5rem;"
         >
           <v-row align="center" no-gutters>
             <v-col cols="auto">
-              <v-icon class="me-3" left>{{ themeIcon }}</v-icon>
+              <v-icon class="me-3" left style="font-size: 1.5rem;">{{ themeIcon }}</v-icon>
             </v-col>
-            <v-col> Toggle Theme </v-col>
+            <v-col> Theme </v-col>
           </v-row>
         </v-btn>
       </v-list-item>
 
-      <v-list-item>
+      <v-list-item style="padding: 8px;">
         <v-btn
           class="justify-start"
           rounded="0"
@@ -51,30 +53,49 @@
           size="large"
           block
           to="/scan"
-          style="text-transform: none"
+          style="text-transform: none; font-size: 1.5rem;"
         >
           <v-row align="center" no-gutters>
             <v-col cols="auto">
-              <v-icon class="me-3" left>mdi-magnify</v-icon>
+              <v-icon class="me-3" left style="font-size: 1.5rem;">mdi-magnify</v-icon>
             </v-col>
             <v-col> Scan </v-col>
           </v-row>
         </v-btn>
       </v-list-item>
 
-      <v-list-item>
+      <v-list-item style="padding: 10px;">
         <v-btn
           class="justify-start"
           rounded="0"
           variant="text"
           size="large"
           block
-          @click="handleLogoutClick"
-          style="text-transform: none"
+          to="/home"
+          style="text-transform: none; font-size: 1.5rem;"
         >
           <v-row align="center" no-gutters>
             <v-col cols="auto">
-              <v-icon class="me-3" left>mdi-logout</v-icon>
+              <v-icon class="me-3" left style="font-size: 1.5rem;">mdi-view-dashboard</v-icon>
+            </v-col>
+            <v-col> Dashboard </v-col>
+          </v-row>
+        </v-btn>
+      </v-list-item>
+
+      <v-list-item style="padding: 8px; margin-top: 26rem;">
+        <v-btn
+          class="justify-center"
+          rounded="0"
+          variant="text"
+          size="large"
+          block
+          @click="handleLogoutClick"
+          style="text-transform: none; font-size: 1.5rem;"
+        >
+          <v-row align="center" no-gutters>
+            <v-col cols="auto">
+              <v-icon class="me-3" left style="font-size: 1.5rem;">mdi-logout</v-icon>
             </v-col>
             <v-col> Logout </v-col>
           </v-row>
@@ -83,7 +104,7 @@
     </v-list>
   </v-navigation-drawer>
 
-  <v-app-bar :color="isDarkTheme ? 'dark-navbar' : 'light-navbar'">
+  <v-app-bar :color="isDarkTheme ? 'dark-navbar' : 'light-navbar'" style="height: 100px; padding: 1rem;">
     <v-app-bar-nav-icon variant="text" @click.stop="drawer = !drawer"></v-app-bar-nav-icon>
 
     <div class="title">Smart-Pest-Detection</div>
