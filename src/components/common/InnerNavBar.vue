@@ -31,14 +31,14 @@
           variant="text"
           size="large"
           block
-          @click="handleLogoutClick"
+          @click="toggleTheme"
           style="text-transform: none"
         >
           <v-row align="center" no-gutters>
             <v-col cols="auto">
-              <v-icon class="me-3" left>mdi-logout</v-icon>
+              <v-icon class="me-3" left>{{ themeIcon }}</v-icon>
             </v-col>
-            <v-col> Logout </v-col>
+            <v-col> Toggle Theme </v-col>
           </v-row>
         </v-btn>
       </v-list-item>
@@ -50,14 +50,33 @@
           variant="text"
           size="large"
           block
-          @click="toggleTheme"
+          to="/scan"
           style="text-transform: none"
         >
           <v-row align="center" no-gutters>
             <v-col cols="auto">
-              <v-icon class="me-3" left>{{ themeIcon }}</v-icon>
+              <v-icon class="me-3" left>mdi-magnify</v-icon>
             </v-col>
-            <v-col> Toggle Theme </v-col>
+            <v-col> Scan </v-col>
+          </v-row>
+        </v-btn>
+      </v-list-item>
+
+      <v-list-item>
+        <v-btn
+          class="justify-start"
+          rounded="0"
+          variant="text"
+          size="large"
+          block
+          @click="handleLogoutClick"
+          style="text-transform: none"
+        >
+          <v-row align="center" no-gutters>
+            <v-col cols="auto">
+              <v-icon class="me-3" left>mdi-logout</v-icon>
+            </v-col>
+            <v-col> Logout </v-col>
           </v-row>
         </v-btn>
       </v-list-item>
