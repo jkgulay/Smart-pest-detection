@@ -14,24 +14,30 @@
     <!-- Buttons -->
     <v-container style="margin-top: 29vh">
       <v-row justify="center">
-        <v-btn class="button-background mt-4" rounded="lg" color="black">
+        <v-btn class="button-background mt-4" rounded="lg" color="black" @click="showLoginDialog = true">
           <span class="button">Sign In</span>
         </v-btn>
       </v-row>
       <v-row justify="center">
-        <RouterLink
-          to="RegisterView"
-          style="text-decoration: none"
-          class="mt-1"
-        >
-          <span class="router">Create an Account</span>
-        </RouterLink>
+        <span class="router" @click="showRegisterDialog = true">Create an Account</span>
       </v-row>
     </v-container>
+    <v-dialog v-model="showLoginDialog" max-width="500px">
+      <LoginForm @close="showLoginDialog = false" />
+    </v-dialog>
+    <v-dialog v-model="showRegisterDialog" max-width="600px">
+      <RegisterForm @close-dialog="showRegisterDialog = false" />
+    </v-dialog>
   </div>
 </template>
 
 <script lang="ts" setup>
+import { ref } from 'vue';
+import LoginForm from '@/components/auth/LoginForm.vue';
+import RegisterForm from '@/components/auth/RegisterForm.vue';
+
+const showLoginDialog = ref(false);
+const showRegisterDialog = ref(false);
 </script>
 
 <style>

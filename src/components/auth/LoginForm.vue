@@ -1,5 +1,6 @@
 <template>
   <v-card class="pa-10" :class="themeClass" elevation="8">
+   
     <v-form  @submit.prevent="onFormSubmit">
       <v-row dense>
         <v-col cols="12">
@@ -8,6 +9,7 @@
             label="Email"
             prepend-inner-icon="mdi-email-outline"
             :rules="[requiredValidator, emailValidator]"
+            :error-messages="emailErrorMessages"
           ></v-text-field>
         </v-col>
 
@@ -19,7 +21,8 @@
             :type="isPasswordVisible ? 'text' : 'password'"
             :append-inner-icon="isPasswordVisible ? 'mdi-eye-off' : 'mdi-eye'"
             @click:append-inner="isPasswordVisible = !isPasswordVisible"
-            :rules="[requiredValidator]"
+            :rules="[requiredValidator, passwordValidator]"
+            :error-messages="passwordErrorMessages"
           ></v-text-field>
         </v-col>
       </v-row>
@@ -35,14 +38,7 @@
       >
         Login
       </v-btn>
-      <a
-        class="mt-2 v-btn"
-        href="#"
-        :class="{ 'v-btn--disabled': formAction.formProcess }"
-        @click.prevent="$emit('open-register-dialog')"
-      >
-        Register
-      </a>
+     
     </v-form>
   </v-card>
 </template>
@@ -51,7 +47,7 @@
 import { ref, computed, inject } from 'vue';
 import { useAuthUserStore } from '../../stores/authUser';
 import { useToast } from 'vue-toastification';
-import { requiredValidator, emailValidator } from '../../lib/validator';
+import { requiredValidator, emailValidator, passwordValidator } from '../../lib/validator';
 import router from '@/router';
 
 const loginEmail = ref('');
@@ -64,6 +60,9 @@ const isDarkTheme = inject('isDarkTheme', ref(false));
 const themeClass = computed(() => (isDarkTheme.value ? 'light-theme' : 'dark-theme'));
 
 const authUserStore = useAuthUserStore();
+
+const emailErrorMessages = ref([]);
+const passwordErrorMessages = ref([]);
 
 const onFormSubmit = async () => {
   formAction.value.formProcess = true;

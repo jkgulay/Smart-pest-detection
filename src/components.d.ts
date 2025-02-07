@@ -12,7 +12,7 @@ declare module 'vue' {
     BarChart: typeof import('./components/common/BarChart.vue')['default']
     Camera: typeof import('./components/common/Camera.vue')['default']
     InnerNavBar: typeof import('./components/common/InnerNavBar.vue')['default']
-    LoginForm: typeof import('./components/auth/LoginForm.vue')['default']
+    LoginForm: typeof import('./components/views/auth/LoginForm.vue')['default']
     LoginView: typeof import('./components/views/auth/LoginView.vue')['default']
     NavBar: typeof import('./components/common/NavBar.vue')['default']
     RegisterForm: typeof import('./components/auth/RegisterForm.vue')['default']

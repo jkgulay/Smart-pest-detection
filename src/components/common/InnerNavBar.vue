@@ -1,61 +1,91 @@
 <template>
-  <v-app-bar class="bg-card"> 
-    <v-toolbar-title class="text-h6 title">Smart-Pest-Detection</v-toolbar-title>
-    <v-icon class="me-5" @click="toggleTheme">{{ themeIcon }}</v-icon>
-    <v-menu transition="slide-y-transition">
-      <template v-slot:activator="{ props }">
-        <v-btn rounded="xl" size="large" variant="tonal" v-bind="props">
-          <v-avatar size="25" class="mr-2">
-            <v-img src="#"></v-img>
-          </v-avatar>
-          <v-icon color="white">mdi-cog</v-icon>
+  <v-navigation-drawer
+    v-model="drawer"
+    :location="$vuetify.display.mobile ? 'left' : 'left'"
+    temporary
+  >
+    <v-list>
+      <v-list-item>
+        <v-btn
+          class="justify-start"
+          rounded="0"
+          variant="text"
+          size="large"
+          block
+          to="/profiles"
+          style="text-transform: none"
+        >
+          <v-row align="center" no-gutters>
+            <v-col cols="auto">
+              <v-icon class="me-3" left>mdi-account</v-icon>
+            </v-col>
+            <v-col> {{ userEmail }} </v-col>
+          </v-row>
         </v-btn>
-      </template>
+      </v-list-item>
 
-      <v-sheet class="pa-0 mt-2 me-1 menu-card" color="grey-darken-3">
-        <div>
-          <v-btn
-            class="justify-start"
-            rounded="0"
-            variant="text"
-            size="large"
-            block
-            to="/profiles"
-            style="text-transform: none"
-          >
-            <v-row align="center" no-gutters>
-              <v-col cols="auto">
-                <v-icon class="me-3" left>mdi-account</v-icon>
-              </v-col>
-              <v-col> {{ userEmail }}</v-col>
-            </v-row>
-          </v-btn>
-    
-         
-          <v-btn
-            class="justify-start"
-            rounded="0"
-            variant="text"
-            size="large"
-            block
-            @click="handleLogoutClick"
-            style="text-transform: none"
-          >
-            <v-row align="center" no-gutters>
-              <v-col cols="auto">
-                <v-icon class="me-3" left>mdi-logout</v-icon>
-              </v-col>
-              <v-col> Logout </v-col>
-            </v-row>
-          </v-btn>
-        </div>
-      </v-sheet>
-    </v-menu>
+      <v-list-item>
+        <v-btn
+          class="justify-start"
+          rounded="0"
+          variant="text"
+          size="large"
+          block
+          @click="handleLogoutClick"
+          style="text-transform: none"
+        >
+          <v-row align="center" no-gutters>
+            <v-col cols="auto">
+              <v-icon class="me-3" left>mdi-logout</v-icon>
+            </v-col>
+            <v-col> Logout </v-col>
+          </v-row>
+        </v-btn>
+      </v-list-item>
+
+      <v-list-item>
+        <v-btn
+          class="justify-start"
+          rounded="0"
+          variant="text"
+          size="large"
+          block
+          @click="toggleTheme"
+          style="text-transform: none"
+        >
+          <v-row align="center" no-gutters>
+            <v-col cols="auto">
+              <v-icon class="me-3" left>{{ themeIcon }}</v-icon>
+            </v-col>
+            <v-col> Toggle Theme </v-col>
+          </v-row>
+        </v-btn>
+      </v-list-item>
+    </v-list>
+  </v-navigation-drawer>
+
+  <v-app-bar :color="isDarkTheme ? 'dark-navbar' : 'light-navbar'">
+    <v-app-bar-nav-icon variant="text" @click.stop="drawer = !drawer"></v-app-bar-nav-icon>
+
+    <div class="title">Smart-Pest-Detection</div>
+
+    <v-spacer></v-spacer>
+
+    <v-img
+      class="logo pt-1"
+      src="@/assets/5-removebg-preview.png"
+      max-width="100"
+    ></v-img>
   </v-app-bar>
+
+  <!-- Replacing v-main with a div -->
+  <div style="height: 100%; padding: 16px;">
+    <!-- Content goes here -->
+  </div>
 </template>
 
 <script lang="ts" setup>
-import { computed } from 'vue';
+import { computed, ref } from 'vue';
 import { useTheme } from 'vuetify';
 import { doLogout } from '@/lib/supabase';
 import { useUserInfo } from '@/composables/userInfo'; 
@@ -71,21 +101,40 @@ function toggleTheme() {
   localStorage.setItem('theme', newTheme);
 }
 
-const {userEmail } = useUserInfo();
+const { userEmail } = useUserInfo();
 
 function handleLogoutClick() {
   doLogout();
- router.push('/');
+  router.push('/');
 }
+
+const drawer = ref(false);
 </script>
 
 <style scoped>
-
 .bg-card {
   background: rgba(161, 205, 247, 0.15);
   box-shadow: 0 4px 10px rgba(254, 79, 90, 0.3);
   backdrop-filter: blur(5px);
 }
+
+.title {
+  font-family: "Montserrat", sans-serif !important;
+  font-weight: 900;
+  margin-left: 0;
+}
+
+.logo {
+  margin-right: 0;
+  margin-top: 9px;
+}
+
+@media (max-width: 600px) {
+  .title {
+    font-size: 14px;
+  }
+}
+
+
+
 </style>
-  
-  

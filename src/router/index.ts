@@ -26,22 +26,22 @@ const router = createRouter({
   routes,
 });
 
-// router.beforeEach((to, from, next) => {
-//   const isLoggedIn = localStorage.getItem("access_token") !== null;
-//   const publicPages = ["/"];
-//   const protectedPages = ["/home", "/admin", "/profiles"];
+router.beforeEach((to, from, next) => {
+  const isLoggedIn = localStorage.getItem("access_token") !== null;
+  const publicPages = ["/"];
+  const protectedPages = ["/home", "/admin", "/profiles"];
 
-//   if (to.meta.requiresAuth && !isLoggedIn) {
-//     toast.error("Authentication is required to access this page.");
-//     return next("/");
-//   }
+  if (to.meta.requiresAuth && !isLoggedIn) {
+    toast.error("Authentication is required to access this page.");
+    return next("/");
+  }
 
-//   if (publicPages.includes(to.path) && isLoggedIn) {
-//     return next("/home");
-//   }
+  if (publicPages.includes(to.path) && isLoggedIn) {
+    return next("/home");
+  }
 
-//   next();
-// });
+  next();
+});
 
 router.onError((err, to) => {
   if (err?.message?.includes?.("Failed to fetch dynamically imported module")) {
