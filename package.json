@@ -32,6 +32,7 @@
     "@ionic/vue-router": "^8.4.3",
     "@mdi/font": "7.4.47",
     "@supabase/supabase-js": "^2.48.1",
+    "axios": "^1.7.9",
     "chart.js": "^3.9.1",
     "core-js": "^3.37.1",
     "roboto-fontface": "*",

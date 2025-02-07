@@ -1,8 +1,8 @@
 <template>
    <LayoutWrapper>
       <template #content>
-        <div>
-          <ScanHistory />
+        <div class="container">
+          <!-- <ScanHistory /> -->
           <Camera />
         </div>
       </template>
@@ -23,4 +23,9 @@ export default {
 }
 </script>
 
+<style>
+.view{
+  height: 100%;
+}
+</style>
 

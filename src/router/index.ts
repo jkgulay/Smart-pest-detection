@@ -9,6 +9,7 @@ import Admin from '@/pages/Admin.vue';
 import Profiles from '@/pages/Profiles.vue';
 // @ts-ignore
 import Scan from '@/pages/Scan.vue';
+import Result from '@/pages/Result.vue';
 
 const toast = useToast();
 
@@ -18,6 +19,7 @@ const routes = setupLayouts([
   { path: '/admin', component: Admin, name: 'Admin', meta: { requiresAuth: true } },
   { path: '/profiles', component: Profiles, name: 'Profiles', meta: { requiresAuth: true } },
   { path: '/scan', component: Scan, name: 'Scan', meta: { requiresAuth: true } },
+  { path: '/result', component: Result, name: 'Result', meta: { requiresAuth: true } },
   { path: '/:pathMatch(.*)*', component: NotFound, name: 'NotFound' },
 ]);
 
