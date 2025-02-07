@@ -15,6 +15,7 @@
           label="Email"
           prepend-inner-icon="mdi-email-outline"
           :rules="[requiredValidator, emailValidator]"
+          :error-messages="emailErrorMessages"
         ></v-text-field>
       </v-col>
 
@@ -27,6 +28,7 @@
           :append-inner-icon="isPasswordVisible ? 'mdi-eye-off' : 'mdi-eye'"
           @click:append-inner="isPasswordVisible = !isPasswordVisible"
           :rules="[requiredValidator, passwordValidator]"
+           :error-messages="passwordErrorMessages"
         ></v-text-field>
       </v-col>
 
@@ -41,6 +43,7 @@
             requiredValidator,
             confirmedValidator(formData.password_confirmation, formData.password)
           ]"
+          :error-messages="passwordConfirmErrorMessages"
         ></v-text-field>
       </v-col>
     </v-row>
@@ -79,6 +82,10 @@ const formData = ref({
 const formAction = ref({ formProcess: false });
 const isPasswordVisible = ref(false);
 const isPasswordConfirmVisible = ref(false);
+
+const emailErrorMessages = ref([]);
+const passwordErrorMessages = ref([]);
+const passwordConfirmErrorMessages = ref([]);
 
 const authUserStore = useAuthUserStore();
 

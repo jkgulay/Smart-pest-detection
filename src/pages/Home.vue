@@ -1,60 +1,60 @@
 <template>
-  <ion-page>
-    <ion-header>
-      <NavBar />
-    </ion-header>
+  <LayoutWrapper>
+    <template #content>
+      <ion-page>
+        <ion-content>
+          <div class="dashboard-container">
+            <!-- Welcome Section -->
+            <div class="welcome-section">
+              <h2 class="title mt-15">Welcome to PestLens</h2>
+              <p class="username">John Doe</p>
+            </div>
 
-    <ion-content>
-      <div class="dashboard-container">
-        <!-- Welcome Section -->
-        <div class="welcome-section">
-          <h2 class="title mt-15">Welcome to PestLens</h2>
-          <p class="username">John Doe</p>
-        </div>
+            <!-- Filter Buttons -->
+            <div class="filter-section">
+              <ion-segment v-model="selectedFilter" class="custom-segment">
+                <ion-segment-button value="hour" @click="filterScans('hour')">
+                  Hours
+                </ion-segment-button>
+                <ion-segment-button value="day" @click="filterScans('day')">
+                  Days
+                </ion-segment-button>
+                <ion-segment-button value="month" @click="filterScans('month')">
+                  Month
+                </ion-segment-button>
+              </ion-segment>
+            </div>
 
-        <!-- Filter Buttons -->
-        <div class="filter-section">
-          <ion-segment v-model="selectedFilter" class="custom-segment">
-            <ion-segment-button value="hour" @click="filterScans('hour')">
-              Hours
-            </ion-segment-button>
-            <ion-segment-button value="day" @click="filterScans('day')">
-              Days
-            </ion-segment-button>
-            <ion-segment-button value="month" @click="filterScans('month')">
-              Month
-            </ion-segment-button>
-          </ion-segment>
-        </div>
+            <!-- Statistics Grid -->
+            <div class="stats-grid">
+              <div class="stats-card total-scanned">
+                <div class="card-content">
+                  <h3 class="card-title">Total Scanned</h3>
+                  <p class="card-value">23</p>
+                </div>
+              </div>
+              <div class="stats-card scanned-today">
+                <div class="card-content">
+                  <h3 class="card-title">Scanned Today</h3>
+                  <p class="card-value">5</p>
+                </div>
+              </div>
+            </div>
 
-        <!-- Statistics Grid -->
-        <div class="stats-grid">
-          <div class="stats-card total-scanned">
-            <div class="card-content">
-              <h3 class="card-title">Total Scanned</h3>
-              <p class="card-value">23</p>
+            <!-- Chart Section -->
+            <div class="chart-section">
+              <div class="chart-card">
+                <h3 class="card-title">Scan Overview</h3>
+                <div class="chart-container">
+                  <BarChart />
+                </div>
+              </div>
             </div>
           </div>
-          <div class="stats-card scanned-today">
-            <div class="card-content">
-              <h3 class="card-title">Scanned Today</h3>
-              <p class="card-value">5</p>
-            </div>
-          </div>
-        </div>
-
-        <!-- Chart Section -->
-        <div class="chart-section">
-          <div class="chart-card">
-            <h3 class="card-title">Scan Overview</h3>
-            <div class="chart-container">
-              <BarChart />
-            </div>
-          </div>
-        </div>
-      </div>
-    </ion-content>
-  </ion-page>
+        </ion-content>
+      </ion-page>
+    </template>
+  </LayoutWrapper>
 </template>
 
 <script setup lang="ts">
@@ -67,6 +67,7 @@ import {
   IonSegmentButton,
 } from "@ionic/vue";
 import BarChart from "@/components/common/BarChart.vue";
+import LayoutWrapper from "@/layouts/LayoutWrapper.vue";
 
 const selectedFilter = ref("day");
 </script>
