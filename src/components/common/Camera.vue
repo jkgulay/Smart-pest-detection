@@ -29,7 +29,7 @@ const onSubmit = () => {
 <template>
   <v-container class="text-center">
     <v-btn color="primary" @click="takePicture" size="large">
-      <v-icon left>mdi-camera</v-icon> Take Photo
+      <v-icon left>mdi-camera</v-icon> Scan a Pest
     </v-btn>
 
     <v-card v-if="selectedImage" class="mt-4" elevation="4" max-width="400">
