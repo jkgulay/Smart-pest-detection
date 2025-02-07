@@ -13,13 +13,13 @@
             <!-- Filter Buttons -->
             <div class="filter-section">
               <ion-segment v-model="selectedFilter" class="custom-segment">
-                <ion-segment-button value="hour" @click="filterScans('hour')">
+                <ion-segment-button value="hour">
                   Hours
                 </ion-segment-button>
-                <ion-segment-button value="day" @click="filterScans('day')">
+                <ion-segment-button value="day">
                   Days
                 </ion-segment-button>
-                <ion-segment-button value="month" @click="filterScans('month')">
+                <ion-segment-button value="month" >
                   Month
                 </ion-segment-button>
               </ion-segment>

@@ -45,9 +45,9 @@
 
 <script lang="ts" setup>
 import { ref, computed, inject } from 'vue';
-import { useAuthUserStore } from '../../stores/authUser';
+import { useAuthUserStore } from '@/stores/authUser';
 import { useToast } from 'vue-toastification';
-import { requiredValidator, emailValidator, passwordValidator } from '../../lib/validator';
+import { requiredValidator, emailValidator, passwordValidator } from '@/lib/validator';
 import router from '@/router';
 
 const loginEmail = ref('');
