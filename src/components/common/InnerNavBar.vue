@@ -6,7 +6,7 @@
   >
     <v-list>
      
-      <v-list-item style="padding: 8px; margin-top: 10rem;">
+      <v-list-item style="padding: 8px; margin-top: 2rem;">
        
         <v-btn
           class="justify-start"
@@ -15,7 +15,7 @@
           size="large"
           block
           to="/profiles"
-          style="text-transform: none; font-size: 1.5rem;"
+          style="text-transform: none; font-size: 1rem;"
         >
           <v-row align="center" no-gutters>
             <v-col cols="auto">
@@ -34,7 +34,7 @@
           size="large"
           block
           @click="toggleTheme"
-          style="text-transform: none; font-size: 1.5rem;"
+          style="text-transform: none; font-size: 1rem;"
         >
           <v-row align="center" no-gutters>
             <v-col cols="auto">
@@ -53,7 +53,7 @@
           size="large"
           block
           to="/scan"
-          style="text-transform: none; font-size: 1.5rem;"
+          style="text-transform: none; font-size: 1rem;"
         >
           <v-row align="center" no-gutters>
             <v-col cols="auto">
@@ -72,7 +72,7 @@
           size="large"
           block
           to="/home"
-          style="text-transform: none; font-size: 1.5rem;"
+          style="text-transform: none; font-size: 1rem;"
         >
           <v-row align="center" no-gutters>
             <v-col cols="auto">
@@ -83,7 +83,7 @@
         </v-btn>
       </v-list-item>
 
-      <v-list-item style="padding: 8px; margin-top: 26rem;">
+      <v-list-item style="padding: 8px; margin-top: 20rem;">
         <v-btn
           class="justify-center"
           rounded="0"
@@ -91,7 +91,7 @@
           size="large"
           block
           @click="handleLogoutClick"
-          style="text-transform: none; font-size: 1.5rem;"
+          style="text-transform: none; font-size: 1rem;"
         >
           <v-row align="center" no-gutters>
             <v-col cols="auto">
