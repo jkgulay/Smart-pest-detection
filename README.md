@@ -1,3 +1,66 @@
+# Smart Pest Detection
+
+## Project Structure
+
+```
+Smart-Pest-Detection/
+├── src/
+│   ├── components/
+│   │   ├── Header.js
+│   │   ├── Footer.js
+│   │   └── ...
+│   ├── services/
+│   │   ├── apiService.js
+│   │   └── ...
+│   ├── styles/
+│   │   ├── settings.scss
+│   │   └── ...
+│   ├── App.js
+│   └── index.js
+├── public/
+│   ├── index.html
+│   └── ...
+├── tests/
+│   ├── App.test.js
+│   └── ...
+├── .gitignore
+├── package.json
+├── README.md
+└── LICENSE
+```
+
+## Description
+
+Smart Pest Detection is a project aimed at detecting pests using advanced machine learning algorithms. This repository contains the source code, tests, and documentation for the project.
+
+## Installation
+
+To install the dependencies, run:
+```bash
+npm install
+```
+
+## Usage
+
+To start the development server, run:
+```bash
+npm run dev
+```
+
+To build the project for production, use:
+```bash
+npm run build
+```
+
+To run the tests, use:
+```bash
+npm test
+```
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
 Early detection of the pests in plants and crops is a major challenge facing farmers
 these days (Gondal & Khan, 2015). The occurrence of insect pests can have significant
 negative effects on the quality and quantity of agricultural products such as grains,
