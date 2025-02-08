@@ -20,6 +20,18 @@
       </v-row>
       <v-row dense justify="center">
         <v-col cols="12">
+          <div class="text-subtitle-1 text-mediumemphasis-">Account</div>
+          <v-text-field
+            v-model="formData.username"
+            variant="outlined"
+            density="compact"
+            label="Username"
+            prepend-inner-icon="mdi-account-outline"
+            :rules="[requiredValidator, usernameValidator]"
+            :error-messages="userNameErrorMessages"
+          ></v-text-field>
+        </v-col>
+        <v-col cols="12">
           <div class="text-subtitle-1 text-mediumemphasis-">Email Address</div>
           <v-text-field
             v-model="formData.email"
@@ -103,6 +115,7 @@ import {
   emailValidator,
   passwordValidator,
   confirmedValidator,
+  usernameValidator,
 } from "@/lib/validator";
 import { useAuthUserStore } from "@/stores/authUser";
 import { useToast } from "vue-toastification";
@@ -116,11 +129,13 @@ const formData = ref({
   email: "",
   password: "",
   password_confirmation: "",
+  username: "",
 });
 const formAction = ref({ formProcess: false });
 const isPasswordVisible = ref(false);
 const isPasswordConfirmVisible = ref(false);
 
+const userNameErrorMessages = ref([]);
 const emailErrorMessages = ref([]);
 const passwordErrorMessages = ref([]);
 const passwordConfirmErrorMessages = ref([]);
@@ -132,7 +147,8 @@ async function onFormSubmit() {
 
   const { error } = await authUserStore.registerUser(
     formData.value.email,
-    formData.value.password
+    formData.value.password,
+    formData.value.username
   );
 
   formAction.value.formProcess = false;

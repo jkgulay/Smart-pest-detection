@@ -7,7 +7,7 @@
             <!-- Welcome Section -->
             <div class="welcome-section mt-16">
               <h2 class="title mt-10">Welcome</h2>
-              <p class="username">John Doe</p>
+              <p class="username">username</p>
             </div>
             <!-- Filter Buttons -->
             <div class="filter-section">
