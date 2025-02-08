@@ -133,7 +133,7 @@
   </v-app-bar>
 
   <!-- Replacing v-main with a div -->
-  <div style="height: 100%; padding: 16px">
+  <div style="height: 100%; padding: 15px">
     <!-- Content goes here -->
   </div>
 </template>

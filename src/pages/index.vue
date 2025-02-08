@@ -54,7 +54,7 @@ const showRegisterDialog = ref(false);
 
 .text {
   font-family: "Montserrat", sans-serif !important;
-  font-weight: 700;
+  font-weight: 800;
   font-size: 3rem; /* Responsive font size */
   color: #ffffff;
   margin-top: 50px;
