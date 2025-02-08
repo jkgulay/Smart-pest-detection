@@ -1,75 +1,22 @@
 <template>
-<<<<<<< HEAD
-  <ion-page>
-    <ion-header>
-      <InnerNavBar />
-    </ion-header>
-=======
   <LayoutWrapper>
     <template #content>
       <ion-page>
         <ion-content>
           <div class="dashboard-container">
             <!-- Welcome Section -->
-            <div class="welcome-section">
-              <h2 class="title mt-15">Welcome to PestLens</h2>
+            <div class="welcome-section mt-16">
+              <h2 class="title mt-10">Welcome</h2>
               <p class="username">John Doe</p>
             </div>
->>>>>>> bbe11855c06ea03da099d910666a6a7bc58108de
-
             <!-- Filter Buttons -->
             <div class="filter-section">
               <ion-segment v-model="selectedFilter" class="custom-segment">
-                <ion-segment-button value="hour">
-                  Hours
-                </ion-segment-button>
-                <ion-segment-button value="day">
-                  Days
-                </ion-segment-button>
-                <ion-segment-button value="month" >
-                  Month
-                </ion-segment-button>
+                <ion-segment-button value="hour"> Hours </ion-segment-button>
+                <ion-segment-button value="day"> Days </ion-segment-button>
+                <ion-segment-button value="month"> Month </ion-segment-button>
               </ion-segment>
             </div>
-
-<<<<<<< HEAD
-        <!-- Filter Section -->
-        <div class="filter-section">
-          <ion-row class="ion-justify-content-center">
-            <ion-segment v-model="selectedFilter" class="custom-segment">
-              <ion-segment-button value="hour" @click="updateChart('hour')">
-                Hours
-              </ion-segment-button>
-              <ion-segment-button value="day" @click="updateChart('day')">
-                Days
-              </ion-segment-button>
-              <ion-segment-button value="month" @click="updateChart('month')">
-                Month
-              </ion-segment-button>
-            </ion-segment>
-          </ion-row>
-        </div>
-
-        <!-- Statistics & Chart Card -->
-        <ion-card class="stats-card">
-          <ion-card-content>
-            <!-- Statistics Grid -->
-            <ion-grid class="stats-grid">
-              <ion-col size="6" class="total-scanned">
-                <div class="card-content">
-                  <h3 class="card-title">Total Scanned</h3>
-                  <p class="card-value">{{ totalScanned }}</p>
-                </div>
-              </ion-col>
-              <ion-col size="6" class="scanned-today">
-                <div class="card-content">
-                  <h3 class="card-title">Scanned Today</h3>
-                  <p class="card-value">{{ scannedToday }}</p>
-                </div>
-              </ion-col>
-            </ion-grid>
-
-=======
             <!-- Statistics Grid -->
             <div class="stats-grid">
               <div class="stats-card total-scanned">
@@ -86,35 +33,12 @@
               </div>
             </div>
 
->>>>>>> bbe11855c06ea03da099d910666a6a7bc58108de
             <!-- Chart Section -->
             <div class="chart-section">
               <div class="chart-card">
                 <h3 class="card-title">Scan Overview</h3>
                 <div class="chart-container">
-<<<<<<< HEAD
                   <BarChart :chartData="chartData" />
-                </div>
-              </div>
-            </div>
-          </ion-card-content>
-        </ion-card>
-        <v-row justify="center">
-          <v-col cols="auto">
-            <v-btn height="72" style="border-radius: 100px" @click="openCamera">
-              <v-icon size="40">mdi-magnify-scan</v-icon>
-            </v-btn>
-          </v-col>
-        </v-row>
-      </div>
-    </ion-content>
-
-    <ion-footer>
-      <BottomBar />
-    </ion-footer>
-  </ion-page>
-=======
-                  <BarChart />
                 </div>
               </div>
             </div>
@@ -123,7 +47,6 @@
       </ion-page>
     </template>
   </LayoutWrapper>
->>>>>>> bbe11855c06ea03da099d910666a6a7bc58108de
 </template>
 
 <script setup lang="ts">
@@ -140,13 +63,7 @@ import {
   IonCol,
 } from "@ionic/vue";
 import BarChart from "@/components/common/BarChart.vue";
-<<<<<<< HEAD
-import InnerNavBar from "@/components/common/InnerNavBar.vue";
-import BottomBar from "@/components/common/BottomBar.vue";
-import { Camera, CameraResultType, CameraSource } from "@capacitor/camera";
-=======
 import LayoutWrapper from "@/layouts/LayoutWrapper.vue";
->>>>>>> bbe11855c06ea03da099d910666a6a7bc58108de
 
 const imageUrl = ref<string | null>(null);
 
@@ -176,7 +93,7 @@ const chartData = ref({
     {
       label: "Scanned",
       backgroundColor: "#8BC34A",
-      data: [5, 8, 12, 20, 6], // Default daily data
+      data: [5, 8, 12, 20, 6],
     },
   ],
 });
@@ -258,7 +175,7 @@ const updateChart = (filter: string) => {
   .custom-segment {
     --background: #677861;
     border-radius: 8px;
-    max-width: 350px;
+    max-width: 250px;
 
     ion-segment-button {
       --color: #393535;
@@ -283,6 +200,7 @@ const updateChart = (filter: string) => {
     font-size: 1.2rem;
     margin-bottom: 10px;
     opacity: 0.8;
+    padding: 0.5rem;
   }
 
   .card-value {
