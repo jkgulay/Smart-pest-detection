@@ -13,11 +13,13 @@ declare module 'vue' {
     BottomBar: typeof import('./components/common/BottomBar.vue')['default']
     Camera: typeof import('./components/common/Camera.vue')['default']
     InnerNavBar: typeof import('./components/common/InnerNavBar.vue')['default']
+    Loader: typeof import('./components/common/Loader.vue')['default']
     LoginForm: typeof import('./components/auth/LoginForm.vue')['default']
-    NavBar: typeof import('./components/common/NavBar.vue')['default']
+    LoginView: typeof import('./components/views/auth/LoginView.vue')['default']
     RegisterForm: typeof import('./components/auth/RegisterForm.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
+    ScanHistory: typeof import('./components/views/ScanHistory.vue')['default']
     ScrollDown: typeof import('./components/common/ScrollDown.vue')['default']
   }
 }

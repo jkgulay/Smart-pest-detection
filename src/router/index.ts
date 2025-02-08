@@ -10,6 +10,7 @@ import Profiles from '@/pages/Profiles.vue';
 import LoginForm from '@/components/auth/LoginForm.vue';
 // @ts-ignore
 import Scan from '@/pages/Scan.vue';
+import Result from '@/pages/Result.vue';
 
 const toast = useToast();
 
@@ -19,6 +20,7 @@ const routes = setupLayouts([
   { path: '/admin', component: Admin, name: 'Admin', meta: { requiresAuth: true } },
   { path: '/profiles', component: Profiles, name: 'Profiles', meta: { requiresAuth: true } },
   { path: '/scan', component: Scan, name: 'Scan', meta: { requiresAuth: true } },
+  { path: '/result', component: Result, name: 'Result', meta: { requiresAuth: true } },
   { path: '/:pathMatch(.*)*', component: NotFound, name: 'NotFound' },
   { path: '/:login', component: LoginForm, name: 'Login'}
 ]);
@@ -28,22 +30,22 @@ const router = createRouter({
   routes,
 });
 
-// router.beforeEach((to, from, next) => {
-//   const isLoggedIn = localStorage.getItem("access_token") !== null;
-//   const publicPages = ["/"];
-//   const protectedPages = ["/home", "/admin", "/profiles"];
+router.beforeEach((to, from, next) => {
+  const isLoggedIn = localStorage.getItem("access_token") !== null;
+  const publicPages = ["/"];
+  const protectedPages = ["/home", "/admin", "/profiles"];
 
-//   if (to.meta.requiresAuth && !isLoggedIn) {
-//     toast.error("Authentication is required to access this page.");
-//     return next("/");
-//   }
+  if (to.meta.requiresAuth && !isLoggedIn) {
+    toast.error("Authentication is required to access this page.");
+    return next("/");
+  }
 
-//   if (publicPages.includes(to.path) && isLoggedIn) {
-//     return next("/home");
-//   }
+  if (publicPages.includes(to.path) && isLoggedIn) {
+    return next("/home");
+  }
 
-//   next();
-// });
+  next();
+});
 
 router.onError((err, to) => {
   if (err?.message?.includes?.("Failed to fetch dynamically imported module")) {
