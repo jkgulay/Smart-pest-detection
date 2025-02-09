@@ -11,7 +11,7 @@
             </div>
             <!-- Filter Buttons -->
             <div class="filter-section">
-              <ion-segment v-model="selectedFilter" class="custom-segment">
+              <ion-segment v-model="selectedFilter" class="custom-segment" @ionChange="updateChart(selectedFilter)">
                 <ion-segment-button value="hour"> Hours </ion-segment-button>
                 <ion-segment-button value="day"> Days </ion-segment-button>
                 <ion-segment-button value="month"> Month </ion-segment-button>
@@ -51,6 +51,7 @@
 
 <script setup lang="ts">
 import { ref } from "vue";
+import { Camera, CameraResultType, CameraSource } from "@capacitor/camera";
 import {
   IonPage,
   IonHeader,

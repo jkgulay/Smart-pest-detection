@@ -104,9 +104,10 @@
         <v-window v-model="activeTab">
           <v-window-item value="scans">
             <v-list>
-              <v-list-item v-for="scan in recentScans" :key="scan.id">
-                <v-list-item-title>{{ scan.pestType }}</v-list-item-title>
-                <v-list-item-subtitle>{{ scan.date }}</v-list-item-subtitle>
+              <v-list-item>
+             <!--  <v-list-item v-for="scan in recentScans" :key="scan.id"> -->
+                <v-list-item-title><!-- {{ scan.pestType }} --></v-list-item-title>
+                <v-list-item-subtitle><!-- {{ scan.date }} --></v-list-item-subtitle>
               </v-list-item>
             </v-list>
           </v-window-item>
@@ -260,7 +261,7 @@ const uploadProfileImage = async (event: Event) => {
 
   const url = await uploadImage(input.files[0], "avatars", authUser.id);
   if (url && user.value) {
-    users.value.profile_image = url; // Update the user object
+    /* users.value.profile_image = url; */
   }
 };
 
