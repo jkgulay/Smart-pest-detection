@@ -32,7 +32,7 @@ const app = createApp(App).use(IonicVue).use(router).use(Toast); // Modify this 
 
 import { defineCustomElements } from '@ionic/pwa-elements/loader';
 defineCustomElements(window);
-// app.config.warnHandler = () => {}; 
+app.config.warnHandler = () => {}; 
 
 registerPlugins(app)
 

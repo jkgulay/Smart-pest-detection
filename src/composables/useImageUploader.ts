@@ -1,5 +1,7 @@
-import axios from "axios";
-import { useScanResultStore } from "../stores/scanResultStore";
+import axios from 'axios';
+import { useScanResultStore } from '../stores/scanResultStore';
+
+const ROBOFLOW_API_KEY = import.meta.env.VITE_ROBOFLOW_API_KEY;
 
 export const useImageUploader = async (imageFile: File) => {
   if (!(imageFile instanceof Blob)) {
@@ -14,10 +16,10 @@ export const useImageUploader = async (imageFile: File) => {
       const base64Image = reader.result as string;
 
       const response = await axios({
-        method: "POST",
-        url: "https://detect.roboflow.com/common-rice-pests-philippines/11",
+        method: 'POST',
+        url: 'https://detect.roboflow.com/pest-detection-pcs9q/1',
         params: {
-          api_key: "EbsQu3NoU1RS9mT73hIR",
+          api_key: ROBOFLOW_API_KEY
         },
         data: base64Image,
         headers: {
@@ -26,7 +28,7 @@ export const useImageUploader = async (imageFile: File) => {
       });
 
       const predictions = response.data.predictions;
-      console.log("Predictions:", predictions);
+      /* console.log('Predictions:', predictions); */
 
       const scanResultStore = useScanResultStore();
       if (predictions.length === 0) {
@@ -34,11 +36,12 @@ export const useImageUploader = async (imageFile: File) => {
           { class: "No pests detected", confidence: 0 },
         ]);
       } else {
-        const formattedPredictions = predictions.map((prediction: any) => ({
-          class: prediction.class,
-          confidence: prediction.confidence,
-        }));
-        scanResultStore.setScanResult(formattedPredictions);
+        const firstPrediction = predictions[0];
+        const formattedPrediction = {
+          class: firstPrediction.class,
+          confidence: firstPrediction.confidence
+        };
+        scanResultStore.setScanResult([formattedPrediction]);
       }
     };
 
