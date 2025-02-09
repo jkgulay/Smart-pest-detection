@@ -10,6 +10,7 @@ declare module 'vue' {
     AlertNotification: typeof import('./components/common/AlertNotification.vue')['default']
     AppFooter: typeof import('./components/AppFooter.vue')['default']
     BarChart: typeof import('./components/common/BarChart.vue')['default']
+    BottomBar: typeof import('./components/common/BottomBar.vue')['default']
     Camera: typeof import('./components/common/Camera.vue')['default']
     InnerNavBar: typeof import('./components/common/InnerNavBar.vue')['default']
     Loader: typeof import('./components/common/Loader.vue')['default']

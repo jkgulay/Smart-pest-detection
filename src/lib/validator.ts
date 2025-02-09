@@ -54,6 +54,21 @@ export const emailValidator = (value: string | string[]): string | boolean => {
   return re.test(String(value)) || 'The Email field must be a valid email address';
 }
 
+export const usernameValidator = (value: string | string[]): string | boolean => {
+  if (isEmpty(value)) return true; // Allow empty value if needed
+
+  // Regular expression for username validation
+  const re = /^(?!.*[_.-]{2})[a-zA-Z0-9_.-]{3,20}(?<![_.-])$/;
+
+  if (Array.isArray(value)) {
+    return (
+      value.every((val) => re.test(String(val))) || 'The Username field must be a valid username'
+    );
+  }
+
+  return re.test(String(value)) || 'The Username field must be a valid username';
+}
+
 // 👉 Password Validator
 export const passwordValidator = (password: string): string | boolean => {
   const regExp = /(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%&*()]).{8,}/;

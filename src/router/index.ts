@@ -2,11 +2,12 @@ import { createRouter, createWebHistory } from '@ionic/vue-router';
 import { setupLayouts } from 'virtual:generated-layouts';
 import { useToast } from 'vue-toastification';
 
-import Hero from '@/pages/index.vue';
+import Hero from '@/pages/Index.vue';
 import Home from '@/pages/Home.vue';
 import NotFound from '@/pages/NotFound.vue';
 import Admin from '@/pages/Admin.vue';
 import Profiles from '@/pages/Profiles.vue';
+import LoginForm from '@/components/auth/LoginForm.vue';
 // @ts-ignore
 import Scan from '@/pages/Scan.vue';
 import Result from '@/pages/Result.vue';
@@ -21,6 +22,7 @@ const routes = setupLayouts([
   { path: '/scan', component: Scan, name: 'Scan', meta: { requiresAuth: true } },
   { path: '/result', component: Result, name: 'Result', meta: { requiresAuth: true } },
   { path: '/:pathMatch(.*)*', component: NotFound, name: 'NotFound' },
+  { path: '/:login', component: LoginForm, name: 'Login'}
 ]);
 
 const router = createRouter({
