@@ -14,7 +14,7 @@
             <!-- Welcome Section -->
             <v-row>
               <v-col cols="12">
-                <v-card class="dashboard-card mb-1 rounded-xl" elevation="1">
+                <v-card class="dashboard-card rounded-xl" elevation="1">
                   <v-card-item>
                     <div>
                       <div class="welcome-title mb-1">Welcome back</div>
@@ -39,8 +39,18 @@
 
             <!-- Stats Section -->
             <v-row>
-              <v-col v-for="(stat, index) in stats" :key="index" cols="6" sm="6" md="4">
-                <v-card class="rounded-lg dashboard-card" elevation="0" :class="stat.color">
+              <v-col
+                v-for="(stat, index) in stats"
+                :key="index"
+                cols="6"
+                sm="6"
+                md="4"
+              >
+                <v-card
+                  class="rounded-lg dashboard-card"
+                  elevation="0"
+                  :class="stat.color"
+                >
                   <v-card-item>
                     <template v-slot:prepend>
                       <v-icon
@@ -59,9 +69,14 @@
             </v-row>
 
             <!-- Time Filter -->
-            <v-row class="mt-4">
+            <v-row>
               <v-col cols="12">
-                <v-card class="rounded-lg dashboard-card" elevation="0">
+                <v-card
+                  class="rounded-lg dashboard-card"
+                  elevation="0"
+                  text-align="center"
+                  justify-content="center"
+                >
                   <v-card-text>
                     <v-btn-toggle
                       v-model="selectedTimeframe"
@@ -88,11 +103,11 @@
             <!-- Chart Section -->
             <v-row>
               <v-col cols="12">
-                <v-card class="rounded-lg" elevation="0">
+                <v-card class="rounded-lg dashboard-card" elevation="0">
                   <v-card-title class="px-4 pt-4">
                     Scan Activity
                     <v-spacer></v-spacer>
-                    <span class="text-caption text-medium-emphasis">
+                    <span class="text-caption" style="color: #D3E5F1;">
                       Total scans: {{ totalScans }}
                     </span>
                   </v-card-title>
@@ -124,7 +139,7 @@
 
 <script setup lang="ts">
 import { ref, computed } from "vue";
-import { use } from "echarts/core";
+import { color, use } from "echarts/core";
 import { CanvasRenderer } from "echarts/renderers";
 import { BarChart } from "echarts/charts";
 import {
@@ -141,7 +156,7 @@ import {
   mdiCalendarWeek,
   mdiBugOutline,
   mdiPercent,
- } from "@mdi/js";
+} from "@mdi/js";
 import LayoutWrapper from "@/layouts/LayoutWrapper.vue";
 use([
   CanvasRenderer,
@@ -228,9 +243,15 @@ const chartOption = computed(() => ({
     axisTick: {
       alignWithLabel: true,
     },
+    axisLabel: {
+      color: "#D3E5F1", // Change label color here
+    },
   },
   yAxis: {
     type: "value",
+    axisLabel: {
+      color: "#D3E5F1", // Change label color here
+    },
   },
   series: [
     {
@@ -239,11 +260,12 @@ const chartOption = computed(() => ({
       barWidth: "60%",
       data: chartData[selectedTimeframe.value].data,
       itemStyle: {
-        color: "#6200EA",
+        color: "#D3E5F1",
       },
     },
   ],
 }));
+
 
 const startScan = () => {
   console.log("Starting new scan...");
@@ -251,56 +273,60 @@ const startScan = () => {
 </script>
 
 <style scoped>
-@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Roboto:wght@300;400;500;700&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Roboto:wght@300;400;500;700&display=swap");
 
 .pest-scanner-app {
-  background: linear-gradient(135deg, #f8f9fc 0%, #eef1f8 100%);
+  background: #8ca189;
   min-height: 100vh;
 }
 
+.v-main {
+  background: #8ca189 !important;
+}
+
 .dashboard-card {
-  background: rgba(255, 255, 255, 0.95) !important;
-  border: 1px solid rgba(229, 232, 238, 0.7);
+  background-color: #5e7962;
+  border: 1px solid rgba(32, 63, 42, 0.7);
   transition: all 0.3s ease;
   border-radius: 10px;
+  color: #ffffff;
 }
 
 .welcome-title {
-  font-family: 'Montserrat', sans-serif;
+  font-family: "Montserrat", sans-serif;
   font-size: 1.5rem;
   font-weight: 600;
-  color: #1e293b;
+  color: #ffffff;
   line-height: 1.3;
 }
 
 .status-text {
-  font-family: 'Roboto', sans-serif;
+  font-family: "Roboto", sans-serif;
   font-size: 0.875rem;
-  color: #64748b;
+  color: #ffffff;
 }
 
-/* Responsive Adjustments */
 @media (max-width: 600px) {
   .welcome-title {
     font-size: 1.25rem;
   }
-  
+
   .stat-value {
     font-size: 1.5rem;
   }
-  
+
   .icon-wrapper {
     width: 40px;
     height: 40px;
   }
-  
+
   .scan-button-wrapper {
     bottom: 16px;
   }
 }
 
 .chart {
-  height: 200px; 
+  height: 200px;
   width: 100%;
 }
 </style>
