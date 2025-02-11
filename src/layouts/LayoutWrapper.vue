@@ -18,6 +18,7 @@ import ScrollDown from "@/components/common/ScrollDown.vue";
 
 <style scoped>
 .v-main {
-  background: #8ca189 !important;
+  background-color: #8ca189 !important; 
 }
+
 </style>

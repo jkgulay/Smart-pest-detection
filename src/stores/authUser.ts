@@ -12,7 +12,6 @@ interface UserData {
   created_at?: string;
   username: string | null;
   profile_image: string | null;
-  profile_background: string | null;
 }
 
 interface SessionUser {
@@ -131,7 +130,7 @@ export async function fetchUserData() {
     // Get additional user data from Supabase database
     const { data: profile, error: profileError } = await supabase
       .from("users")
-      .select("username, profile_image, profile_background")
+      .select("username, profile_image")
       .eq("user_id", user.id)
       .single();
 
@@ -145,7 +144,6 @@ export async function fetchUserData() {
       email: user.email || "",
       username: profile?.username || null,
       profile_image: profile?.profile_image || null,
-      profile_background: profile?.profile_background || null,
     };
   } catch (e) {
     console.error("Error fetching user info:", e);
@@ -179,7 +177,7 @@ export function useUserData() {
 
       const { data: profile, error: profileError } = await supabase
         .from("users")
-        .select("username, profile_image, profile_background")
+        .select("username, profile_image")
         .eq("user_id", authUser.id)
         .single();
 
@@ -192,7 +190,6 @@ export function useUserData() {
         email: authUser.email || "",
         username: profile?.username || null,
         profile_image: profile?.profile_image || null,
-        profile_background: profile?.profile_background || null,
       };
     } catch (e) {
       console.error("Error fetching user info:", e);

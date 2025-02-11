@@ -139,7 +139,7 @@
 
 <script setup lang="ts">
 import { ref, computed } from "vue";
-import { color, use } from "echarts/core";
+import { use } from "echarts/core";
 import { CanvasRenderer } from "echarts/renderers";
 import { BarChart } from "echarts/charts";
 import {
@@ -244,13 +244,13 @@ const chartOption = computed(() => ({
       alignWithLabel: true,
     },
     axisLabel: {
-      color: "#D3E5F1", // Change label color here
+      color: "#D3E5F1", 
     },
   },
   yAxis: {
     type: "value",
     axisLabel: {
-      color: "#D3E5F1", // Change label color here
+      color: "#D3E5F1", 
     },
   },
   series: [
@@ -282,6 +282,12 @@ const startScan = () => {
 
 .v-main {
   background: #8ca189 !important;
+  overflow: auto; 
+}
+
+.v-container {
+  overflow-y: auto; 
+  max-height: calc(100vh - 64px);
 }
 
 .dashboard-card {

@@ -1,281 +1,247 @@
 <template>
   <LayoutWrapper>
     <template #content>
-      <div
-        v-if="loading"
-        class="d-flex justify-center align-center"
-        style="height: 100vh"
-      >
-        <v-progress-circular indeterminate></v-progress-circular>
-      </div>
+      <v-container class="profile-page pa-0" fluid>
+        <!-- Loading State -->
+        <v-overlay v-if="loading" contained>
+          <v-progress-circular indeterminate></v-progress-circular>
+        </v-overlay>
 
-      <div
-        v-else-if="error"
-        class="d-flex justify-center align-center"
-        style="height: 100vh"
-      >
-        <v-alert type="error" title="Error" :text="error.message"></v-alert>
-      </div>
-      <div class="profile-page">
-        <div class="profile-header">
-          <v-img
-            :src="profileBackground"
-            height="200"
-            cover
-            class="header-background"
-          >
-            <template v-slot:placeholder>
-              <v-row class="fill-height ma-0" align="center" justify="center">
-                <v-progress-circular indeterminate></v-progress-circular>
+        <!-- Error State -->
+        <v-alert
+          v-if="error"
+          type="error"
+          title="Error"
+          :text="error.message"
+          class="ma-4"
+        ></v-alert>
+
+         <!-- Main Content -->
+         <div v-else>
+          <!-- Improved Profile Header -->
+          <v-sheet class="profile-header" rounded="lg">
+            <div class="header-background"></div>
+            <v-container class="py-6">
+              <v-row align="center" justify="space-between" class="profile-info">
+                <v-col cols="12" sm="8" class="d-flex align-center">
+                  <v-avatar size="120" class="border-avatar elevation-4 mr-4">
+                    <v-img :src="profileImage" cover>
+                      <template v-slot:placeholder>
+                        <v-row align="center" justify="center">
+                          <v-progress-circular indeterminate></v-progress-circular>
+                        </v-row>
+                      </template>
+                    </v-img>
+                  </v-avatar>
+                  <div>
+                    <div class="text-h4 font-weight-bold text-white mb-1">{{ username }}</div>
+                    <div class="text-subtitle-1 text-white-darken-2">{{ email }}</div>
+                  </div>
+                </v-col>
+                <v-col cols="12" sm="4" class="d-flex justify-end">
+                  <v-btn
+                    prepend-icon="mdi-account-edit"
+                    variant="elevated"
+                    class="bg-white px-6"
+                    @click="dialog = true"
+                    elevation="2"
+                  >
+                    Edit Profile
+                  </v-btn>
+                </v-col>
               </v-row>
-            </template>
-          </v-img>
+            </v-container>
+          </v-sheet>
 
-          <v-card class="profile-card mx-4 mt-2" elevation="3" rounded="lg">
-            <v-row no-gutters>
-              <v-col cols="4" class="pa-4">
-                <v-avatar size="80" class="profile-avatar">
-                  <v-img :src="profileImage" cover>
-                    <template v-slot:placeholder>
-                      <v-row
-                        class="fill-height ma-0"
-                        align="center"
-                        justify="center"
-                      >
-                        <v-progress-circular
-                          indeterminate
-                        ></v-progress-circular>
-                      </v-row>
-                    </template>
-                  </v-img>
-                </v-avatar>
-              </v-col>
-              <v-col cols="8" class="pa-4">
-                <div class="d-flex flex-column justify-center h-100">
-                  <div class="text-h6 font-weight-bold mb-1">
-                    {{ username }}
-                  </div>
-                  <div class="text-subtitle-2 text-medium-emphasis">
-                    {{ email }}
-                  </div>
-                </div>
+          <!-- Stats Section -->
+          <v-container>
+            <v-row>
+              <v-col cols="12" sm="6" md="4">
+                <v-card class="rounded-lg elevation-3" theme="white">
+                  <v-card-text>
+                    <div class="d-flex align-center justify-space-between">
+                      <div>
+                        <div class="text-h4 font-weight-bold">156</div>
+                        <div class="text-subtitle-2">Total Scans</div>
+                      </div>
+                      <v-icon size="36" color="success">mdi-leaf</v-icon>
+                    </div>
+                  </v-card-text>
+                </v-card>
               </v-col>
             </v-row>
 
-            <v-row no-gutters class="stats-row" justify="center">
-              <v-col
-                v-for="stat in stats"
-                :key="stat.label"
-                cols="4"
-                class="text-center"
-              >
-                <div class="stat-item pa-2">
-                  <div class="text-h6 font-weight-bold">{{ stat.value }}</div>
-                  <div class="text-caption">{{ stat.label }}</div>
-                </div>
-              </v-col>
-            </v-row>
+            <!-- Recent Scans -->
+            <v-card class="mt-4 rounded-lg elevation-3">
+              <v-card-title class="d-flex align-center pb-2">
+                <v-icon start color="success" class="mr-2">mdi-magnify</v-icon>
+                Recent Pest Scans
+              </v-card-title>
 
-            <v-card-actions class="pa-4">
+              <v-divider></v-divider>
+
+              <v-list>
+                <v-list-item
+                  v-for="scan in recentScans"
+                  :key="scan.id"
+                  :subtitle="formatDate(scan.date)"
+                  class="py-2"
+                >
+                  <template v-slot:prepend>
+                    <v-icon color="success" class="mr-2">mdi-bug</v-icon>
+                  </template>
+                  <v-list-item-title>
+                    {{ scan.pestType }}
+                    <v-chip
+                      variant="tonal"
+                      :color="getSeverityColor(scan.Severity)"
+                      size="small"
+                      class="ml-2"
+                    >
+                      {{ scan.Severity }}
+                    </v-chip>
+                  </v-list-item-title>
+                </v-list-item>
+              </v-list>
+
+              <v-divider></v-divider>
+
+              <v-card-actions>
+                <v-btn
+                  variant="text"
+                  color="success"
+                  block
+                  prepend-icon="mdi-history"
+                >
+                  View All Scans
+                </v-btn>
+              </v-card-actions>
+            </v-card>
+          </v-container>
+        </div>
+
+        <!-- Edit Profile Dialog -->
+        <v-dialog v-model="dialog" max-width="500">
+          <v-card>
+            <v-card-title class="text-h6">Edit Profile</v-card-title>
+            <v-card-text>
+              <v-form @submit.prevent="saveProfile">
+                <v-text-field
+                  v-model="username"
+                  label="Username"
+                  prepend-inner-icon="mdi-account"
+                  variant="outlined"
+                  class="mb-4"
+                ></v-text-field>
+                <v-file-input
+                  accept="image/*"
+                  label="Profile Picture"
+                  prepend-icon="mdi-camera"
+                  variant="outlined"
+                  class="mb-4"
+                  @change="uploadProfileImage"
+                ></v-file-input>
+              </v-form>
+            </v-card-text>
+            <v-card-actions>
+              <v-spacer></v-spacer>
+              <v-btn color="grey" variant="text" @click="dialog = false">
+                Cancel
+              </v-btn>
               <v-btn
-                block
-                color="primary"
-                variant="tonal"
-                prepend-icon="mdi-account-edit"
-                @click="dialog = true"
+                color="success"
+                variant="text"
+                @click="saveProfile"
+                :loading="saving"
               >
-                Edit Profile
+                Save
               </v-btn>
             </v-card-actions>
           </v-card>
-        </div>
-
-        <v-tabs v-model="activeTab" grow class="mt-4">
-          <v-tab value="scans">
-            <v-icon>mdi-bug-check-outline</v-icon>
-            Recent Scans
-          </v-tab>
-          <v-tab value="saved">
-            <v-icon>mdi-bookmark-outline</v-icon>
-            Saved Reports
-          </v-tab>
-        </v-tabs>
-
-        <v-window v-model="activeTab">
-          <v-window-item value="scans">
-            <v-list>
-              <v-list-item v-for="scan in recentScans" :key="scan.id">
-                <v-list-item-title>{{ scan.pestType }}</v-list-item-title>
-                <v-list-item-subtitle>{{ scan.date }}</v-list-item-subtitle>
-              </v-list-item>
-            </v-list>
-          </v-window-item>
-
-          <v-window-item value="saved">
-            <div class="pa-4 text-center text-medium-emphasis">
-              <v-icon size="64" class="mb-4">mdi-bookmark-outline</v-icon>
-              <div>No saved reports yet</div>
-            </div>
-          </v-window-item>
-        </v-window>
-      </div>
-
-      <v-dialog v-model="dialog" persistent max-width="500px">
-        <v-card>
-          <v-card-title>Edit Profile</v-card-title>
-          <v-card-text>
-            <v-text-field
-              v-model="username"
-              prepend-inner-icon="mdi-account-outline"
-              label="Username"
-              variant="outlined"
-            ></v-text-field>
-            <v-file-input
-              label="Profile Picture"
-              accept="image/*"
-              @change="uploadProfileImage"
-            ></v-file-input>
-            <v-file-input
-              label="Background Image"
-              accept="image/*"
-              @change="uploadBackgroundImage"
-            ></v-file-input>
-          </v-card-text>
-          <v-card-actions>
-            <v-spacer></v-spacer>
-            <v-btn color="grey" variant="text" @click="dialog = false"
-              >Cancel</v-btn
-            >
-            <v-btn
-              color="primary"
-              variant="text"
-              @click="saveProfile"
-              :loading="saving"
-              >Save</v-btn
-            >
-          </v-card-actions>
-        </v-card>
-      </v-dialog>
+        </v-dialog>
+      </v-container>
     </template>
   </LayoutWrapper>
 </template>
 
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
-import LayoutWrapper from "@/layouts/LayoutWrapper.vue";
 import { useUserData, supabase } from "@/stores/authUser";
+import LayoutWrapper from "@/layouts/LayoutWrapper.vue";
 
-const { user, loading, error, refresh } = useUserData();
-
-// Local state
+// State
 const dialog = ref(false);
 const saving = ref(false);
-const activeTab = ref("scans");
-const recentScans = ref([]);
-const stats = ref([
-  { label: "Scans", value: "5" },
-  { label: "Reports", value: "0" },
-  { label: "Saved", value: "0" },
-]);
+const { user, loading, error, refresh } = useUserData();
+
+// Profile Data
 const username = ref("");
 const email = ref("");
 const profileImage = ref("https://randomuser.me/api/portraits/lego/1.jpg");
-const profileBackground = ref("https://randomuser.me/api/portraits/men/91.jpg");
 
-// Fetch user data
-const fetchUserInfo = async () => {
-  try {
-    const {
-      data: { user },
-      error,
-    } = await supabase.auth.getUser();
+// Mock Data for Recent Scans
+const recentScans = ref([
+  { 
+    id: 1, 
+    pestType: "Aphids", 
+    date: "2025-02-11",
+    Severity: "High" 
+  },
+  { 
+    id: 2, 
+    pestType: "Spider Mites", 
+    date: "2025-02-10",
+    Severity: "Low"
+  },
+  { 
+    id: 3, 
+    pestType: "Whiteflies", 
+    date: "2025-02-09",
+    Severity: "Medium"
+  }
+]);
 
-    if (error) throw error;
-    if (!user) throw new Error("User not authenticated");
-
-    email.value = user.email || "";
-    await fetchUserProfile(user.id);
-  } catch (error) {
-    console.error("Error fetching user:", error);
-  } finally {
-    loading.value = false;
+const getSeverityColor = (severity: string): string => {
+  switch (severity.toLowerCase()) {
+    case 'high':
+      return 'error';
+    case 'medium':
+      return 'warning';
+    case 'low':
+      return 'success';
+    default:
+      return 'grey';
   }
 };
 
-const fetchUserProfile = async (userId: string) => {
-  if (!userId) return;
-
-  const { data, error } = await supabase
-    .from("users")
-    .select("username, profile_image, profile_background") 
-    .eq("user_id", userId)
-    .single();
-
-  if (error) {
-    console.error("Error fetching user profile:", error);
-  } else if (data) {
-    username.value = data.username || "";
-    profileImage.value = data.profile_image || profileImage.value;
-    profileBackground.value =
-      data.profile_background || profileBackground.value;
-  }
+// Methods
+const formatDate = (date: string) => {
+  return new Date(date).toLocaleDateString();
 };
 
-const uploadImage = async (file: File, path: string, userId: string) => {
-  if (!file || !userId) return null;
+const uploadProfileImage = async (file: File) => {
+  if (!file || !user.value?.id) return;
 
-  const fileExt = file.name.split(".").pop();
+  const fileExt = file.name.split('.').pop();
   const fileName = `${Date.now()}.${fileExt}`;
-  const filePath = `${path}/${fileName}`;
+  const filePath = `avatars/${fileName}`;
 
   try {
     const { error: uploadError } = await supabase.storage
-      .from("profiles")
-      .upload(filePath, file, {
-        upsert: true,
-        cacheControl: "3600",
-      });
+      .from('profiles')
+      .upload(filePath, file);
 
-    if (uploadError) {
-      console.error("Error uploading file:", uploadError);
-      return null;
+    if (uploadError) throw uploadError;
+
+    const { data } = await supabase.storage
+      .from('profiles')
+      .getPublicUrl(filePath);
+
+    if (data) {
+      profileImage.value = data.publicUrl;
     }
-
-    const { data } = await supabase.storage.from("profiles").getPublicUrl(filePath);
-    return data.publicUrl;
   } catch (error) {
-    console.error("Error in upload process:", error);
-    return null;
-  }
-};
-
-const uploadProfileImage = async (event: Event) => {
-  const input = event.target as HTMLInputElement;
-  if (!input.files?.length) return;
-
-  const {
-    data: { user: authUser },
-  } = await supabase.auth.getUser();
-  if (!authUser) return;
-
-  const url = await uploadImage(input.files[0], "avatars", authUser.id);
-  if (url && user.value) {
-    users.value.profile_image = url; 
-  }
-};
-
-const uploadBackgroundImage = async (event: Event) => {
-  const input = event.target as HTMLInputElement;
-  if (!input.files?.length) return;
-
-  const {
-    data: { user: authUser },
-  } = await supabase.auth.getUser();
-  if (!authUser) return;
-
-  const url = await uploadImage(input.files[0], "backgrounds", authUser.id);
-  if (url && user.value) {
-    user.value.profile_background = url; // Update the user object
+    console.error('Error uploading image:', error);
   }
 };
 
@@ -284,47 +250,87 @@ const saveProfile = async () => {
 
   saving.value = true;
   try {
-    console.log("Updating profile with:", {
-      username: user.value.username,
-      profile_image: user.value.profile_image,
-      profile_background: user.value.profile_background,
-    });
-
-    const { error: updateError } = await supabase
-      .from("users")
+    const { error } = await supabase
+      .from('users')
       .update({
-        username: user.value.username,
-        profile_image: user.value.profile_image,
-        profile_background: user.value.profile_background,
+        username: username.value,
+        profile_image: profileImage.value
       })
-      .eq("user_id", user.value.id);
+      .eq('user_id', user.value.id);
 
-    if (updateError) throw updateError;
+    if (error) throw error;
 
     dialog.value = false;
+    username.value = username.value;
     await refresh();
-  } catch (e) {
-    console.error("Error updating profile:", e);
+  } catch (error) {
+    console.error('Error saving profile:', error);
   } finally {
     saving.value = false;
   }
 };
 
-onMounted(fetchUserInfo);
+// Lifecycle
+onMounted(async () => {
+  await fetchUserInfo();
+});
+
+const fetchUserInfo = async () => {
+  try {
+    const { data: { user }, error } = await supabase.auth.getUser();
+    
+    if (error) throw error;
+    if (!user) throw new Error('User not authenticated');
+
+    email.value = user.email || '';
+    await fetchUserProfile(user.id);
+  } catch (error) {
+    console.error('Error fetching user:', error);
+  }
+};
+
+const fetchUserProfile = async (userId: string) => {
+  if (!userId) return;
+
+  const { data, error } = await supabase
+    .from('users')
+    .select('username, profile_image')
+    .eq('user_id', userId)
+    .single();
+
+  if (error) {
+    console.error('Error fetching profile:', error);
+  } else if (data) {
+    username.value = data.username || '';
+    profileImage.value = data.profile_image || profileImage.value;
+  }
+};
 </script>
 
 <style scoped>
 .profile-page {
   min-height: 100vh;
-  background-color: rgb(249, 250, 251);
+  background-color: #8ca189;
 }
 
-.stats-row {
-  border-top: 1px solid rgba(0, 0, 0, 0.12);
-  border-bottom: 1px solid rgba(0, 0, 0, 0.12);
+.profile-header {
+  background: #5e7962;
+  margin: 10px;
 }
 
-.hidden-input {
-  display: none;
+.border-avatar {
+  border: 3px solid white;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.profile-info {
+  position: relative;
+  z-index: 2;
+}
+
+
+
+:deep(.v-card) {
+  border: 1px solid rgba(255, 255, 255, 0.1);
 }
 </style>

@@ -115,7 +115,7 @@
   <v-app-bar
     class="navbar"
     :color="isDarkTheme ? 'dark-navbar' : 'light-navbar'"
-    style="height: 80px; padding: 1rem"
+    style="height: 63px"
   >
     <v-app-bar-nav-icon
       variant="text"
@@ -134,7 +134,7 @@
   </v-app-bar>
 
   <!-- Replacing v-main with a div -->
-  <div style="height: 100%; padding: 15px">
+  <div style="height: 100%">
     <!-- Content goes here -->
   </div>
 </template>
@@ -198,5 +198,4 @@ const drawer = ref(false);
     border-bottom-right-radius: 30px;
   }
 }
-
 </style>
