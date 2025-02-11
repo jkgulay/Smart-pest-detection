@@ -31,15 +31,18 @@
     "@ionic/vue": "^8.4.3",
     "@ionic/vue-router": "^8.4.3",
     "@mdi/font": "7.4.47",
+    "@mdi/js": "^7.4.47",
     "@supabase/supabase-js": "^2.48.1",
     "axios": "^1.7.9",
     "chart.js": "^3.9.1",
     "core-js": "^3.37.1",
+    "echarts": "^5.6.0",
     "roboto-fontface": "*",
     "vue": "^3.4.31",
     "vue-chart-3": "^3.1.8",
+    "vue-echarts": "^7.0.3",
     "vue-toastification": "^2.0.0-rc.5",
-    "vuetify": "^3.6.14"
+    "vuetify": "^3.7.11"
   },
   "devDependencies": {
     "@eslint/js": "^9.14.0",

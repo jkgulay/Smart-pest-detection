@@ -260,7 +260,7 @@ const uploadProfileImage = async (event: Event) => {
 
   const url = await uploadImage(input.files[0], "avatars", authUser.id);
   if (url && user.value) {
-    users.value.profile_image = url; // Update the user object
+    users.value.profile_image = url; 
   }
 };
 
