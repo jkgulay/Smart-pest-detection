@@ -5,7 +5,6 @@
         <InnerNavBar />
         <slot name="content"></slot>
         <ScrollDown />
-        <BottomBar />
       </div>
     </v-main>
   </v-app>

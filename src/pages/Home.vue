@@ -224,6 +224,7 @@ const chartData = {
   },
 };
 
+
 const chartOption = computed(() => ({
   tooltip: {
     trigger: "axis",

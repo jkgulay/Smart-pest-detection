@@ -16,15 +16,14 @@
           class="ma-4"
         ></v-alert>
 
-         <!-- Main Content -->
-         <div v-else>
-          <!-- Improved Profile Header -->
+        <!-- Main Content -->
+        <div v-else>
           <v-sheet class="profile-header" rounded="lg">
             <div class="header-background"></div>
             <v-container class="py-6">
               <v-row align="center" justify="space-between" class="profile-info">
                 <v-col cols="12" sm="8" class="d-flex align-center">
-                  <v-avatar size="120" class="border-avatar elevation-4 mr-4">
+                  <v-avatar size="120" class="border-avatar elevation-4 mr-4 profile-avatar">
                     <v-img :src="profileImage" cover>
                       <template v-slot:placeholder>
                         <v-row align="center" justify="center">
@@ -181,36 +180,36 @@ const profileImage = ref("https://randomuser.me/api/portraits/lego/1.jpg");
 
 // Mock Data for Recent Scans
 const recentScans = ref([
-  { 
-    id: 1, 
-    pestType: "Aphids", 
+  {
+    id: 1,
+    pestType: "Aphids",
     date: "2025-02-11",
-    Severity: "High" 
+    Severity: "High",
   },
-  { 
-    id: 2, 
-    pestType: "Spider Mites", 
+  {
+    id: 2,
+    pestType: "Spider Mites",
     date: "2025-02-10",
-    Severity: "Low"
+    Severity: "Low",
   },
-  { 
-    id: 3, 
-    pestType: "Whiteflies", 
+  {
+    id: 3,
+    pestType: "Whiteflies",
     date: "2025-02-09",
-    Severity: "Medium"
-  }
+    Severity: "Medium",
+  },
 ]);
 
 const getSeverityColor = (severity: string): string => {
   switch (severity.toLowerCase()) {
-    case 'high':
-      return 'error';
-    case 'medium':
-      return 'warning';
-    case 'low':
-      return 'success';
+    case "high":
+      return "error";
+    case "medium":
+      return "warning";
+    case "low":
+      return "success";
     default:
-      return 'grey';
+      return "grey";
   }
 };
 
@@ -221,6 +220,12 @@ const formatDate = (date: string) => {
 
 const uploadProfileImage = async (file: File) => {
   if (!file || !user.value?.id) return;
+
+  // Ensure file.name is a string
+  if (typeof file.name !== 'string') {
+    console.error('Invalid file name:', file.name);
+    return;
+  }
 
   const fileExt = file.name.split('.').pop();
   const fileName = `${Date.now()}.${fileExt}`;
@@ -251,12 +256,12 @@ const saveProfile = async () => {
   saving.value = true;
   try {
     const { error } = await supabase
-      .from('users')
+      .from("users")
       .update({
         username: username.value,
-        profile_image: profileImage.value
+        profile_image: profileImage.value,
       })
-      .eq('user_id', user.value.id);
+      .eq("user_id", user.value.id);
 
     if (error) throw error;
 
@@ -264,7 +269,7 @@ const saveProfile = async () => {
     username.value = username.value;
     await refresh();
   } catch (error) {
-    console.error('Error saving profile:', error);
+    console.error("Error saving profile:", error);
   } finally {
     saving.value = false;
   }
@@ -277,15 +282,18 @@ onMounted(async () => {
 
 const fetchUserInfo = async () => {
   try {
-    const { data: { user }, error } = await supabase.auth.getUser();
-    
-    if (error) throw error;
-    if (!user) throw new Error('User not authenticated');
+    const {
+      data: { user },
+      error,
+    } = await supabase.auth.getUser();
 
-    email.value = user.email || '';
+    if (error) throw error;
+    if (!user) throw new Error("User not authenticated");
+
+    email.value = user.email || "";
     await fetchUserProfile(user.id);
   } catch (error) {
-    console.error('Error fetching user:', error);
+    console.error("Error fetching user:", error);
   }
 };
 
@@ -293,15 +301,15 @@ const fetchUserProfile = async (userId: string) => {
   if (!userId) return;
 
   const { data, error } = await supabase
-    .from('users')
-    .select('username, profile_image')
-    .eq('user_id', userId)
+    .from("users")
+    .select("username, profile_image")
+    .eq("user_id", userId)
     .single();
 
   if (error) {
-    console.error('Error fetching profile:', error);
+    console.error("Error fetching profile:", error);
   } else if (data) {
-    username.value = data.username || '';
+    username.value = data.username || "";
     profileImage.value = data.profile_image || profileImage.value;
   }
 };
@@ -309,26 +317,89 @@ const fetchUserProfile = async (userId: string) => {
 
 <style scoped>
 .profile-page {
-  min-height: 100vh;
   background-color: #8ca189;
+  overflow: auto;
+  overflow-y: auto;
+  overflow-y: auto;
+  max-height: calc(100vh - 64px);
 }
 
 .profile-header {
   background: #5e7962;
-  margin: 10px;
+  margin: 15px;
+  margin-bottom: -5px;
 }
 
-.border-avatar {
-  border: 3px solid white;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+.profile-header::before {
+  content: "";
+  position: absolute;
+  top: -50%;
+  right: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(
+    circle,
+    rgba(255, 255, 255, 0.1) 0%,
+    rgba(255, 255, 255, 0) 70%
+  );
 }
 
-.profile-info {
+.profile-avatar {
+  border: 4px solid rgba(255, 255, 255, 0.3);
   position: relative;
-  z-index: 2;
+  transition: transform 0.3s ease;
 }
 
+.profile-avatar:hover {
+  transform: scale(1.05);
+}
 
+.online-indicator {
+  position: absolute;
+  bottom: 8px;
+  right: 8px;
+  width: 20px;
+  height: 20px;
+  background: #4caf50;
+  border: 3px solid white;
+  border-radius: 50%;
+}
+
+.profile-details {
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.edit-btn {
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.3) !important;
+  transition: all 0.3s ease;
+  padding: 16px 32px !important;
+}
+
+.edit-btn:hover {
+  background: rgba(255, 255, 255, 0.15) !important;
+  transform: translateY(-2px);
+}
+
+@media (max-width: 960px) {
+  .profile-content {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .profile-avatar {
+    margin: 0 auto 24px;
+  }
+
+  .edit-btn {
+    width: 100%;
+    margin-top: 24px;
+  }
+
+  .d-flex.gap-2 {
+    justify-content: center;
+  }
+}
 
 :deep(.v-card) {
   border: 1px solid rgba(255, 255, 255, 0.1);
