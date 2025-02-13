@@ -1,13 +1,13 @@
 <template>
+  <!-- Template remains exactly the same as previous version -->
   <v-container class="scan-container pa-4">
     <div class="text-center mb-3">
-      <h1 class="text-h4 font-weight-bold mb-2">Plant Scanner</h1>
+      <h1 class="text-h4 font-weight-bold text-primary mb-2">Plant Guardian</h1>
       <p class="text-subtitle-1 text-medium-emphasis">
-        Detect and identify plant pests
+        Smart Plant Health Analysis
       </p>
     </div>
 
-    <!-- Main Card Section -->
     <v-card
       class="mx-auto scan-card"
       :class="{
@@ -17,7 +17,6 @@
       max-width="500"
       rounded="lg"
     >
-      <!-- Loading Overlay -->
       <v-overlay
         v-model="isTakingPicture"
         class="align-center justify-center"
@@ -30,72 +29,73 @@
             color="primary"
             size="64"
           ></v-progress-circular>
-          <div class="text-body-1 mt-4">Processing your image...</div>
+          <div class="text-h6 mt-1 text-primary">Processing your image...</div>
         </v-card-text>
       </v-overlay>
 
-      <!-- Image Preview -->
       <v-img
         :src="selectedImage || defaultImage"
-        :aspect-ratio="1"
+        :aspect-ratio="4 / 3"
         cover
         class="scan-image"
       >
-        <template v-slot:placeholder>
-          <v-row class="fill-height ma-0" align="center" justify="center">
-            <v-progress-circular
-              indeterminate
-              color="grey-lighten-5"
-            ></v-progress-circular>
-          </v-row>
-        </template>
 
-        <!-- Image Overlay Guidelines -->
         <div class="image-overlay" v-if="!selectedImage">
           <div class="text-center text-white">
-            <v-icon size="64" color="white" class="mb-2"
-              >mdi-camera-outline</v-icon
+            <v-icon size="72" color="white" class="mb-3"
+              >mdi-leaf-circle</v-icon
             >
+            <div class="text-h6 mb-2">Ready to Scan</div>
             <div class="text-body-1">
-              Take a clear photo of the affected area
+              Position the affected area in the frame
             </div>
           </div>
         </div>
       </v-img>
 
-      <!-- Action Buttons -->
-      <v-card-actions class="pa-4 d-flex flex-wrap gap-3">
+      <v-card-actions class="pa-4 d-flex flex-column gap-3">
         <v-btn
           block
           color="white"
-          size="large"
+          size="x-large"
           :loading="isTakingPicture"
           :disabled="isTakingPicture"
           @click="takePicture"
-          class="scan-button"
-          elevation="2"
+          class="scan-button text-none"
+          elevation="3"
         >
-          <v-icon start>mdi-camera</v-icon>
-          {{ selectedImage ? "Scan Again" : "Scan a Pest" }}
+          <v-icon start size="24" class="mr-2">
+            {{ selectedImage ? "mdi-camera-retake" : "mdi-camera" }}
+          </v-icon>
+          {{ selectedImage ? "Scan Again" : "Scan Plant" }}
         </v-btn>
 
         <v-btn
           v-if="selectedImage"
           block
           color="error"
-          size="large"
+          size="x-large"
           variant="outlined"
           @click="clearImage"
           class="clear-button"
-          elevation="0"
+          elevation="3"
         >
           <v-icon start>mdi-refresh</v-icon>
           Clear Image
         </v-btn>
+
+        <v-btn
+          color="black"
+          variant="text"
+          block
+          @click="$router.push('/scan-history')"
+        >
+          <v-icon start>mdi-history</v-icon>
+          View Scan History
+        </v-btn>
       </v-card-actions>
     </v-card>
 
-    <!-- Scanning Tips -->
     <v-card
       class="mt-6 mx-auto tips-card"
       max-width="500"
@@ -103,9 +103,9 @@
       rounded="lg"
     >
       <v-list lines="two">
-        <v-list-subheader class="text-primary font-weight-medium"
-          >Scanning Tips</v-list-subheader
-        >
+        <v-list-subheader class="text-primary font-weight-medium">
+          Tips for Best Results
+        </v-list-subheader>
 
         <v-list-item
           prepend-icon="mdi-light-flood-up"
@@ -137,15 +137,22 @@ import { usePestScan } from "@/composables/usePestScan";
 import { useScanResultStore } from "@/stores/scanResultStore";
 import { useRouter } from "vue-router";
 
+interface ScanResult {
+  imageUrl: string;
+  diagnosis: string;
+  confidence: number;
+  timestamp: Date;
+}
+
 const selectedImage = ref<string | null>(null);
 const { mobile } = useDisplay();
 const defaultImage = "/src/assets/default/pest1.jpg";
 const { uploadPestScan, uploadError, isLoading } = usePestScan();
 const scanResultStore = useScanResultStore();
-const isTakingPicture = ref(false);
+const isTakingPicture = ref<boolean>(false);
 const router = useRouter();
 
-const takePicture = async () => {
+const takePicture = async (): Promise<void> => {
   try {
     const image = await Camera.getPhoto({
       quality: 50,
@@ -181,7 +188,7 @@ const takePicture = async () => {
   }
 };
 
-const clearImage = () => {
+const clearImage = (): void => {
   selectedImage.value = null;
 };
 </script>
@@ -189,21 +196,21 @@ const clearImage = () => {
 <style scoped>
 .scan-container {
   max-width: 100%;
-  min-height: 100vh; 
   background: #8ca189;
-  overflow: auto;
 }
 
 .scan-card {
   position: relative;
-  border-radius: 20px;
-  padding: 0.5rem;
-  overflow: auto;
+  border-radius: 24px;
+  background: rgba(255, 255, 255, 0.95);
+  transition: all 0.3s ease;
+  padding: 10px;
 }
 
 .scan-image {
   position: relative;
-  border-radius: 12px;
+  border-radius: 16px;
+  overflow: hidden;
 }
 
 .image-overlay {
@@ -212,7 +219,8 @@ const clearImage = () => {
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 0, 0, 0.5);
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(2px);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -220,8 +228,9 @@ const clearImage = () => {
 }
 
 .scan-button {
-  transition: transform 0.2s ease;
-  background-color: #43673d;
+  transition: all 0.3s ease;
+  letter-spacing: 0.5px;
+  background: #526e48;
 }
 
 .scan-button:active {
@@ -230,11 +239,11 @@ const clearImage = () => {
 
 .tips-card {
   background: rgba(255, 255, 255, 0.9);
-  overflow: auto;
+  border: 1px solid rgba(0, 0, 0, 0.1);
 }
 
 .gap-3 {
-  gap: 12px;
+  gap: 16px;
 }
 
 @media (max-width: 600px) {
@@ -243,7 +252,7 @@ const clearImage = () => {
   }
 
   .text-h4 {
-    font-size: 1.5rem !important;
+    font-size: 1.75rem !important;
   }
 
   .scan-card {
