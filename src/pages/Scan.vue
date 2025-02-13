@@ -15,9 +15,8 @@ import LayoutWrapper from "@/layouts/LayoutWrapper.vue";
 
 <style scoped>
 .container {
-  min-height: 100vh; 
-  overflow-y: auto; 
   display: flex;
   flex-direction: column;
+
 }
 </style>

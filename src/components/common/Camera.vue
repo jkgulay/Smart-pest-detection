@@ -1,5 +1,4 @@
 <template>
-  <!-- Template remains exactly the same as previous version -->
   <v-container class="scan-container pa-4">
     <div class="text-center mb-3">
       <h1 class="text-h4 font-weight-bold text-primary mb-2">Plant Guardian</h1>
@@ -196,6 +195,8 @@ const clearImage = (): void => {
 <style scoped>
 .scan-container {
   max-width: 100%;
+  height: 92vh;
+  overflow-y: auto;
   background: #8ca189;
 }
 

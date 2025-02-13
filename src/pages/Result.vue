@@ -277,8 +277,7 @@ onMounted(async () => {
 
 <style scoped>
 .result-container {
-  min-height: 100vh;
-  padding: 24px;
+  height: 92vh;
   background: #8ca189;
   overflow-y: auto;
 }
