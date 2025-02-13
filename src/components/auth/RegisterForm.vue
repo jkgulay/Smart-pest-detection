@@ -44,49 +44,50 @@
           ></v-text-field>
         </v-col>
 
-        <v-col cols="12">
-          <div class="text-subtitle-1 text-mediumemphasis-">Password</div>
-          <v-text-field
-            v-model="formData.password"
-            variant="outlined"
-            density="compact"
-            prepend-inner-icon="mdi-lock-outline"
-            label="Password"
-            :type="isPasswordVisible ? 'text' : 'password'"
-            :append-inner-icon="isPasswordVisible ? 'mdi-eye-off' : 'mdi-eye'"
-            @click:append-inner="isPasswordVisible = !isPasswordVisible"
-            :rules="[requiredValidator, passwordValidator]"
-            :error-messages="passwordErrorMessages"
-          ></v-text-field>
-        </v-col>
+        <v-row
+          ><v-col cols="6">
+            <div class="text-subtitle-1 text-mediumemphasis-">Password</div>
+            <v-text-field
+              v-model="formData.password"
+              variant="outlined"
+              density="compact"
+              prepend-inner-icon="mdi-lock-outline"
+              label="Password"
+              :type="isPasswordVisible ? 'text' : 'password'"
+              :append-inner-icon="isPasswordVisible ? 'mdi-eye-off' : 'mdi-eye'"
+              @click:append-inner="isPasswordVisible = !isPasswordVisible"
+              :rules="[requiredValidator, passwordValidator]"
+              :error-messages="passwordErrorMessages"
+            ></v-text-field>
+          </v-col>
 
-        <v-col cols="12">
-          <div class="text-subtitle-1 text-mediumemphasis-">
-            Repeat Password
-          </div>
-          <v-text-field
-            v-model="formData.password_confirmation"
-            label="Password Confirmation"
-            variant="outlined"
-            density="compact"
-            prepend-inner-icon="mdi-lock-check-outline"
-            :type="isPasswordConfirmVisible ? 'text' : 'password'"
-            :append-inner-icon="
-              isPasswordConfirmVisible ? 'mdi-eye-off' : 'mdi-eye'
-            "
-            @click:append-inner="
-              isPasswordConfirmVisible = !isPasswordConfirmVisible
-            "
-            :rules="[
-              requiredValidator,
-              confirmedValidator(
-                formData.password_confirmation,
-                formData.password
-              ),
-            ]"
-            :error-messages="passwordConfirmErrorMessages"
-          ></v-text-field>
-        </v-col>
+          <v-col cols="6">
+            <div class="text-subtitle-1 text-mediumemphasis-">
+              Repeat Password
+            </div>
+            <v-text-field
+              v-model="formData.password_confirmation"
+              label="Password Confirmation"
+              variant="outlined"
+              density="compact"
+              prepend-inner-icon="mdi-lock-check-outline"
+              :type="isPasswordConfirmVisible ? 'text' : 'password'"
+              :append-inner-icon="
+                isPasswordConfirmVisible ? 'mdi-eye-off' : 'mdi-eye'
+              "
+              @click:append-inner="
+                isPasswordConfirmVisible = !isPasswordConfirmVisible
+              "
+              :rules="[
+                requiredValidator,
+                confirmedValidator(
+                  formData.password_confirmation,
+                  formData.password
+                ),
+              ]"
+              :error-messages="passwordConfirmErrorMessages"
+            ></v-text-field> </v-col
+        ></v-row>
 
         <v-col cols="auto">
           <v-btn
