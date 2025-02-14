@@ -1,8 +1,6 @@
 <template>
   <LayoutWrapper>
     <template #content>
-      <v-app>
-        <v-main class="bg-grey-lighten-4">
           <!-- Main Container -->
           <v-container
             :class="{
@@ -131,8 +129,6 @@
               Start New Scan
             </v-btn>
           </v-container>
-        </v-main>
-      </v-app>
     </template>
   </LayoutWrapper>
 </template>
@@ -278,7 +274,7 @@ const startScan = () => {
 
 .pest-scanner-app {
   background: #8ca189;
-  min-height: 100vh;
+  min-height: 100dvh;
 }
 
 .v-main {

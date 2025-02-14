@@ -1,10 +1,10 @@
 <template>
   <v-container class="scan-container pa-4">
-    <div class="text-center mb-3">
-      <h1 class="text-h4 font-weight-bold text-primary mb-2">Plant Guardian</h1>
-      <p class="text-subtitle-1 text-medium-emphasis">
-        Smart Plant Health Analysis
-      </p>
+    <div class="text-center mb-1">
+      <div class="text-h4 font-weight-bold text-primary mb-1">Scan Pests</div>
+      <div class="text-subtitle-1 text-medium-emphasis">
+        Smart Pest Scanner
+      </div>
     </div>
 
     <v-card
@@ -52,11 +52,12 @@
         </div>
       </v-img>
 
-      <v-card-actions class="pa-4 d-flex flex-column gap-3">
+      <v-card-actions class="pa-2 d-flex flex-column ">
         <v-btn
           block
           color="white"
-          size="x-large"
+          size="large"
+          rounded="lg"
           :loading="isTakingPicture"
           :disabled="isTakingPicture"
           @click="takePicture"
@@ -73,7 +74,8 @@
           v-if="selectedImage"
           block
           color="error"
-          size="x-large"
+          size="large"
+          rounded="lg"
           variant="outlined"
           @click="clearImage"
           class="clear-button"
@@ -212,6 +214,8 @@ const clearImage = (): void => {
   position: relative;
   border-radius: 16px;
   overflow: hidden;
+  width: 100%;
+  max-width: 100%;
 }
 
 .image-overlay {
@@ -226,6 +230,8 @@ const clearImage = (): void => {
   align-items: center;
   justify-content: center;
   padding: 20px;
+  width: 100%;
+  height: 100%;
 }
 
 .scan-button {
@@ -243,9 +249,6 @@ const clearImage = (): void => {
   border: 1px solid rgba(0, 0, 0, 0.1);
 }
 
-.gap-3 {
-  gap: 16px;
-}
 
 @media (max-width: 600px) {
   .scan-container {

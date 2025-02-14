@@ -5,19 +5,19 @@
         <div v-if="isLoading" class="loading-state">
           <Loader />
           <div class="text-h6 mt-1 text-primary">Analyzing your plant...</div>
-          <div class="text-body-2 text-medium-emphasis mt-2">
+          <div class="text-body-2 text-medium-emphasis mt-1">
             Using AI to detect issues
           </div>
         </div>
 
         <div v-else class="result-content">
-          <div class="text-center mb-6">
-            <h1 class="text-h4 font-weight-bold text-primary mb-2">
+          <div class="text-center mb-1">
+            <div class="text-h4 font-weight-bold text-primary mb-1">
               Analysis Results
-            </h1>
-            <p class="text-subtitle-1 text-medium-emphasis">
+            </div>
+            <div class="text-subtitle-1 text-medium-emphasis">
               Here's what our system detected in your plant
-            </p>
+            </div>
           </div>
 
           <v-card
@@ -125,52 +125,29 @@
                 </div>
               </v-card-text>
 
-              <v-card-actions class="pa-4 pt-0">
-                <v-row>
-                  <v-col cols="12">
-                    <v-btn
-                      block
-                      color="white"
-                      size="large"
-                      rounded="lg"
-                      @click="$router.push('/scan')"
-                      elevation="2"
-                      class="scan-button"
-                    >
-                      <v-icon start>mdi-camera</v-icon>
-                      Scan Another Plant
-                    </v-btn>
-                  </v-col>
+              <v-card-actions class="pa-2 d-flex flex-column">
+                <v-btn
+                  block
+                  color="white"
+                  size="large"
+                  rounded="lg"
+                  @click="$router.push('/scan')"
+                  elevation="3"
+                  class="scan-button text-none"
+                >
+                  <v-icon start>mdi-camera</v-icon>
+                  Scan Another Plant
+                </v-btn>
 
-                  <v-col cols="12">
-                    <v-btn
-                      block
-                      color="success"
-                      variant="outlined"
-                      size="large"
-                      rounded="lg"
-                      @click="viewTreatments"
-                      class="text-none"
-                    >
-                      <v-icon start>mdi-medical-bag</v-icon>
-                      View Treatment Options
-                    </v-btn>
-                  </v-col>
-
-                  <v-col cols="12">
-                    <v-btn
-                      block
-                      variant="text"
-                      size="large"
-                      rounded="lg"
-                      @click="$router.push('/scan-history')"
-                      class="text-none"
-                    >
-                      <v-icon start>mdi-history</v-icon>
-                      View Scan History
-                    </v-btn>
-                  </v-col>
-                </v-row>
+                <v-btn
+                  block
+                  color="black"
+                  variant="text"
+                  @click="$router.push('/scan-history')"
+                >
+                  <v-icon start>mdi-history</v-icon>
+                  View Scan History
+                </v-btn>
               </v-card-actions>
             </div>
           </v-card>
@@ -277,13 +254,13 @@ onMounted(async () => {
 
 <style scoped>
 .result-container {
-  height: 92vh;
+  max-width: 100%;
+  min-height: 100dvh;
   background: #8ca189;
   overflow-y: auto;
 }
 
 .loading-state {
-  height: 100vh;
   display: flex;
   flex-direction: column;
   align-items: center;
