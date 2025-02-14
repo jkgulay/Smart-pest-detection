@@ -11,6 +11,7 @@ import LoginForm from '@/components/auth/LoginForm.vue';
 // @ts-ignore
 import Scan from '@/pages/Scan.vue';
 import Result from '@/pages/Result.vue';
+import ScanHistory from '@/components/views/ScanHistory.vue';
 
 const toast = useToast();
 
@@ -22,7 +23,8 @@ const routes = setupLayouts([
   { path: '/scan', component: Scan, name: 'Scan', meta: { requiresAuth: true } },
   { path: '/result', component: Result, name: 'Result', meta: { requiresAuth: true } },
   { path: '/:pathMatch(.*)*', component: NotFound, name: 'NotFound' },
-  { path: '/:login', component: LoginForm, name: 'Login'}
+  { path: '/:login', component: LoginForm, name: 'Login'},
+  {path: '/scan-history', component: ScanHistory, name: 'ScanHistory', meta: { requiresAuth: true }},
 ]);
 
 const router = createRouter({

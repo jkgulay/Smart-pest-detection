@@ -4,7 +4,10 @@
       <div id="main-content">
         <InnerNavBar />
         <slot name="content"></slot>
-        <ScrollDown />
+       
+      </div>
+      <div id="bottom">
+        <BottomBar/>
       </div>
     </v-main>
   </v-app>
@@ -12,12 +15,11 @@
 
 <script lang="ts" setup>
 import InnerNavBar from "@/components/common/InnerNavBar.vue";
-import ScrollDown from "@/components/common/ScrollDown.vue";
+import BottomBar from "@/components/common/BottomBar.vue";
 </script>
 
 <style scoped>
 .v-main {
-  background-color: #8ca189 !important; 
+  background-color: #8ca189 !important;
 }
-
 </style>
