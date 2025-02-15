@@ -20,6 +20,7 @@ declare module 'vue' {
     RegisterView: typeof import('./components/views/auth/RegisterView.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
+    ScanDetails: typeof import('./components/views/ScanDetails.vue')['default']
     ScanHistory: typeof import('./components/views/ScanHistory.vue')['default']
     ScrollDown: typeof import('./components/common/ScrollDown.vue')['default']
   }

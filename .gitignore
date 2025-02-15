@@ -21,6 +21,13 @@ pnpm-debug.log*
 *.sln
 *.sw?
 .env
-*.gradle
 *.java
-/android
+*.gradle
+*.pro
+*.png
+*.xml
+*.properties
+android/gradle/wrapper/gradle-wrapper.jar
+android/gradlew
+android/gradlew.bat
+
