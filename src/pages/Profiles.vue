@@ -1,101 +1,120 @@
 <template>
   <LayoutWrapper>
     <template #content>
-      <v-container class="profile-page pa-0" fluid>
+      <v-container class="profile-page pa-4" fluid>
         <!-- Loading State -->
-        <v-overlay v-if="loading" contained>
-          <v-progress-circular indeterminate></v-progress-circular>
+        <v-overlay v-if="loading" contained class="profile-overlay">
+          <v-progress-circular
+            indeterminate
+            color="success"
+          ></v-progress-circular>
         </v-overlay>
 
         <!-- Error State -->
         <v-alert
           v-if="error"
           type="error"
+          variant="tonal"
           title="Error"
           :text="error.message"
           class="ma-4"
         ></v-alert>
 
         <!-- Main Content -->
-        <div v-else>
+        <div v-else class="profile-content">
+          <!-- Profile Header -->
           <v-sheet class="profile-header" rounded="lg">
-            <div class="header-background"></div>
-            <v-container class="py-6">
-              <v-row align="center" justify="space-between" class="profile-info">
-                <v-col cols="12" sm="8" class="d-flex align-center">
-                  <v-avatar size="120" class="border-avatar elevation-4 mr-4 profile-avatar">
+            <v-container class="py-2">
+              <div class="text-center">
+                <div class="avatar-wrapper mb-1">
+                  <v-avatar size="110" class="profile-avatar">
                     <v-img :src="profileImage" cover>
                       <template v-slot:placeholder>
                         <v-row align="center" justify="center">
-                          <v-progress-circular indeterminate></v-progress-circular>
+                          <v-progress-circular
+                            indeterminate
+                            color="success"
+                          ></v-progress-circular>
                         </v-row>
                       </template>
                     </v-img>
+                    <div class="edit-overlay" @click="dialog = true">
+                      <v-icon color="white" size="24">mdi-pencil</v-icon>
+                    </div>
                   </v-avatar>
-                  <div>
-                    <div class="text-h4 font-weight-bold text-white mb-1">{{ username }}</div>
-                    <div class="text-subtitle-1 text-white-darken-2">{{ email }}</div>
-                  </div>
-                </v-col>
-                <v-col cols="12" sm="4" class="d-flex justify-end">
-                  <v-btn
-                    prepend-icon="mdi-account-edit"
-                    variant="elevated"
-                    class="bg-white px-6"
-                    @click="dialog = true"
-                    elevation="2"
-                  >
-                    Edit Profile
-                  </v-btn>
-                </v-col>
-              </v-row>
+                </div>
+                <h2 class="text-h5 font-weight-bold text-white mb-1">
+                  {{ username }}
+                </h2>
+                <p class="text-subtitle-2 text-white-darken-2">{{ email }}</p>
+                <v-btn
+                  prepend-icon="mdi-account-edit"
+                  variant="tonal"
+                  class="edit-profile-btn mt-2"
+                  @click="dialog = true"
+                  size="small"
+                >
+                  Edit Profile
+                </v-btn>
+              </div>
             </v-container>
           </v-sheet>
 
-          <!-- Stats Section -->
-          <v-container>
-            <v-row>
-              <v-col cols="12" sm="6" md="4">
-                <v-card class="rounded-lg elevation-3" theme="white">
-                  <v-card-text>
-                    <div class="d-flex align-center justify-space-between">
-                      <div>
-                        <div class="text-h4 font-weight-bold">156</div>
-                        <div class="text-subtitle-2">Total Scans</div>
-                      </div>
-                      <v-icon size="36" color="success">mdi-leaf</v-icon>
-                    </div>
+          <!-- Stats Cards -->
+          <v-container class="py-4">
+            <v-row dense>
+              <v-col cols="6" sm="4">
+                <v-card class="stat-card" elevation="0">
+                  <v-card-text class="text-center">
+                    <v-icon color="success" size="36" class="mb-2"
+                      >mdi-leaf</v-icon
+                    >
+                    <div class="text-h5 font-weight-bold">156</div>
+                    <div class="text-caption">Total Scans</div>
+                  </v-card-text>
+                </v-card>
+              </v-col>
+              <v-col cols="6" sm="4">
+                <v-card class="stat-card" elevation="0">
+                  <v-card-text class="text-center">
+                    <v-icon color="warning" size="36" class="mb-2"
+                      >mdi-bug</v-icon
+                    >
+                    <div class="text-h5 font-weight-bold">23</div>
+                    <div class="text-caption">Active Alerts</div>
                   </v-card-text>
                 </v-card>
               </v-col>
             </v-row>
 
             <!-- Recent Scans -->
-            <v-card class="mt-4 rounded-lg elevation-3">
-              <v-card-title class="d-flex align-center pb-2">
-                <v-icon start color="success" class="mr-2">mdi-magnify</v-icon>
-                Recent Pest Scans
+            <v-card class="mt-4 scan-history-card" elevation="0">
+              <v-card-title class="d-flex align-center py-3 px-4">
+                <v-icon color="success" class="mr-2">mdi-history</v-icon>
+                Recent Scans
               </v-card-title>
 
               <v-divider></v-divider>
 
-              <v-list>
+              <v-list class="scan-list">
                 <v-list-item
                   v-for="scan in recentScans"
                   :key="scan.id"
                   :subtitle="formatDate(scan.date)"
-                  class="py-2"
+                  class="scan-item"
                 >
                   <template v-slot:prepend>
-                    <v-icon color="success" class="mr-2">mdi-bug</v-icon>
+                    <v-avatar size="40" color="success" class="mr-3">
+                      <v-icon color="white">mdi-bug</v-icon>
+                    </v-avatar>
                   </template>
-                  <v-list-item-title>
+                  <v-list-item-title class="font-weight-medium">
                     {{ scan.pestType }}
                     <v-chip
-                      variant="tonal"
                       :color="getSeverityColor(scan.Severity)"
-                      size="small"
+                      size="x-small"
                       class="ml-2"
+                      variant="tonal"
                     >
                       {{ scan.Severity }}
                     </v-chip>
@@ -105,12 +124,13 @@
 
               <v-divider></v-divider>
 
-              <v-card-actions>
+              <v-card-actions class="pa-4">
                 <v-btn
-                  variant="text"
+                  variant="tonal"
                   color="success"
                   block
                   prepend-icon="mdi-history"
+                  class="view-all-btn"
                 >
                   View All Scans
                 </v-btn>
@@ -120,9 +140,9 @@
         </div>
 
         <!-- Edit Profile Dialog -->
-        <v-dialog v-model="dialog" max-width="500">
+        <v-dialog v-model="dialog" max-width="500" class="profile-dialog">
           <v-card>
-            <v-card-title class="text-h6">Edit Profile</v-card-title>
+            <v-card-title class="text-h6 pa-4">Edit Profile</v-card-title>
             <v-card-text>
               <v-form @submit.prevent="saveProfile">
                 <v-text-field
@@ -131,6 +151,7 @@
                   prepend-inner-icon="mdi-account"
                   variant="outlined"
                   class="mb-4"
+                  density="comfortable"
                 ></v-text-field>
                 <v-file-input
                   accept="image/*"
@@ -139,21 +160,23 @@
                   variant="outlined"
                   class="mb-4"
                   @change="uploadProfileImage"
+                  density="comfortable"
+                  hint="Select a new profile picture"
                 ></v-file-input>
               </v-form>
             </v-card-text>
-            <v-card-actions>
+            <v-card-actions class="pa-4">
               <v-spacer></v-spacer>
-              <v-btn color="grey" variant="text" @click="dialog = false">
+              <v-btn color="grey" variant="tonal" @click="dialog = false">
                 Cancel
               </v-btn>
               <v-btn
                 color="success"
-                variant="text"
                 @click="saveProfile"
                 :loading="saving"
+                variant="tonal"
               >
-                Save
+                Save Changes
               </v-btn>
             </v-card-actions>
           </v-card>
@@ -222,31 +245,31 @@ const uploadProfileImage = async (file: File) => {
   if (!file || !user.value?.id) return;
 
   // Ensure file.name is a string
-  if (typeof file.name !== 'string') {
-    console.error('Invalid file name:', file.name);
+  if (typeof file.name !== "string") {
+    console.error("Invalid file name:", file.name);
     return;
   }
 
-  const fileExt = file.name.split('.').pop();
+  const fileExt = file.name.split(".").pop();
   const fileName = `${Date.now()}.${fileExt}`;
   const filePath = `avatars/${fileName}`;
 
   try {
     const { error: uploadError } = await supabase.storage
-      .from('profiles')
+      .from("profiles")
       .upload(filePath, file);
 
     if (uploadError) throw uploadError;
 
     const { data } = await supabase.storage
-      .from('profiles')
+      .from("profiles")
       .getPublicUrl(filePath);
 
     if (data) {
       profileImage.value = data.publicUrl;
     }
   } catch (error) {
-    console.error('Error uploading image:', error);
+    console.error("Error uploading image:", error);
   }
 };
 
@@ -318,90 +341,102 @@ const fetchUserProfile = async (userId: string) => {
 <style scoped>
 .profile-page {
   background-color: #8ca189;
-  overflow: auto;
+  height: 93vh;
   overflow-y: auto;
-  overflow-y: auto;
-  max-height: calc(100vh - 64px);
+  padding-bottom: 80px !important;
+}
+
+.profile-content {
+  padding-bottom: 64px;
 }
 
 .profile-header {
-  background: #5e7962;
-  margin: 15px;
-  margin-bottom: -5px;
+  background: linear-gradient(135deg, #5e7962 0%, #3d5141 100%);
+  margin: 16px;
+  border-radius: 20px !important;
+  position: relative;
+  overflow: hidden;
 }
 
-.profile-header::before {
-  content: "";
-  position: absolute;
-  top: -50%;
-  right: -50%;
-  width: 200%;
-  height: 200%;
-  background: radial-gradient(
-    circle,
-    rgba(255, 255, 255, 0.1) 0%,
-    rgba(255, 255, 255, 0) 70%
-  );
+.avatar-wrapper {
+  position: relative;
+  display: inline-block;
 }
 
 .profile-avatar {
-  border: 4px solid rgba(255, 255, 255, 0.3);
-  position: relative;
+  border: 4px solid rgba(255, 255, 255, 0.2);
   transition: transform 0.3s ease;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
-.profile-avatar:hover {
-  transform: scale(1.05);
-}
-
-.online-indicator {
+.edit-overlay {
   position: absolute;
-  bottom: 8px;
-  right: 8px;
-  width: 20px;
-  height: 20px;
-  background: #4caf50;
-  border: 3px solid white;
+  bottom: 0;
+  right: 0;
+  background: rgba(0, 0, 0, 0.5);
+  width: 32px;
+  height: 32px;
   border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 0.3s ease;
 }
 
-.profile-details {
-  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+.avatar-wrapper:hover .edit-overlay {
+  opacity: 1;
 }
 
-.edit-btn {
-  backdrop-filter: blur(8px);
-  border: 1px solid rgba(255, 255, 255, 0.3) !important;
-  transition: all 0.3s ease;
-  padding: 16px 32px !important;
-}
-
-.edit-btn:hover {
+.edit-profile-btn {
   background: rgba(255, 255, 255, 0.15) !important;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.stat-card {
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 16px !important;
+  transition: transform 0.3s ease;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.stat-card:hover {
   transform: translateY(-2px);
 }
 
-@media (max-width: 960px) {
-  .profile-content {
-    flex-direction: column;
-    text-align: center;
-  }
-
-  .profile-avatar {
-    margin: 0 auto 24px;
-  }
-
-  .edit-btn {
-    width: 100%;
-    margin-top: 24px;
-  }
-
-  .d-flex.gap-2 {
-    justify-content: center;
-  }
+.scan-history-card {
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 20px !important;
+  border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-:deep(.v-card) {
-  border: 1px solid rgba(255, 255, 255, 0.1);
+.scan-item {
+  transition: background-color 0.3s ease;
+  border-radius: 8px;
+  margin: 4px 8px;
+}
+
+.scan-item:hover {
+  background-color: rgba(0, 0, 0, 0.03);
+}
+
+.view-all-btn {
+  border-radius: 12px;
+}
+
+@media (max-width: 600px) {
+  .profile-header {
+    margin: 8px;
+    border-radius: 16px !important;
+  }
+
+  .stat-card {
+    border-radius: 12px !important;
+  }
+
+  .scan-history-card {
+    border-radius: 16px !important;
+  }
 }
 </style>
