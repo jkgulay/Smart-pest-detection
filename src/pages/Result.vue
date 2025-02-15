@@ -1,7 +1,7 @@
 <template>
   <LayoutWrapper>
     <template #content>
-      <v-container class="result-container pa-4">
+      <v-container class="pa-4">
         <div v-if="isLoading" class="loading-state">
           <Loader />
           <div class="text-h6 mt-1 text-primary">Analyzing your plant...</div>
@@ -12,9 +12,7 @@
 
         <div v-else class="result-content">
           <div class="text-center mb-1">
-            <div class="text-h4 font-weight-bold text-primary mb-1">
-              Analysis Results
-            </div>
+       
             <div class="text-subtitle-1 text-medium-emphasis">
               Here's what our system detected in your plant
             </div>
@@ -44,7 +42,6 @@
                 </div>
               </template>
 
-              <!-- Overlay for loading state -->
               <div v-if="imageLoading" class="image-overlay">
                 <v-progress-circular
                   indeterminate
@@ -55,6 +52,7 @@
             </v-img>
 
             <div v-if="!imageLoading && scanResultStore.ScanResult.length">
+              <!-- AI Insights Section -->
               <v-card-text class="pa-4">
                 <div class="d-flex align-center justify-space-between mb-4">
                   <div class="text-h6 font-weight-medium">
@@ -123,6 +121,51 @@
                     </v-card-text>
                   </v-card>
                 </div>
+                <v-card
+                  class="mb-4 ai-insights-card"
+                  rounded="lg"
+                  elevation="1"
+                >
+                  <v-card-text>
+                    <div class="d-flex align-center mb-2">
+                      <v-icon color="primary" size="24" class="mr-2"
+                        >mdi-brain</v-icon
+                      >
+                      <span class="text-h6">AI Insights</span>
+                    </div>
+
+                    <div class="d-flex align-center justify-space-between mb-3">
+                      <v-chip
+                        :color="getOverallSeverityColor(getOverallSeverity())"
+                        size="small"
+                        class="mr-2"
+                      >
+                        {{ getOverallSeverity() }} Severity
+                      </v-chip>
+                      <v-chip color="primary" size="small">
+                        {{ getCurrentDate() }}
+                      </v-chip>
+                    </div>
+
+                    <div class="text-body-1 mb-3">
+                      {{ getAIAnalysis() }}
+                    </div>
+
+                    <v-alert
+                      v-if="getOverallSeverity() !== 'Low'"
+                      :color="getOverallSeverityColor(getOverallSeverity())"
+                      variant="tonal"
+                      density="comfortable"
+                    >
+                      <div class="text-subtitle-2 font-weight-medium">
+                        Recommended Action
+                      </div>
+                      <div class="text-body-2">
+                        {{ getRecommendedAction() }}
+                      </div>
+                    </v-alert>
+                  </v-card-text>
+                </v-card>
               </v-card-text>
 
               <v-card-actions class="pa-2 d-flex flex-column">
@@ -164,7 +207,6 @@ import LayoutWrapper from "@/layouts/LayoutWrapper.vue";
 import Loader from "@/components/common/Loader.vue";
 import { supabase } from "@/lib/supabase";
 
-
 interface UserScan {
   image_path: string;
   created_at?: string;
@@ -185,6 +227,64 @@ const getIssueColor = (confidence: number): string => {
   if (confidence >= 0.8) return "error";
   if (confidence >= 0.6) return "warning";
   return "info";
+};
+
+const getOverallSeverityColor = (severity: string): string => {
+  const colors: Record<string, string> = {
+    High: "error",
+    Medium: "warning",
+    Low: "success",
+  };
+  return colors[severity] || "info";
+};
+
+const getOverallSeverity = (): string => {
+  const maxConfidence = Math.max(
+    ...scanResultStore.ScanResult.map((r) => r.confidence)
+  );
+  if (maxConfidence >= 0.8) return "High";
+  if (maxConfidence >= 0.6) return "Medium";
+  return "Low";
+};
+
+const getAIAnalysis = (): string => {
+  const issues = scanResultStore.ScanResult.map((r) => r.class.toLowerCase());
+
+  if (issues.includes("healthy")) {
+    return "Your plant appears to be healthy! Continue with regular care and maintenance to keep it thriving.";
+  }
+
+  if (issues.includes("aphids")) {
+    return "I've detected signs of aphid infestation. These small insects feed on plant sap and can quickly multiply, potentially causing significant damage to your plant's health and growth.";
+  }
+
+  if (issues.includes("leaf-spot")) {
+    return "Analysis shows evidence of leaf spot disease. This fungal infection can spread to other leaves and plants if not treated promptly. The affected areas may expand and eventually cause leaf drop.";
+  }
+
+  return "I've identified potential issues with your plant. Please review the detailed findings below for specific concerns and recommended actions.";
+};
+
+const getRecommendedAction = (): string => {
+  const issues = scanResultStore.ScanResult.map((r) => r.class.toLowerCase());
+
+  if (issues.includes("aphids")) {
+    return "Apply insecticidal soap or neem oil solution. Remove heavily infested leaves and isolate the plant to prevent spread to other plants. Consider introducing natural predators like ladybugs for organic control.";
+  }
+
+  if (issues.includes("leaf-spot")) {
+    return "Remove and dispose of affected leaves, improve air circulation around the plant, and avoid overhead watering. Apply an appropriate fungicide and adjust watering practices to keep leaves dry.";
+  }
+
+  return "Monitor the plant closely for any changes and consider consulting a plant specialist for a detailed treatment plan.";
+};
+
+const getCurrentDate = (): string => {
+  return new Date().toLocaleDateString("en-US", {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+  });
 };
 
 const getIssueIcon = (className: string): string => {
@@ -235,7 +335,6 @@ const onImageLoaded = (): void => {
   imageLoading.value = false;
 };
 
-
 onMounted(async () => {
   const data = await fetchUserScans();
   userScans.value = data;
@@ -244,11 +343,15 @@ onMounted(async () => {
 </script>
 
 <style scoped>
-.result-container {
-  max-width: 100%;
-  min-height: 100dvh;
+.pest-scanner-app {
   background: #8ca189;
+  min-height: 100dvh;
+  overflow: auto;
+}
+
+.v-container {
   overflow-y: auto;
+  max-height: calc(100vh - 64px);
 }
 
 .loading-state {
@@ -264,6 +367,11 @@ onMounted(async () => {
   border-radius: 20px;
   overflow: hidden;
   background: rgba(255, 255, 255, 0.95);
+}
+
+.ai-insights-card {
+  background: rgba(250, 250, 250, 0.95);
+  border: 1px solid rgba(0, 0, 0, 0.1);
 }
 
 .result-image {

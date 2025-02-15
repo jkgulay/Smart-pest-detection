@@ -116,18 +116,6 @@
               </v-col>
             </v-row>
 
-            <!-- Action Button -->
-            <v-btn
-              color="primary"
-              class="text-none rounded-lg mt-4"
-              block
-              size="large"
-              elevation="2"
-              :prepend-icon="mdiQrcodeScan"
-              @click="startScan"
-            >
-              Start New Scan
-            </v-btn>
           </v-container>
     </template>
   </LayoutWrapper>
@@ -147,7 +135,6 @@ import {
 } from "echarts/components";
 import VChart from "vue-echarts";
 import {
-  mdiQrcodeScan,
   mdiClockOutline,
   mdiCalendarMonth,
   mdiCalendarWeek,
@@ -274,10 +261,6 @@ const chartOption = computed(() => ({
   ],
 }));
 
-
-const startScan = () => {
-  console.log("Starting new scan...");
-};
 </script>
 
 <style scoped>

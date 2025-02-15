@@ -1,14 +1,5 @@
 <template>
-  <v-container class="scan-container pa-4">
-    <div class="text-center mb-1">
-      <div class="text-h4 font-weight-bold text-primary mb-1">
-        Scan Pests
-      </div>
-      <div class="text-subtitle-1 text-medium-emphasis">
-        Smart Pest Scanner
-      </div>
-    </div>
-
+  <v-container class="pa-4">
     <v-card
       class="mx-auto scan-card"
       :class="{
@@ -30,9 +21,7 @@
             color="primary"
             size="64"
           ></v-progress-circular>
-          <div class="text-h6 mt-1 text-primary">
-            Processing your image...
-          </div>
+          <div class="text-h6 mt-1 text-primary">Processing your image...</div>
         </v-card-text>
       </v-overlay>
 
@@ -139,8 +128,6 @@ import { Camera, CameraResultType, CameraSource } from "@capacitor/camera";
 import { usePestScan } from "@/composables/usePestScan";
 import { useRouter } from "vue-router";
 
-
-
 const selectedImage = ref<string | null>(null);
 const defaultImage = "/src/assets/default/pest1.jpg";
 const { uploadPestScan, uploadError } = usePestScan();
@@ -189,11 +176,15 @@ const clearImage = (): void => {
 </script>
 
 <style scoped>
-.scan-container {
-  max-width: 100%;
-  min-height: 100dvh;
+.pest-scanner-app {
   background: #8ca189;
+  min-height: 100dvh;
+  overflow: auto;
+}
+
+.v-container {
   overflow-y: auto;
+  max-height: calc(100vh - 64px);
 }
 
 .scan-card {

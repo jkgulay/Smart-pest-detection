@@ -1,10 +1,6 @@
 <template>
   <LayoutWrapper>
-    <template #content>
-      <div class="container">
-        <Camera />
-      </div>
-    </template>
+    <template #content> <Camera /> </template>
   </LayoutWrapper>
 </template>
 
@@ -14,7 +10,14 @@ import LayoutWrapper from "@/layouts/LayoutWrapper.vue";
 </script>
 
 <style lang="scss">
-.view {
-  height: 100%;
+.pest-scanner-app {
+  min-height: 100dvh;
+  overflow: auto; 
 }
+
+.v-container {
+  overflow-y: auto; 
+  max-height: calc(100vh - 64px);
+}
+
 </style>
