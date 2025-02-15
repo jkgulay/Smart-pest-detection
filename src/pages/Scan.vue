@@ -140,24 +140,15 @@
 <script setup lang="ts">
 import { ref } from "vue";
 import { Camera, CameraResultType, CameraSource } from "@capacitor/camera";
-import { useDisplay } from "vuetify";
 import { usePestScan } from "@/composables/usePestScan";
-import { useScanResultStore } from "@/stores/scanResultStore";
 import { useRouter } from "vue-router";
 import LayoutWrapper from "@/layouts/LayoutWrapper.vue";
 
-interface ScanResult {
-  imageUrl: string;
-  diagnosis: string;
-  confidence: number;
-  timestamp: Date;
-}
+
 
 const selectedImage = ref<string | null>(null);
-const { mobile } = useDisplay();
 const defaultImage = "/src/assets/default/pest1.jpg";
-const { uploadPestScan, uploadError, isLoading } = usePestScan();
-const scanResultStore = useScanResultStore();
+const { uploadPestScan, uploadError } = usePestScan();
 const isTakingPicture = ref<boolean>(false);
 const router = useRouter();
 

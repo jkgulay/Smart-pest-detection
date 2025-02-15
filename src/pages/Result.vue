@@ -54,7 +54,7 @@
               </div>
             </v-img>
 
-            <div v-if="!imageLoading && scanResultStore.scanResult.length">
+            <div v-if="!imageLoading && scanResultStore.ScanResult.length">
               <v-card-text class="pa-4">
                 <div class="d-flex align-center justify-space-between mb-4">
                   <div class="text-h6 font-weight-medium">
@@ -62,9 +62,9 @@
                     Detection Results
                   </div>
                   <v-chip color="primary" size="small" variant="elevated">
-                    {{ scanResultStore.scanResult.length }}
+                    {{ scanResultStore.ScanResult.length }}
                     {{
-                      scanResultStore.scanResult.length === 1
+                      scanResultStore.ScanResult.length === 1
                         ? "Issue"
                         : "Issues"
                     }}
@@ -74,7 +74,7 @@
 
                 <div class="results-list">
                   <v-card
-                    v-for="(result, index) in scanResultStore.scanResult"
+                    v-for="(result, index) in scanResultStore.ScanResult"
                     :key="index"
                     variant="outlined"
                     class="mb-3 result-item"
@@ -159,23 +159,17 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
-import { useRouter } from "vue-router";
 import { useScanResultStore } from "@/stores/scanResultStore";
 import LayoutWrapper from "@/layouts/LayoutWrapper.vue";
 import Loader from "@/components/common/Loader.vue";
 import { supabase } from "@/lib/supabase";
 
-interface ScanResult {
-  class: string;
-  confidence: number;
-}
 
 interface UserScan {
   image_path: string;
   created_at?: string;
 }
 
-const router = useRouter();
 const scanResultStore = useScanResultStore();
 const userScans = ref<UserScan | null>(null);
 const isLoading = ref<boolean>(true);
@@ -222,9 +216,9 @@ const getIssueDescription = (className: string): string => {
   return descriptions[className.toLowerCase()] || descriptions.default;
 };
 
-const fetchUserScans = async (): Promise<{ data?: UserScan; error?: any }> => {
+const fetchUserScans = async (): Promise<UserScan | null> => {
   const userId = localStorage.getItem("user_id");
-  if (!userId) return { error: "User not logged in" };
+  if (!userId) return null;
 
   const { data, error } = await supabase
     .from("pest_scans")
@@ -234,20 +228,17 @@ const fetchUserScans = async (): Promise<{ data?: UserScan; error?: any }> => {
     .limit(1)
     .single();
 
-  return error ? { error } : { data };
+  return error ? null : data;
 };
 
 const onImageLoaded = (): void => {
   imageLoading.value = false;
 };
 
-const viewTreatments = (): void => {
-  router.push("/treatments");
-};
 
 onMounted(async () => {
-  const { data, error } = await fetchUserScans();
-  if (!error) userScans.value = data;
+  const data = await fetchUserScans();
+  userScans.value = data;
   isLoading.value = false;
 });
 </script>
