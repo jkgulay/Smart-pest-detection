@@ -92,41 +92,53 @@
                   rounded="lg"
                   class="w-100"
                 >
-                  <v-btn
-                    v-for="option in timeframeOptions"
-                    :key="option.value"
-                    :value="option.value"
-                    :prepend-icon="option.icon"
-                    class="flex-grow-1"
-                  >
-                    {{ option.label }}
-                  </v-btn>
-                </v-btn-toggle>
-              </v-card-text>
-            </v-card>
-          </v-col>
-        </v-row>
 
-        <!-- Chart Section -->
-        <v-row class="mb-15">
-          <v-col cols="12">
-            <v-card class="rounded-lg dashboard-card" elevation="0">
-              <v-card-title class="px-4 pt-4">
-                Scan Activity
-                <v-spacer></v-spacer>
-                <span class="text-caption" style="color: #d3e5f1">
-                  Total scans: {{ totalScans }}
-                </span>
-              </v-card-title>
-              <v-card-text>
-                <v-chart class="chart" :option="chartOption" autoresize />
-              </v-card-text>
-            </v-card>
-          </v-col>
-        </v-row>
-      </v-container>
+                  <v-card-text>
+                    <v-btn-toggle
+                      v-model="selectedTimeframe"
+                      mandatory
+                      color="primary"
+                      rounded="lg"
+                      class="w-100"
+                    >
+                      <v-btn
+                        v-for="option in timeframeOptions"
+                        :key="option.value"
+                        :value="option.value"
+                        :prepend-icon="option.icon"
+                        class="flex-grow-1"
+                      >
+                        {{ option.label }}
+                      </v-btn>
+                    </v-btn-toggle>
+                  </v-card-text>
+                </v-card>
+              </v-col>
+            </v-row>
+
+            <!-- Chart Section -->
+            <v-row class="mb-10">
+              <v-col cols="12">
+                <v-card class="rounded-lg dashboard-card" elevation="0">
+                  <v-card-title class="px-4 pt-4">
+                    Scan Activity
+                    <v-spacer></v-spacer>
+                    <span class="text-caption" style="color: #D3E5F1;">
+                      Total scans: {{ totalScans }}
+                    </span>
+                  </v-card-title>
+                  <v-card-text>
+                    <v-chart class="chart" :option="chartOption" autoresize />
+                  </v-card-text>
+                </v-card>
+              </v-col>
+            </v-row>
+
+          </v-container>
+
     </template>
   </LayoutWrapper>
+  
 </template>
 
 <script setup lang="ts">
@@ -440,4 +452,5 @@ onMounted(async () => {
   height: 200px;
   width: 100%;
 }
+
 </style>

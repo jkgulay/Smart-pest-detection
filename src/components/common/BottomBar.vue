@@ -54,6 +54,7 @@ const isScanActive = ref(false);
   padding: 0 4px !important;  /* Reduced padding */
   width: calc(100% - 8px) !important;  /* Adjusted width */
   z-index: 100;
+  margin-top: 4rem;
 }
 
 .nav-button {
