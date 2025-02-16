@@ -145,7 +145,7 @@ const clearImage = (): void => {
     </v-card>
 
     <v-card
-      class="mt-6 mx-auto tips-card"
+      class="mt-4 mx-auto tips-card"
       max-width="500"
       variant="outlined"
       rounded="lg"
@@ -236,6 +236,7 @@ const clearImage = (): void => {
 .tips-card {
   background: rgba(255, 255, 255, 0.9);
   border: 1px solid rgba(0, 0, 0, 0.1);
+  margin-bottom: 50px;
 }
 
 @media (max-width: 600px) {

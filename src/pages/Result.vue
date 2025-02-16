@@ -227,7 +227,7 @@ onMounted(async () => {
 <template>
   <LayoutWrapper>
     <template #content>
-      <v-container class="pa-4">
+      <v-container class="pa-4 mb-10">
         <div v-if="isLoading" class="loading-state">
           <Loader />
           <div class="text-h6 mt-1 text-primary">Analyzing your plant...</div>

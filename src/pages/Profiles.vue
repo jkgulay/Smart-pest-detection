@@ -291,19 +291,19 @@ const uploadProfileImage = async (file: File | null, userId: string | null) => {
   }
 
   if (!userId) {
-    console.error("User  ID is missing.");
-    errorMessage.value = "User  ID is missing.";
+    console.error("User ID is missing.");
+    errorMessage.value = "User ID is missing.";
     return;
   }
 
   try {
-    // Generate a unique file name
+    // Ensure the file has an extension
     const fileExt = file.name.split('.').pop() || 'jpg';
     const fileName = `${Date.now()}.${fileExt}`;
-    const filePath = `profiles/avatars/${fileName}`;
+    const filePath = `avatars/${fileName}`;
 
     // Upload the file to Supabase Storage
-    const { error: uploadError } = await supabase.storage
+    const { data: uploadData, error: uploadError } = await supabase.storage
       .from('profiles')
       .upload(filePath, file);
 
@@ -311,20 +311,20 @@ const uploadProfileImage = async (file: File | null, userId: string | null) => {
       throw new Error(`Upload error: ${uploadError.message}`);
     }
 
-    // Get the public URL of the uploaded file
-    const { data: urlData } = await supabase.storage
+    // Construct the public URL manually if needed
+    const { data: urlData, error: urlError } = supabase.storage
       .from('profiles')
       .getPublicUrl(filePath);
 
-    if (!urlData?.publicUrl) {
+    if (urlError || !urlData.publicUrl) {
       throw new Error("Failed to get public URL for the uploaded image.");
     }
 
-    // Update the user's profile image URL in the users table
+    // Update the user's profile image in the database
     const { error: updateError } = await supabase
       .from('users')
       .update({ profile_image: urlData.publicUrl })
-      .eq('id', userId);
+      .eq('user_id', userId);
 
     if (updateError) {
       throw new Error(`Update error: ${updateError.message}`);
@@ -334,12 +334,8 @@ const uploadProfileImage = async (file: File | null, userId: string | null) => {
     profileImage.value = urlData.publicUrl;
     console.log("Profile image updated successfully:", urlData.publicUrl);
   } catch (error) {
-    console.error('Error uploading image:', error);
-    if (error instanceof Error) {
-      errorMessage.value = error.message;
-    } else {
-      errorMessage.value = "An unknown error occurred.";
-    }
+    console.error("Error uploading image:", error);
+    errorMessage.value = error instanceof Error ? error.message : "An unknown error occurred.";
   }
 };
 
@@ -508,6 +504,7 @@ const fetchUserProfile = async (userId: string) => {
   background: rgba(255, 255, 255, 0.9);
   border-radius: 20px !important;
   border: 1px solid rgba(255, 255, 255, 0.1);
+  margin-bottom: 50px;
 }
 
 .scan-item {

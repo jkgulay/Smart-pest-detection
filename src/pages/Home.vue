@@ -108,7 +108,7 @@
         </v-row>
 
         <!-- Chart Section -->
-        <v-row>
+        <v-row class="mb-15">
           <v-col cols="12">
             <v-card class="rounded-lg dashboard-card" elevation="0">
               <v-card-title class="px-4 pt-4">
