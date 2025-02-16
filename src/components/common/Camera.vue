@@ -1,3 +1,58 @@
+<script setup lang="ts">
+import { ref } from "vue";
+import { Camera, CameraResultType, CameraSource } from "@capacitor/camera";
+import { usePestScan } from "@/composables/usePestScan";
+import { useRouter } from "vue-router";
+
+const selectedImage = ref<string | null>(null);
+const defaultImage = "/src/assets/default/pest1.jpg";
+const { uploadPestScan, uploadError } = usePestScan();
+const isTakingPicture = ref<boolean>(false);
+const router = useRouter();
+
+const takePicture = async (): Promise<void> => {
+  try {
+    const image = await Camera.getPhoto({
+      quality: 50,
+      resultType: CameraResultType.Uri,
+      allowEditing: false,
+      saveToGallery: true,
+      source: CameraSource.Prompt,
+      promptLabelCancel: "Go Back",
+      promptLabelPhoto: "Choose from Gallery",
+      promptLabelPicture: "Take a Picture",
+    });
+
+    selectedImage.value = image.webPath || null;
+
+    if (image.webPath) {
+      const response = await fetch(image.webPath);
+      const blob = await response.blob();
+      const file = new File([blob], "image.jpg", { type: blob.type });
+      isTakingPicture.value = true;
+
+      const imageUrl = await uploadPestScan(file);
+      if (uploadError.value) {
+        console.error("Upload error:", uploadError.value);
+      } else {
+        console.log("Image uploaded to:", imageUrl);
+        router.push("/result");
+      }
+    }
+  } catch (error) {
+    console.error("Camera error:", error);
+  } finally {
+    isTakingPicture.value = false;
+  }
+};
+
+const clearImage = (): void => {
+  selectedImage.value = null;
+};
+</script>
+
+
+
 <template>
   <v-container class="pa-4">
     <v-card
@@ -122,58 +177,7 @@
   </v-container>
 </template>
 
-<script setup lang="ts">
-import { ref } from "vue";
-import { Camera, CameraResultType, CameraSource } from "@capacitor/camera";
-import { usePestScan } from "@/composables/usePestScan";
-import { useRouter } from "vue-router";
 
-const selectedImage = ref<string | null>(null);
-const defaultImage = "/src/assets/default/pest1.jpg";
-const { uploadPestScan, uploadError } = usePestScan();
-const isTakingPicture = ref<boolean>(false);
-const router = useRouter();
-
-const takePicture = async (): Promise<void> => {
-  try {
-    const image = await Camera.getPhoto({
-      quality: 50,
-      resultType: CameraResultType.Uri,
-      allowEditing: false,
-      saveToGallery: true,
-      source: CameraSource.Prompt,
-      promptLabelCancel: "Go Back",
-      promptLabelPhoto: "Choose from Gallery",
-      promptLabelPicture: "Take a Picture",
-    });
-
-    selectedImage.value = image.webPath || null;
-
-    if (image.webPath) {
-      const response = await fetch(image.webPath);
-      const blob = await response.blob();
-      const file = new File([blob], "image.jpg", { type: blob.type });
-      isTakingPicture.value = true;
-
-      const imageUrl = await uploadPestScan(file);
-      if (uploadError.value) {
-        console.error("Upload error:", uploadError.value);
-      } else {
-        console.log("Image uploaded to:", imageUrl);
-        router.push("/result");
-      }
-    }
-  } catch (error) {
-    console.error("Camera error:", error);
-  } finally {
-    isTakingPicture.value = false;
-  }
-};
-
-const clearImage = (): void => {
-  selectedImage.value = null;
-};
-</script>
 
 <style scoped>
 .pest-scanner-app {

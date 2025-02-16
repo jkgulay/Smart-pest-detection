@@ -96,6 +96,9 @@ export const useAuthUserStore = defineStore("authUser", () => {
     userData.value = {
       id: user.id,
       email: user.email,
+      username: null,
+      profile_image: null,
+     /*  profile_background: null, */
     };
 
     return { user };

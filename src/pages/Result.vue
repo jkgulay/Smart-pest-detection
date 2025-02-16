@@ -1,3 +1,216 @@
+<script setup lang="ts">
+import { ref, onMounted } from "vue";
+import LayoutWrapper from "@/layouts/LayoutWrapper.vue";
+import Loader from "@/components/common/Loader.vue";
+import { supabase } from "@/lib/supabase";
+
+interface PestScan {
+  id: number;
+  created_at: string;
+  image_path: string;
+  name: string;
+  alert_lvl: string;
+  comment: string;
+  confidence: number;
+  recommended_action: string;
+}
+
+interface ScanHistory {
+  id: number;
+  created_at: string;
+  scan_id: number;
+  user_id: number;
+  pest_scan?: PestScan;
+}
+
+const userScans = ref<PestScan | null>(null);
+const recentScans = ref<PestScan[]>([]);
+const isLoading = ref<boolean>(true);
+const imageLoading = ref<boolean>(true);
+
+const getConfidenceColor = (confidence: number): string => {
+  if (confidence >= 0.8) return "success";
+  if (confidence >= 0.6) return "warning";
+  return "error";
+};
+
+const getIssueColor = (confidence: number): string => {
+  if (confidence >= 0.8) return "error";
+  if (confidence >= 0.6) return "warning";
+  return "info";
+};
+
+const getOverallSeverityColor = (severity: string): string => {
+  const colors: Record<string, string> = {
+    High: "error",
+    Medium: "warning",
+    Low: "success",
+  };
+  return colors[severity] || "info";
+};
+
+const getOverallSeverity = (): string => {
+  const severityLevels = recentScans.value.map(scan => scan.alert_lvl);
+  if (severityLevels.includes("High")) return "High";
+  if (severityLevels.includes("Medium")) return "Medium";
+  return "Low";
+};
+
+const getAIAnalysis = (): string => {
+  const issues = recentScans.value.map((r) => r.name.toLowerCase());
+
+  if (issues.includes("healthy")) {
+    return "Your plant appears to be healthy! Continue with regular care and maintenance to keep it thriving.";
+  }
+
+  if (issues.includes("aphids")) {
+    return "I've detected signs of aphid infestation. These small insects feed on plant sap and can quickly multiply, potentially causing significant damage to your plant's health and growth.";
+  }
+
+  if (issues.includes("leaf-spot")) {
+    return "Analysis shows evidence of leaf spot disease. This fungal infection can spread to other leaves and plants if not treated promptly. The affected areas may expand and eventually cause leaf drop.";
+  }
+
+  return "I've identified potential issues with your plant. Please review the detailed findings below for specific concerns and recommended actions.";
+};
+
+const getCurrentDate = (): string => {
+  return new Date().toLocaleDateString("en-US", {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+  });
+};
+
+const getIssueIcon = (name: string): string => {
+  const icons: Record<string, string> = {
+    "Rice Bug": "mdi-bug",
+    "Brown Planthopper": "mdi-leaf-off",
+    "Green Leaf Hopper": "mdi-leaf",
+    "Rice Black Bug": "mdi-bug",
+    "White Yellow Stemborer": "mdi-butterfly",
+    default: "mdi-alert-circle",
+  };
+  return icons[name] || icons.default;
+};
+
+const formatClassName = (className: string): string => {
+  return className
+    .split("-")
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(" ");
+};
+
+const getIssueDescription = (className: string): string => {
+  const descriptions: Record<string, string> = {
+    aphids:
+      "Small sap-sucking insects that can cause significant damage to plants.",
+    "leaf-spot":
+      "Fungal disease causing spots on leaves that can lead to defoliation.",
+    healthy: "No significant issues detected in the plant.",
+    default: "Potential plant health issue detected.",
+  };
+  return descriptions[className.toLowerCase()] || descriptions.default;
+};
+
+const fetchUserScans = async (): Promise<PestScan | null> => {
+  const userId = localStorage.getItem("user_id");
+  console.log('User ID:', userId);
+  if (!userId) return null;
+
+  // Get user's ID from users table first
+  const { data: userData, error: userError } = await supabase
+    .from('users')
+    .select('id')
+    .eq('id', userId)
+    .single();
+
+  if (userError || !userData) {
+    console.error('Error fetching user:', userError);
+    return null;
+  }
+
+  // Fetch latest scan from scan_history with joined pest_scans data
+  const { data: scanData, error: scanError } = await supabase
+    .from('scan_history')
+    .select(`
+      *,
+      pest_scan:pest_scans (*)
+    `)
+    .eq('user_id', userData.id)
+    .order('created_at', { ascending: false })
+    .limit(1)
+    .single();
+
+  if (scanError) {
+    console.error('Error fetching scan history:', scanError);
+    return null;
+  }
+
+  if (scanData && scanData.pest_scan) {
+    console.log('Latest Scan Data:', scanData);
+    return scanData.pest_scan;
+  }
+
+  return null;
+};
+
+const fetchRecentScans = async (): Promise<PestScan[]> => {
+  const userId = localStorage.getItem("user_id");
+  if (!userId) return [];
+
+  // Get user's ID from users table first
+  const { data: userData, error: userError } = await supabase
+    .from('users')
+    .select('id')
+    .eq('id', userId)
+    .single();
+
+  if (userError || !userData) {
+    console.error('Error fetching user:', userError);
+    return [];
+  }
+
+  // Fetch recent scans with joined pest_scans data
+  const { data: scanData, error: scanError } = await supabase
+    .from('scan_history')
+    .select(`
+      *,
+      pest_scan:pest_scans (*)
+    `)
+    .eq('user_id', userData.id)
+    .order('created_at', { ascending: false })
+    .limit(1);
+
+  if (scanError) {
+    console.error('Error fetching recent scans:', scanError);
+    return [];
+  }
+
+  // Extract pest_scan data from each scan history record
+  const pestScans = scanData
+    ?.map(scan => scan.pest_scan)
+    .filter((scan): scan is PestScan => scan !== null) || [];
+
+  console.log('Recent Pest Scans:', pestScans);
+  return pestScans;
+};
+
+const onImageLoaded = (): void => {
+  imageLoading.value = false;
+};
+
+onMounted(async () => {
+  const data = await fetchUserScans();
+  userScans.value = data;
+  isLoading.value = false;
+
+  const recentScansData = await fetchRecentScans();
+  recentScans.value = recentScansData;
+  console.log('Recent Scans:', recentScansData);
+});
+</script>
+
 <template>
   <LayoutWrapper>
     <template #content>
@@ -12,7 +225,6 @@
 
         <div v-else class="result-content">
           <div class="text-center mb-1">
-       
             <div class="text-subtitle-1 text-medium-emphasis">
               Here's what our system detected in your plant
             </div>
@@ -51,7 +263,7 @@
               </div>
             </v-img>
 
-            <div v-if="!imageLoading && scanResultStore.ScanResult.length">
+            <div v-if="!imageLoading && recentScans.length">
               <!-- AI Insights Section -->
               <v-card-text class="pa-4">
                 <div class="d-flex align-center justify-space-between mb-4">
@@ -60,9 +272,9 @@
                     Detection Results
                   </div>
                   <v-chip color="primary" size="small" variant="elevated">
-                    {{ scanResultStore.ScanResult.length }}
+                    {{ recentScans.length }}
                     {{
-                      scanResultStore.ScanResult.length === 1
+                      recentScans.length === 1
                         ? "Issue"
                         : "Issues"
                     }}
@@ -72,7 +284,7 @@
 
                 <div class="results-list">
                   <v-card
-                    v-for="(result, index) in scanResultStore.ScanResult"
+                    v-for="(result, index) in recentScans"
                     :key="index"
                     variant="outlined"
                     class="mb-3 result-item"
@@ -89,10 +301,10 @@
                             size="24"
                             class="mr-2"
                           >
-                            {{ getIssueIcon(result.class) }}
+                            {{ getIssueIcon(result.name) }}
                           </v-icon>
                           <span class="text-h6">{{
-                            formatClassName(result.class)
+                            formatClassName(result.name)
                           }}</span>
                         </div>
                         <v-chip
@@ -116,7 +328,7 @@
                       ></v-progress-linear>
 
                       <div class="text-body-2 text-medium-emphasis mt-3">
-                        {{ getIssueDescription(result.class) }}
+                        {{ getIssueDescription(result.name) }}
                       </div>
                     </v-card-text>
                   </v-card>
@@ -131,7 +343,7 @@
                       <v-icon color="primary" size="24" class="mr-2"
                         >mdi-brain</v-icon
                       >
-                      <span class="text-h6">AI Insights</span>
+                      <span class="text-h6">Deep Think</span>
                     </div>
 
                     <div class="d-flex align-center justify-space-between mb-3">
@@ -157,13 +369,23 @@
                       variant="tonal"
                       density="comfortable"
                     >
-                      <div class="text-subtitle-2 font-weight-medium">
-                        Recommended Action
-                      </div>
-                      <div class="text-body-2">
-                        {{ getRecommendedAction() }}
-                      </div>
+                     
                     </v-alert>
+                    <div class="text-body-2 pa-2" style="background-color:#E3F0E4;" v-html="userScans?.recommended_action"></div>
+                  </v-card-text>
+                </v-card>
+                <v-card
+                  class="mb-4 ai-insights-card"
+                  rounded="lg"
+                  elevation="1"
+                >
+                 
+                  <v-card-text>
+                    <div class="d-flex align-center mb-2">
+                      <v-icon color="primary" size="24" class="mr-2">mdi-robot</v-icon>
+                      <span class="text-h6">AI Detailed Analysis</span>
+                    </div>
+                    <div class="text-body-1 mb-3" v-html="userScans?.comment"></div>
                   </v-card-text>
                 </v-card>
               </v-card-text>
@@ -199,148 +421,6 @@
     </template>
   </LayoutWrapper>
 </template>
-
-<script setup lang="ts">
-import { ref, onMounted } from "vue";
-import { useScanResultStore } from "@/stores/scanResultStore";
-import LayoutWrapper from "@/layouts/LayoutWrapper.vue";
-import Loader from "@/components/common/Loader.vue";
-import { supabase } from "@/lib/supabase";
-
-interface UserScan {
-  image_path: string;
-  created_at?: string;
-}
-
-const scanResultStore = useScanResultStore();
-const userScans = ref<UserScan | null>(null);
-const isLoading = ref<boolean>(true);
-const imageLoading = ref<boolean>(true);
-
-const getConfidenceColor = (confidence: number): string => {
-  if (confidence >= 0.8) return "success";
-  if (confidence >= 0.6) return "warning";
-  return "error";
-};
-
-const getIssueColor = (confidence: number): string => {
-  if (confidence >= 0.8) return "error";
-  if (confidence >= 0.6) return "warning";
-  return "info";
-};
-
-const getOverallSeverityColor = (severity: string): string => {
-  const colors: Record<string, string> = {
-    High: "error",
-    Medium: "warning",
-    Low: "success",
-  };
-  return colors[severity] || "info";
-};
-
-const getOverallSeverity = (): string => {
-  const maxConfidence = Math.max(
-    ...scanResultStore.ScanResult.map((r) => r.confidence)
-  );
-  if (maxConfidence >= 0.8) return "High";
-  if (maxConfidence >= 0.6) return "Medium";
-  return "Low";
-};
-
-const getAIAnalysis = (): string => {
-  const issues = scanResultStore.ScanResult.map((r) => r.class.toLowerCase());
-
-  if (issues.includes("healthy")) {
-    return "Your plant appears to be healthy! Continue with regular care and maintenance to keep it thriving.";
-  }
-
-  if (issues.includes("aphids")) {
-    return "I've detected signs of aphid infestation. These small insects feed on plant sap and can quickly multiply, potentially causing significant damage to your plant's health and growth.";
-  }
-
-  if (issues.includes("leaf-spot")) {
-    return "Analysis shows evidence of leaf spot disease. This fungal infection can spread to other leaves and plants if not treated promptly. The affected areas may expand and eventually cause leaf drop.";
-  }
-
-  return "I've identified potential issues with your plant. Please review the detailed findings below for specific concerns and recommended actions.";
-};
-
-const getRecommendedAction = (): string => {
-  const issues = scanResultStore.ScanResult.map((r) => r.class.toLowerCase());
-
-  if (issues.includes("aphids")) {
-    return "Apply insecticidal soap or neem oil solution. Remove heavily infested leaves and isolate the plant to prevent spread to other plants. Consider introducing natural predators like ladybugs for organic control.";
-  }
-
-  if (issues.includes("leaf-spot")) {
-    return "Remove and dispose of affected leaves, improve air circulation around the plant, and avoid overhead watering. Apply an appropriate fungicide and adjust watering practices to keep leaves dry.";
-  }
-
-  return "Monitor the plant closely for any changes and consider consulting a plant specialist for a detailed treatment plan.";
-};
-
-const getCurrentDate = (): string => {
-  return new Date().toLocaleDateString("en-US", {
-    month: "short",
-    day: "numeric",
-    year: "numeric",
-  });
-};
-
-const getIssueIcon = (className: string): string => {
-  const icons: Record<string, string> = {
-    aphids: "mdi-bug",
-    "leaf-spot": "mdi-leaf-off",
-    healthy: "mdi-leaf",
-    default: "mdi-alert-circle",
-  };
-  return icons[className.toLowerCase()] || icons.default;
-};
-
-const formatClassName = (className: string): string => {
-  return className
-    .split("-")
-    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-    .join(" ");
-};
-
-const getIssueDescription = (className: string): string => {
-  const descriptions: Record<string, string> = {
-    aphids:
-      "Small sap-sucking insects that can cause significant damage to plants.",
-    "leaf-spot":
-      "Fungal disease causing spots on leaves that can lead to defoliation.",
-    healthy: "No significant issues detected in the plant.",
-    default: "Potential plant health issue detected.",
-  };
-  return descriptions[className.toLowerCase()] || descriptions.default;
-};
-
-const fetchUserScans = async (): Promise<UserScan | null> => {
-  const userId = localStorage.getItem("user_id");
-  if (!userId) return null;
-
-  const { data, error } = await supabase
-    .from("pest_scans")
-    .select("image_path, created_at")
-    .eq("user_id", userId)
-    .order("created_at", { ascending: false })
-    .limit(1)
-    .single();
-
-  return error ? null : data;
-};
-
-const onImageLoaded = (): void => {
-  imageLoading.value = false;
-};
-
-onMounted(async () => {
-  const data = await fetchUserScans();
-  userScans.value = data;
-  isLoading.value = false;
-});
-</script>
 
 <style scoped>
 .pest-scanner-app {
@@ -432,5 +512,9 @@ onMounted(async () => {
   .result-card {
     margin: 0 !important;
   }
+}
+
+.ai-insights-card :deep(br) {
+  margin-bottom: 0.5em;
 }
 </style>
