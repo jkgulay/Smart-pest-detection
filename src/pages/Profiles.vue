@@ -145,6 +145,7 @@
             <v-card-title class="text-h6 pa-4">Edit Profile</v-card-title>
             <v-card-text>
               <v-form @submit.prevent="saveProfile">
+                <!-- Existing fields -->
                 <v-text-field
                   v-model="username"
                   label="Username"
@@ -153,6 +154,31 @@
                   class="mb-4"
                   density="comfortable"
                 ></v-text-field>
+
+                <!-- New Password Fields -->
+                <v-text-field
+                  v-model="currentPassword"
+                  label="Current Password (required for password change)"
+                  type="password"
+                  prepend-inner-icon="mdi-lock"
+                  variant="outlined"
+                  class="mb-4"
+                  density="comfortable"
+                ></v-text-field>
+
+                <v-text-field
+                  v-model="newPassword"
+                  label="New Password"
+                  type="password"
+                  prepend-inner-icon="mdi-lock-reset"
+                  variant="outlined"
+                  class="mb-4"
+                  density="comfortable"
+                  hint="Leave blank to keep current password"
+                  persistent-hint
+                ></v-text-field>
+
+                <!-- Existing file input -->
                 <v-file-input
                   accept="image/*"
                   label="Profile Picture"
@@ -161,9 +187,17 @@
                   class="mb-4"
                   @change="uploadProfileImage"
                   density="comfortable"
-                  hint="Select a new profile picture"
                 ></v-file-input>
               </v-form>
+              <!-- Error Message -->
+              <v-alert
+                v-if="errorMessage"
+                type="error"
+                variant="tonal"
+                class="mb-4"
+              >
+                {{ errorMessage }}
+              </v-alert>
             </v-card-text>
             <v-card-actions class="pa-4">
               <v-spacer></v-spacer>
@@ -200,6 +234,18 @@ const { user, loading, error, refresh } = useUserData();
 const username = ref("");
 const email = ref("");
 const profileImage = ref("https://randomuser.me/api/portraits/lego/1.jpg");
+const currentPassword = ref("");
+const newPassword = ref("");
+const errorMessage = ref("");
+
+// Clear passwords when dialog closes
+watch(dialog, (newVal) => {
+  if (!newVal) {
+    currentPassword.value = "";
+    newPassword.value = "";
+    errorMessage.value = "";
+  }
+});
 
 // Mock Data for Recent Scans
 const recentScans = ref([
@@ -241,58 +287,85 @@ const formatDate = (date: string) => {
   return new Date(date).toLocaleDateString();
 };
 
-const uploadProfileImage = async (file: File) => {
+const uploadProfileImage = async (file: File | undefined) => {
   if (!file || !user.value?.id) return;
 
-  // Ensure file.name is a string
-  if (typeof file.name !== "string") {
-    console.error("Invalid file name:", file.name);
-    return;
-  }
-
-  const fileExt = file.name.split(".").pop();
-  const fileName = `${Date.now()}.${fileExt}`;
-  const filePath = `avatars/${fileName}`;
-
   try {
+    const fileExt = file.name.split('.').pop() || 'jpg';
+    const fileName = `${Date.now()}.${fileExt}`;
+    const filePath = `avatars/${fileName}`;
+
     const { error: uploadError } = await supabase.storage
-      .from("profiles")
+      .from('profiles')
       .upload(filePath, file);
 
     if (uploadError) throw uploadError;
 
     const { data } = await supabase.storage
-      .from("profiles")
+      .from('profiles')
       .getPublicUrl(filePath);
 
-    if (data) {
+    if (data?.publicUrl) {
       profileImage.value = data.publicUrl;
     }
   } catch (error) {
-    console.error("Error uploading image:", error);
+    console.error('Error uploading image:', error);
+    if (error instanceof Error) {
+      errorMessage.value = error.message;
+    }
   }
 };
 
-const saveProfile = async () => {
+// Typed save profile function
+const saveProfile = async (): Promise<void> => {
   if (!user.value?.id) return;
 
   saving.value = true;
+  errorMessage.value = '';
+
   try {
-    const { error } = await supabase
-      .from("users")
+    if (newPassword.value) {
+      if (!currentPassword.value) {
+        throw new Error('Current password is required to change password.');
+      }
+
+      const { error: authError } = await supabase.auth.signInWithPassword({
+        email: user.value.email!,
+        password: currentPassword.value,
+      });
+
+      if (authError) throw authError;
+
+      const { error: updateError } = await supabase.auth.updateUser({
+        password: newPassword.value,
+      });
+
+      if (updateError) throw updateError;
+    }
+
+    const { error: profileError } = await supabase
+      .from('users')
       .update({
         username: username.value,
         profile_image: profileImage.value,
       })
-      .eq("user_id", user.value.id);
+      .eq('user_id', user.value.id);
 
-    if (error) throw error;
+    if (profileError) throw profileError;
 
     dialog.value = false;
-    username.value = username.value;
+    currentPassword.value = '';
+    newPassword.value = '';
     await refresh();
-  } catch (error) {
-    console.error("Error saving profile:", error);
+  } catch (error: unknown) {
+    console.error('Error saving profile:', error);
+    if (error instanceof Error) {
+      errorMessage.value = error.message;
+    } else if (typeof error === 'string') {
+      errorMessage.value = error;
+    } else {
+      errorMessage.value = 'An unknown error occurred';
+    }
   } finally {
     saving.value = false;
   }
@@ -339,15 +412,14 @@ const fetchUserProfile = async (userId: string) => {
 </script>
 
 <style scoped>
-.profile-page {
-  background-color: #8ca189;
-  height: 93vh;
-  overflow-y: auto;
-  padding-bottom: 80px !important;
+.pest-scanner-app {
+  min-height: 100dvh;
+  overflow: auto;
 }
 
-.profile-content {
-  padding-bottom: 64px;
+.v-container {
+  overflow-y: auto;
+  max-height: calc(100vh - 64px);
 }
 
 .profile-header {

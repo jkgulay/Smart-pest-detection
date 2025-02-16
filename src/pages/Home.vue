@@ -116,18 +116,6 @@
               </v-col>
             </v-row>
 
-            <!-- Action Button -->
-            <v-btn
-              color="primary"
-              class="text-none rounded-lg mt-4"
-              block
-              size="large"
-              elevation="2"
-              :prepend-icon="mdiQrcodeScan"
-              @click="startScan"
-            >
-              Start New Scan
-            </v-btn>
           </v-container>
     </template>
   </LayoutWrapper>
@@ -138,6 +126,7 @@ import { ref, computed } from "vue";
 import { use } from "echarts/core";
 import { CanvasRenderer } from "echarts/renderers";
 import { BarChart } from "echarts/charts";
+import { useScanResultStore } from "@/stores/scanResultStore";
 import {
   GridComponent,
   TooltipComponent,
@@ -146,7 +135,6 @@ import {
 } from "echarts/components";
 import VChart from "vue-echarts";
 import {
-  mdiQrcodeScan,
   mdiClockOutline,
   mdiCalendarMonth,
   mdiCalendarWeek,
@@ -177,10 +165,16 @@ interface StatCard {
   color: string;
 }
 
+const scanResultStore = useScanResultStore();
+const totalScans = computed(() => {
+  return scanResultStore.ScanResult.length; 
+});
+
 const username = ref("Administrator");
 const userAvatar = ref("https://api.dicebear.com/7.x/avataaars/svg?seed=admin");
-const selectedTimeframe = ref("day");
-const totalScans = ref(156);
+const selectedTimeframe = ref<Timeframe>("hour"); 
+
+type Timeframe = "hour" | "day" | "month";
 
 const stats: StatCard[] = [
   {
@@ -205,21 +199,25 @@ const timeframeOptions: TimeframeOption[] = [
   { label: "Months", value: "month", icon: mdiCalendarMonth },
 ];
 
-const chartData = {
+interface ChartData {
+  labels: string[];
+  data: number[];
+}
+
+const chartData: Record<Timeframe, ChartData> = {
   hour: {
-    labels: ["10AM", "11AM", "12PM", "1PM", "2PM"],
-    data: [1, 3, 5, 2, 6],
+    labels: ["00:00", "01:00", "02:00", "03:00", "04:00", "05:00"],
+    data: [10, 20, 30, 40, 50, 60],
   },
   day: {
-    labels: ["Mon", "Tue", "Wed", "Thu", "Fri"],
-    data: [5, 8, 12, 20, 6],
+    labels: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
+    data: [100, 200, 300, 400, 500, 600, 700],
   },
   month: {
-    labels: ["Jan", "Feb", "Mar", "Apr", "May"],
-    data: [50, 80, 100, 90, 120],
+    labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun"],
+    data: [1000, 2000, 3000, 4000, 5000, 6000],
   },
 };
-
 
 const chartOption = computed(() => ({
   tooltip: {
@@ -263,10 +261,6 @@ const chartOption = computed(() => ({
   ],
 }));
 
-
-const startScan = () => {
-  console.log("Starting new scan...");
-};
 </script>
 
 <style scoped>
