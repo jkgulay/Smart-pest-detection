@@ -52,6 +52,7 @@ export const useAuthUserStore = defineStore("authUser", () => {
     const { error: insertError } = await supabase.from("users").insert([
       {
         user_id: userId,
+        username,
       },
     ]);
 
@@ -96,6 +97,7 @@ export const useAuthUserStore = defineStore("authUser", () => {
     userData.value = {
       id: user.id,
       email: user.email,
+      username: profiles.username,
     };
 
     return { user };

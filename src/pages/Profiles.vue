@@ -151,7 +151,6 @@
                   label="Username"
                   prepend-inner-icon="mdi-account"
                   variant="outlined"
-                  class="mb-4"
                   density="comfortable"
                 ></v-text-field>
 
@@ -162,7 +161,6 @@
                   type="password"
                   prepend-inner-icon="mdi-lock"
                   variant="outlined"
-                  class="mb-4"
                   density="comfortable"
                 ></v-text-field>
 
@@ -172,7 +170,6 @@
                   type="password"
                   prepend-inner-icon="mdi-lock-reset"
                   variant="outlined"
-                  class="mb-4"
                   density="comfortable"
                   hint="Leave blank to keep current password"
                   persistent-hint
@@ -184,7 +181,6 @@
                   label="Profile Picture"
                   prepend-icon="mdi-camera"
                   variant="outlined"
-                  class="mb-4"
                   @change="uploadProfileImage"
                   density="comfortable"
                 ></v-file-input>
@@ -287,31 +283,62 @@ const formatDate = (date: string) => {
   return new Date(date).toLocaleDateString();
 };
 
-const uploadProfileImage = async (file: File | undefined) => {
-  if (!file || !user.value?.id) return;
+const uploadProfileImage = async (file: File | null, userId: string | null) => {
+  if (!file) {
+    console.error("No file selected.");
+    errorMessage.value = "No file selected.";
+    return;
+  }
+
+  if (!userId) {
+    console.error("User  ID is missing.");
+    errorMessage.value = "User  ID is missing.";
+    return;
+  }
 
   try {
+    // Generate a unique file name
     const fileExt = file.name.split('.').pop() || 'jpg';
     const fileName = `${Date.now()}.${fileExt}`;
-    const filePath = `avatars/${fileName}`;
+    const filePath = `profiles/avatars/${fileName}`;
 
+    // Upload the file to Supabase Storage
     const { error: uploadError } = await supabase.storage
       .from('profiles')
       .upload(filePath, file);
 
-    if (uploadError) throw uploadError;
+    if (uploadError) {
+      throw new Error(`Upload error: ${uploadError.message}`);
+    }
 
-    const { data } = await supabase.storage
+    // Get the public URL of the uploaded file
+    const { data: urlData } = await supabase.storage
       .from('profiles')
       .getPublicUrl(filePath);
 
-    if (data?.publicUrl) {
-      profileImage.value = data.publicUrl;
+    if (!urlData?.publicUrl) {
+      throw new Error("Failed to get public URL for the uploaded image.");
     }
+
+    // Update the user's profile image URL in the users table
+    const { error: updateError } = await supabase
+      .from('users')
+      .update({ profile_image: urlData.publicUrl })
+      .eq('id', userId);
+
+    if (updateError) {
+      throw new Error(`Update error: ${updateError.message}`);
+    }
+
+    // Update the local profile image reference
+    profileImage.value = urlData.publicUrl;
+    console.log("Profile image updated successfully:", urlData.publicUrl);
   } catch (error) {
     console.error('Error uploading image:', error);
     if (error instanceof Error) {
       errorMessage.value = error.message;
+    } else {
+      errorMessage.value = "An unknown error occurred.";
     }
   }
 };

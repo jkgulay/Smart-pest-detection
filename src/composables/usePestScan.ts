@@ -1,7 +1,7 @@
-import { ref } from 'vue';
-import { supabase } from '@/lib/supabase';
-import { useImageUploader } from '@/composables/useImageUploader';
-import { useScanResultStore } from '@/stores/scanResultStore';
+import { ref } from "vue";
+import { supabase } from "@/lib/supabase";
+import { useImageUploader } from "@/composables/useImageUploader";
+import { useScanResultStore } from "@/stores/scanResultStore";
 
 export function usePestScan() {
   const uploadError = ref<string | null>(null);
@@ -13,16 +13,16 @@ export function usePestScan() {
     uploadError.value = null;
     scanResultStore.setScanResult([]);
     try {
-      const userId = localStorage.getItem("user_id");
+      const userId = parseInt(localStorage.getItem("user_id") || "0", 10);
       if (!userId) {
-        uploadError.value = 'User is not authenticated';
+        uploadError.value = "User is not authenticated";
         isLoading.value = false;
         return;
       }
 
       const fileName = `${Date.now()}_${file.name}`;
-      const { data, error } = await supabase.storage
-        .from('store')
+      const { error } = await supabase.storage
+        .from("store")
         .upload(`/${fileName}`, file);
 
       if (error) {
@@ -32,9 +32,8 @@ export function usePestScan() {
       }
 
       const imageUrl = `https://touhyblbobrrtoebgkzb.supabase.co/storage/v1/object/public/store/${fileName}`;
-
       const { error: insertError } = await supabase
-        .from('pest_scans')
+        .from("pest_scans")
         .insert([{ user_id: userId, image_path: imageUrl }]);
 
       if (insertError) {
@@ -44,9 +43,8 @@ export function usePestScan() {
       }
 
       // Retrieve the uploaded file from Supabase storage
-      const { data: fileData, error: fileError } = await supabase
-        .storage
-        .from('store')
+      const { data: fileData, error: fileError } = await supabase.storage
+        .from("store")
         .download(`/${fileName}`);
 
       if (fileError) {
@@ -56,11 +54,12 @@ export function usePestScan() {
       }
 
       // Convert Blob to File
-      const retrievedFile = new File([fileData], fileName, { type: fileData.type });
+      const retrievedFile = new File([fileData], fileName, {
+        type: fileData.type,
+      });
 
       // Use the retrieved file with useImageUploader
       const result = await useImageUploader(retrievedFile);
-  
 
       isLoading.value = false;
       return imageUrl;
