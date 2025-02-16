@@ -1,9 +1,11 @@
+
 import { ref } from 'vue';
 import { supabase } from '@/lib/supabase';
 import { useImageUploader } from '@/composables/useImageUploader';
 import { useScanResultStore } from '@/stores/scanResultStore';
 import { useGroqChat as useDeepSeek } from '@/lib/deepSeek';
 import { useGroqChat as useLlama } from '@/lib/llama';
+
 
 export function usePestScan() {
   const uploadError = ref<string | null>(null);
