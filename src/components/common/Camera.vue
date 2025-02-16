@@ -1,12 +1,5 @@
 <template>
-  <v-container class="scan-container pa-4">
-    <div class="text-center mb-1">
-      <div class="text-h4 font-weight-bold text-primary mb-1">Scan Pests</div>
-      <div class="text-subtitle-1 text-medium-emphasis">
-        Smart Pest Scanner
-      </div>
-    </div>
-
+  <v-container class="pa-4">
     <v-card
       class="mx-auto scan-card"
       :class="{
@@ -38,7 +31,6 @@
         cover
         class="scan-image"
       >
-
         <div class="image-overlay" v-if="!selectedImage">
           <div class="text-center text-white">
             <v-icon size="72" color="white" class="mb-3"
@@ -52,7 +44,7 @@
         </div>
       </v-img>
 
-      <v-card-actions class="pa-2 d-flex flex-column ">
+      <v-card-actions class="pa-2 d-flex flex-column">
         <v-btn
           block
           color="white"
@@ -133,23 +125,12 @@
 <script setup lang="ts">
 import { ref } from "vue";
 import { Camera, CameraResultType, CameraSource } from "@capacitor/camera";
-import { useDisplay } from "vuetify";
 import { usePestScan } from "@/composables/usePestScan";
-import { useScanResultStore } from "@/stores/scanResultStore";
 import { useRouter } from "vue-router";
 
-interface ScanResult {
-  imageUrl: string;
-  diagnosis: string;
-  confidence: number;
-  timestamp: Date;
-}
-
 const selectedImage = ref<string | null>(null);
-const { mobile } = useDisplay();
 const defaultImage = "/src/assets/default/pest1.jpg";
-const { uploadPestScan, uploadError, isLoading } = usePestScan();
-const scanResultStore = useScanResultStore();
+const { uploadPestScan, uploadError } = usePestScan();
 const isTakingPicture = ref<boolean>(false);
 const router = useRouter();
 
@@ -195,11 +176,15 @@ const clearImage = (): void => {
 </script>
 
 <style scoped>
-.scan-container {
-  max-width: 100%;
-  height: 92vh;
-  overflow-y: auto;
+.pest-scanner-app {
   background: #8ca189;
+  min-height: 100dvh;
+  overflow: auto;
+}
+
+.v-container {
+  overflow-y: auto;
+  max-height: calc(100vh - 64px);
 }
 
 .scan-card {
@@ -248,7 +233,6 @@ const clearImage = (): void => {
   background: rgba(255, 255, 255, 0.9);
   border: 1px solid rgba(0, 0, 0, 0.1);
 }
-
 
 @media (max-width: 600px) {
   .scan-container {
