@@ -92,53 +92,41 @@
                   rounded="lg"
                   class="w-100"
                 >
+                  <v-btn
+                    v-for="option in timeframeOptions"
+                    :key="option.value"
+                    :value="option.value"
+                    :prepend-icon="option.icon"
+                    class="flex-grow-1"
+                  >
+                    {{ option.label }}
+                  </v-btn>
+                </v-btn-toggle>
+              </v-card-text>
+            </v-card>
+          </v-col>
+        </v-row>
 
-                  <v-card-text>
-                    <v-btn-toggle
-                      v-model="selectedTimeframe"
-                      mandatory
-                      color="primary"
-                      rounded="lg"
-                      class="w-100"
-                    >
-                      <v-btn
-                        v-for="option in timeframeOptions"
-                        :key="option.value"
-                        :value="option.value"
-                        :prepend-icon="option.icon"
-                        class="flex-grow-1"
-                      >
-                        {{ option.label }}
-                      </v-btn>
-                    </v-btn-toggle>
-                  </v-card-text>
-                </v-card>
-              </v-col>
-            </v-row>
-
-            <!-- Chart Section -->
-            <v-row class="mb-10">
-              <v-col cols="12">
-                <v-card class="rounded-lg dashboard-card" elevation="0">
-                  <v-card-title class="px-4 pt-4">
-                    Scan Activity
-                    <v-spacer></v-spacer>
-                    <span class="text-caption" style="color: #D3E5F1;">
-                      Total scans: {{ totalScans }}
-                    </span>
-                  </v-card-title>
-                  <v-card-text>
-                    <v-chart class="chart" :option="chartOption" autoresize />
-                  </v-card-text>
-                </v-card>
-              </v-col>
-            </v-row>
-
-          </v-container>
-
+        <!-- Chart Section -->
+        <v-row class="mb-10">
+          <v-col cols="12">
+            <v-card class="rounded-lg dashboard-card" elevation="0">
+              <v-card-title class="px-4 pt-4">
+                Scan Activity
+                <v-spacer></v-spacer>
+                <span class="text-caption" style="color: #d3e5f1">
+                  Total scans: {{ totalScans }}
+                </span>
+              </v-card-title>
+              <v-card-text>
+                <v-chart class="chart" :option="chartOption" autoresize />
+              </v-card-text>
+            </v-card>
+          </v-col>
+        </v-row>
+      </v-container>
     </template>
   </LayoutWrapper>
-  
 </template>
 
 <script setup lang="ts">
@@ -203,8 +191,6 @@ const fetchUserProfile = async (userId: string) => {
     profileImage.value = data.profile_image || profileImage.value;
   }
 };
-
-
 
 interface TimeframeOption {
   label: string;
@@ -316,7 +302,7 @@ const fetchUserScanStats = async (userId: string) => {
     const { data: todayScans, error: todayError } = await supabase
       .from("pest_scans")
       .select("id")
-      .eq("user_id", userId as string) 
+      .eq("user_id", userId as string)
       .gte("created_at", `${today}T00:00:00`)
       .lte("created_at", `${today}T23:59:59`);
 
@@ -327,7 +313,7 @@ const fetchUserScanStats = async (userId: string) => {
     const { data: recentScan, error: recentError } = await supabase
       .from("pest_scans")
       .select("confidence")
-      .eq("user_id", userId as string) 
+      .eq("user_id", userId as string)
       .order("created_at", { ascending: false })
       .limit(1)
       .single();
@@ -368,15 +354,36 @@ const loadChartData = async (userId: string) => {
     });
 
     chartData.value = {
-      hour: { labels: [...Array(24).keys()].map((h) => `${h}:00`), data: hourlyData },
-      day: { labels: ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"], data: dailyData },
-      month: { labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"], data: monthlyData },
+      hour: {
+        labels: [...Array(24).keys()].map((h) => `${h}:00`),
+        data: hourlyData,
+      },
+      day: {
+        labels: ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"],
+        data: dailyData,
+      },
+      month: {
+        labels: [
+          "Jan",
+          "Feb",
+          "Mar",
+          "Apr",
+          "May",
+          "Jun",
+          "Jul",
+          "Aug",
+          "Sep",
+          "Oct",
+          "Nov",
+          "Dec",
+        ],
+        data: monthlyData,
+      },
     };
   } catch (error) {
     console.error("Error loading chart data:", error);
   }
 };
-
 
 onMounted(async () => {
   await fetchUserInfo();
@@ -452,5 +459,4 @@ onMounted(async () => {
   height: 200px;
   width: 100%;
 }
-
 </style>
