@@ -12,6 +12,7 @@ interface PestScan {
   alert_lvl: string;
   comment: string;
   confidence: number;
+  recommended_action: string;
 }
 
 interface ScanHistory {
@@ -71,20 +72,6 @@ const getAIAnalysis = (): string => {
   }
 
   return "I've identified potential issues with your plant. Please review the detailed findings below for specific concerns and recommended actions.";
-};
-
-const getRecommendedAction = (): string => {
-  const issues = recentScans.value.map((r) => r.name.toLowerCase());
-
-  if (issues.includes("aphids")) {
-    return "Apply insecticidal soap or neem oil solution. Remove heavily infested leaves and isolate the plant to prevent spread to other plants. Consider introducing natural predators like ladybugs for organic control.";
-  }
-
-  if (issues.includes("leaf-spot")) {
-    return "Remove and dispose of affected leaves, improve air circulation around the plant, and avoid overhead watering. Apply an appropriate fungicide and adjust watering practices to keep leaves dry.";
-  }
-
-  return "Monitor the plant closely for any changes and consider consulting a plant specialist for a detailed treatment plan.";
 };
 
 const getCurrentDate = (): string => {
@@ -356,7 +343,7 @@ onMounted(async () => {
                       <v-icon color="primary" size="24" class="mr-2"
                         >mdi-brain</v-icon
                       >
-                      <span class="text-h6">AI Insights</span>
+                      <span class="text-h6">Deep Think</span>
                     </div>
 
                     <div class="d-flex align-center justify-space-between mb-3">
@@ -382,13 +369,23 @@ onMounted(async () => {
                       variant="tonal"
                       density="comfortable"
                     >
-                      <div class="text-subtitle-2 font-weight-medium">
-                        Recommended Action
-                      </div>
-                      <div class="text-body-2">
-                        {{ getRecommendedAction() }}
-                      </div>
+                     
                     </v-alert>
+                    <div class="text-body-2 pa-2" style="background-color:#E3F0E4;" v-html="userScans?.recommended_action"></div>
+                  </v-card-text>
+                </v-card>
+                <v-card
+                  class="mb-4 ai-insights-card"
+                  rounded="lg"
+                  elevation="1"
+                >
+                 
+                  <v-card-text>
+                    <div class="d-flex align-center mb-2">
+                      <v-icon color="primary" size="24" class="mr-2">mdi-robot</v-icon>
+                      <span class="text-h6">AI Detailed Analysis</span>
+                    </div>
+                    <div class="text-body-1 mb-3" v-html="userScans?.comment"></div>
                   </v-card-text>
                 </v-card>
               </v-card-text>
@@ -515,5 +512,9 @@ onMounted(async () => {
   .result-card {
     margin: 0 !important;
   }
+}
+
+.ai-insights-card :deep(br) {
+  margin-bottom: 0.5em;
 }
 </style>
