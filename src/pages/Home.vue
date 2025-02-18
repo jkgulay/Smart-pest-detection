@@ -341,17 +341,15 @@ const chartOption = computed(() => ({
     data: chartData.value[selectedTimeframe.value].data,
     itemStyle: {
       color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
-        { offset: 0, color: '#83bff6' },
-        { offset: 0.5, color: '#188df0' },
-        { offset: 1, color: '#188df0' }
+        { offset: 0, color: '#ffffff' },
+        { offset: 1, color: 'rgba(255, 255, 255, 0.8)' }
       ])
     },
     emphasis: {
       itemStyle: {
         color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
-          { offset: 0, color: '#2378f7' },
-          { offset: 0.7, color: '#2378f7' },
-          { offset: 1, color: '#83bff6' }
+          { offset: 0, color: '#ffffff' },
+          { offset: 1, color: 'rgba(255, 255, 255, 0.9)' }
         ])
       }
     }
