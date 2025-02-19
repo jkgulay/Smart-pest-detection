@@ -15,14 +15,6 @@ interface PestScan {
   recommended_action: string;
 }
 
-interface ScanHistory {
-  id: number;
-  created_at: string;
-  scan_id: number;
-  user_id: number;
-  pest_scan?: PestScan;
-}
-
 const userScans = ref<PestScan | null>(null);
 const recentScans = ref<PestScan[]>([]);
 const isLoading = ref<boolean>(true);

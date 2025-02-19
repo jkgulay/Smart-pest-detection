@@ -36,7 +36,11 @@
                     <v-avatar size="120" class="profile-avatar">
                       <v-img :src="profileImage" cover>
                         <template v-slot:placeholder>
-                          <v-row align="center" justify="center" class="fill-height">
+                          <v-row
+                            align="center"
+                            justify="center"
+                            class="fill-height"
+                          >
                             <v-progress-circular
                               indeterminate
                               color="success"
@@ -88,7 +92,7 @@
                     <v-icon color="success" size="36" class="mb-2"
                       >mdi-leaf</v-icon
                     >
-                    <div class="text-h5 font-weight-bold">156</div>
+                    <div class="text-h5 font-weight-bold">{{ totalScans }}</div>
                     <div class="text-caption">Total Scans</div>
                   </v-card-text>
                 </v-card>
@@ -99,8 +103,8 @@
                     <v-icon color="warning" size="36" class="mb-2"
                       >mdi-bug</v-icon
                     >
-                    <div class="text-h5 font-weight-bold">23</div>
-                    <div class="text-caption">Active Alerts</div>
+                    <div class="text-h5 font-weight-bold">{{ totalPests }}</div>
+                    <div class="text-caption">Total Pests Detected</div>
                   </v-card-text>
                 </v-card>
               </v-col>
@@ -149,6 +153,7 @@
                   color="success"
                   block
                   prepend-icon="mdi-history"
+                  @click="$router.push('/scan-history')"
                   class="view-all-btn"
                 >
                   View All Scans
@@ -250,7 +255,9 @@ const { user, loading, error, refresh } = useUserData();
 // Profile Data
 const username = ref("");
 const email = ref("");
-const profileImage = ref("https://touhyblbobrrtoebgkzb.supabase.co/storage/v1/object/public/profiles/avatars/user.png");
+const profileImage = ref(
+  "https://touhyblbobrrtoebgkzb.supabase.co/storage/v1/object/public/profiles/avatars/user.png"
+);
 const currentPassword = ref("");
 const newPassword = ref("");
 const errorMessage = ref("");
@@ -263,46 +270,6 @@ watch(dialog, (newVal) => {
     errorMessage.value = "";
   }
 });
-
-// Mock Data for Recent Scans
-const recentScans = ref([
-  {
-    id: 1,
-    pestType: "Aphids",
-    date: "2025-02-11",
-    Severity: "High",
-  },
-  {
-    id: 2,
-    pestType: "Spider Mites",
-    date: "2025-02-10",
-    Severity: "Low",
-  },
-  {
-    id: 3,
-    pestType: "Whiteflies",
-    date: "2025-02-09",
-    Severity: "Medium",
-  },
-]);
-
-const getSeverityColor = (severity: string): string => {
-  switch (severity.toLowerCase()) {
-    case "high":
-      return "error";
-    case "medium":
-      return "warning";
-    case "low":
-      return "success";
-    default:
-      return "grey";
-  }
-};
-
-// Methods
-const formatDate = (date: string) => {
-  return new Date(date).toLocaleDateString();
-};
 
 const fetchUserInfo = async () => {
   try {
@@ -460,6 +427,164 @@ const saveProfile = async (): Promise<void> => {
     saving.value = false;
   }
 };
+
+interface Scan {
+  id: string;
+  pestType: string;
+  date: string;
+  Severity: "High" | "Medium" | "Low";
+}
+
+interface StatsState {
+  totalScans: number;
+  totalPests: number;
+  recentScans: Scan[];
+  loading: boolean;
+  error: string | null;
+}
+
+const usePestStats = () => {
+  const state = ref<StatsState>({
+    totalScans: 0,
+    totalPests: 0,
+    recentScans: [],
+    loading: false,
+    error: null,
+  });
+
+  const fetchStats = async (userId: string) => {
+    state.value.loading = true;
+    state.value.error = null;
+    try {
+      // Fetch scan IDs for the user from scan_history
+      const { data: scanHistoryData, error: scanHistoryError } = await supabase
+        .from("scan_history")
+        .select("*")
+        .eq("user_id", userId);
+
+      if (scanHistoryError) throw scanHistoryError;
+
+      // Extract scan IDs
+      const scanIds = scanHistoryData.map((item) => item.scan_id);
+
+      // Fetch scans from pest_scans using the scan IDs
+      const { data: scansData, error: scansError } = await supabase
+        .from("scan_history")
+        .select("scan_id , name")
+        .in("id", scanIds);
+
+      if (scansError) throw scansError;
+
+      // Calculate total scans and unique pests
+      state.value.totalScans = scansData?.length || 0;
+      state.value.totalPests = new Set(
+        scansData?.map((item) => item.name)
+      ).size;
+    } catch (error) {
+      state.value.error =
+        error instanceof Error ? error.message : "Failed to fetch stats";
+    } finally {
+      state.value.loading = false;
+    }
+  };
+
+  const fetchRecentScans = async (userId: string, limit: number = 5) => {
+    state.value.loading = true;
+    state.value.error = null;
+    try {
+      // Fetch recent scan history for the user
+      const { data: scanHistoryData, error: scanHistoryError } = await supabase
+        .from("scan_history")
+        .select("scan_id, created_at")
+        .eq("user_id", userId)
+        .order("created_at", { ascending: false })
+        .limit(limit);
+
+      if (scanHistoryError) throw scanHistoryError;
+
+      // Extract scan IDs
+      const scanIds = scanHistoryData.map((item) => item.scan_id);
+
+      // Fetch details from pest_scans using the scan IDs
+      const { data: pestScansData, error: pestScansError } = await supabase
+        .from("pest_scans")
+        .select("id, name, created_at, alert_lvl")
+        .in("id", scanIds);
+
+      if (pestScansError) throw pestScansError;
+
+      // Map data to the Scan interface
+      state.value.recentScans = pestScansData.map((scan) => ({
+        id: scan.id,
+        pestType: scan.name,
+        date: scan.created_at,
+        Severity: scan.alert_lvl,
+      }));
+    } catch (error) {
+      state.value.error =
+        error instanceof Error ? error.message : "Failed to fetch recent scans";
+    } finally {
+      state.value.loading = false;
+    }
+  };
+
+  const getSeverityColor = (severity: string): string => {
+    switch (severity.toLowerCase()) {
+      case "high":
+        return "error";
+      case "medium":
+        return "warning";
+      case "low":
+        return "success";
+      default:
+        return "grey";
+    }
+  };
+
+  const formatDate = (date: string): string =>
+    new Date(date).toLocaleDateString(undefined, {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+    });
+
+  const refreshStats = async (userId: string) => {
+    await Promise.all([fetchStats(userId), fetchRecentScans(userId)]);
+  };
+
+  return {
+    ...toRefs(state.value),
+    getSeverityColor,
+    formatDate,
+    fetchStats,
+    fetchRecentScans,
+    refreshStats,
+  };
+};
+const {
+  totalScans,
+  totalPests,
+  recentScans,
+  getSeverityColor,
+  formatDate,
+  refreshStats,
+} = usePestStats();
+
+onMounted(async () => {
+  if (user.value?.id) {
+    console.log("User ID:", user.value.id);
+    await refreshStats(user.value.id);
+  }
+});
+
+watch(
+  () => user.value?.id,
+  async (newUserId) => {
+    if (newUserId) {
+      await refreshStats(newUserId);
+    }
+  }
+);
 
 // Lifecycle
 onMounted(async () => {
