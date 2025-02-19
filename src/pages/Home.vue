@@ -29,9 +29,9 @@
                 </div>
                 <template v-slot:append>
                   <v-avatar size="70" class="profile_avatar">
-                    <v-img :src="profileImage" cover>
+                    <v-img :src="profileImage" cover height="100%">
                       <template v-slot:placeholder>
-                        <v-row align="center" justify="center">
+                        <v-row class="fill-height" align="center" justify="center">
                           <v-progress-circular
                             indeterminate
                             color="success"
@@ -230,7 +230,7 @@ const totalScans = computed(() => {
 });
 
 const username = ref("");
-const profileImage = ref("https://randomuser.me/api/portraits/lego/1.jpg");
+const profileImage = ref("https://touhyblbobrrtoebgkzb.supabase.co/storage/v1/object/public/profiles/avatars/user.png");
 const selectedTimeframe = ref<Timeframe>("day");
 const email = ref("");
 
