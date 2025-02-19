@@ -223,7 +223,7 @@ const itemsPerPage = computed(() => {
   const height = window.innerHeight;
   if (height <= 667) return 4;
   if (height <= 740) return 5;
-  if (height <= 915) return 7;
+  if (height <= 915) return 6;
   return 7; // default for larger screens
 });
 
