@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted, watch, toRefs } from "vue";
+import { ref, onMounted, watch } from "vue";
 import { useUserData, supabase } from "@/stores/authUser";
 import LayoutWrapper from "@/layouts/LayoutWrapper.vue";
 
@@ -200,9 +200,6 @@ interface StatsState {
   recentScans: Scan[];
   loading: boolean;
   error: string | null;
-  currentPage: number;
-  totalPages: number;
-  itemsPerPage: number;
 }
 
 const usePestStats = () => {
@@ -213,9 +210,6 @@ const usePestStats = () => {
     recentScans: [],
     loading: false,
     error: null,
-    currentPage: 1,
-    totalPages: 1,
-    itemsPerPage: 5,
   });
 
   const fetchStats = async (userId: string) => {
@@ -268,17 +262,17 @@ const usePestStats = () => {
     state.value.error = null;
     try {
       const localUserId = localStorage.getItem("user_id");
-      
-      // First get total count for pagination
+      // Calculate pagination offset
+      const from = (currentPage.value - 1) * itemsPerPage.value;
+      const to = from + itemsPerPage.value - 1;
+
+      // First get total count
       const { count } = await supabase
-        .from('scan_history')
-        .select('*', { count: 'exact', head: true })
-        .eq('user_id', localUserId);
+        .from("scan_history")
+        .select("*", { count: "exact", head: true })
+        .eq("user_id", localUserId);
 
-      state.value.totalPages = Math.ceil((count || 0) / state.value.itemsPerPage);
-
-      // Calculate offset
-      const offset = (state.value.currentPage - 1) * state.value.itemsPerPage;
+      totalItems.value = count || 0;
 
       // Fetch paginated scan history
       const { data: scanHistoryData, error: scanHistoryError } = await supabase
@@ -286,7 +280,7 @@ const usePestStats = () => {
         .select("scan_id, created_at")
         .eq("user_id", localUserId)
         .order("created_at", { ascending: false })
-        .range(offset, offset + state.value.itemsPerPage - 1);
+        .range(from, to);
 
       if (scanHistoryError) throw scanHistoryError;
 
@@ -340,13 +334,6 @@ const usePestStats = () => {
     await Promise.all([fetchStats(userId), fetchRecentScans(userId)]);
   };
 
-  const changePage = async (newPage: number) => {
-    state.value.currentPage = newPage;
-    if (userId) {
-      await fetchRecentScans(userId);
-    }
-  };
-
   return {
     ...toRefs(state.value),
     getSeverityColor,
@@ -354,7 +341,6 @@ const usePestStats = () => {
     fetchStats,
     fetchRecentScans,
     refreshStats,
-    changePage,
   };
 };
 const {
@@ -364,10 +350,21 @@ const {
   getSeverityColor,
   formatDate,
   refreshStats,
-  currentPage,
-  totalPages,
-  changePage,
+  fetchRecentScans,
 } = usePestStats();
+
+// Add these new refs for pagination
+const currentPage = ref(1);
+const itemsPerPage = ref(5);
+const totalItems = ref(0);
+
+// Add pagination handler
+const handlePageChange = async (newPage: number) => {
+  currentPage.value = newPage;
+  if (user.value?.id) {
+    await fetchRecentScans(user.value.id);
+  }
+};
 
 onMounted(async () => {
   if (user.value?.id) {
@@ -513,55 +510,62 @@ onMounted(async () => {
 
               <v-divider></v-divider>
 
-              <v-list class="scan-list">
-                <v-list-item
-                  v-for="scan in recentScans"
-                  :key="scan.id"
-                  :subtitle="formatDate(scan.date)"
-                  class="scan-item"
-                >
-                  <template v-slot:prepend>
-                    <v-avatar size="40" color="success" class="mr-3">
-                      <v-icon color="white">mdi-bug</v-icon>
-                    </v-avatar>
-                  </template>
-                  <v-list-item-title class="font-weight-medium">
-                    {{ scan.pestType }}
-                    <v-chip
-                      :color="getSeverityColor(scan.Severity)"
-                      size="x-small"
-                      class="ml-2"
-                      variant="tonal"
-                    >
-                      {{ scan.Severity }}
-                    </v-chip>
-                  </v-list-item-title>
-                </v-list-item>
-              </v-list>
+              <div class="scan-list-container">
+                <v-list class="scan-list">
+                  <v-list-item
+                    v-for="scan in recentScans"
+                    :key="scan.id"
+                    :subtitle="formatDate(scan.date)"
+                    class="scan-item"
+                  >
+                    <template v-slot:prepend>
+                      <v-avatar size="40" color="success" class="mr-3">
+                        <v-icon color="white">mdi-bug</v-icon>
+                      </v-avatar>
+                    </template>
+                    <v-list-item-title class="font-weight-medium">
+                      {{ scan.pestType }}
+                      <v-chip
+                        :color="getSeverityColor(scan.Severity)"
+                        size="x-small"
+                        class="ml-2"
+                        variant="tonal"
+                      >
+                        {{ scan.Severity }}
+                      </v-chip>
+                    </v-list-item-title>
+                  </v-list-item>
+                </v-list>
+              </div>
 
               <v-divider></v-divider>
 
-              <div class="d-flex align-center justify-space-between pa-4">
+              <!-- Add pagination controls -->
+              <div class="d-flex justify-center pa-2">
+                <v-pagination
+                  v-model="currentPage"
+                  :length="Math.ceil(totalItems / itemsPerPage)"
+                  :total-visible="3"
+                  @update:model-value="handlePageChange"
+                  color="success"
+                  density="comfortable"
+                ></v-pagination>
+              </div>
+
+              <v-divider></v-divider>
+
+              <v-card-actions class="pa-4">
                 <v-btn
                   variant="tonal"
                   color="success"
                   block
                   prepend-icon="mdi-history"
                   @click="$router.push('/scan-history')"
-                  class="view-all-btn mr-2"
+                  class="view-all-btn"
                 >
                   View All Scans
                 </v-btn>
-                
-                <v-pagination
-                  v-model="currentPage"
-                  :length="totalPages"
-                  :total-visible="3"
-                  density="comfortable"
-                  @update:model-value="changePage"
-                  class="ml-2"
-                ></v-pagination>
-              </div>
+              </v-card-actions>
             </v-card>
           </v-container>
         </div>
@@ -732,8 +736,35 @@ onMounted(async () => {
   border-radius: 12px;
 }
 
-.scan-history-card .v-pagination {
-  justify-content: flex-end;
+.scan-list-container {
+  overflow-x: auto;
+  max-width: 100%;
+  /* Custom scrollbar styling */
+  scrollbar-width: thin;
+  scrollbar-color: rgba(94, 121, 98, 0.5) transparent;
+}
+
+.scan-list-container::-webkit-scrollbar {
+  height: 8px;
+}
+
+.scan-list-container::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.scan-list-container::-webkit-scrollbar-thumb {
+  background-color: rgba(94, 121, 98, 0.5);
+  border-radius: 4px;
+}
+
+.scan-list {
+  min-width: min-content;
+  padding: 0;
+}
+
+.scan-item {
+  width: 100%;
+  min-width: 300px;
 }
 
 @media (max-width: 600px) {
@@ -749,14 +780,14 @@ onMounted(async () => {
   .scan-history-card {
     border-radius: 16px !important;
   }
+}
 
-  .scan-history-card .d-flex {
-    flex-direction: column;
-    gap: 1rem;
-  }
-  
-  .scan-history-card .v-pagination {
-    justify-content: center;
-  }
+/* Add these new styles */
+.v-pagination {
+  margin: 8px 0;
+}
+
+.scan-list-container {
+  min-height: 300px; /* Prevent layout shift during pagination */
 }
 </style>
