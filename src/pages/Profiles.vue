@@ -9,6 +9,12 @@ const saving = ref(false);
 const { user, loading, error, refresh } = useUserData();
 const userId = localStorage.getItem("user_id"); //kani ang gamita sa pag filter sa mga user.
 
+// Additional loading states
+const profileLoading = ref(true);
+const statsLoading = ref(true);
+const imageLoading = ref(false);
+const scansLoading = ref(true);
+
 console.log(userId);
 // Profile Data
 const username = ref("");
@@ -43,6 +49,8 @@ const fetchUserInfo = async () => {
     await fetchUserProfile(user.id);
   } catch (error) {
     console.error("Error fetching user:", error);
+  } finally {
+    profileLoading.value = false;
   }
 };
 
@@ -76,7 +84,7 @@ const uploadProfileImage = async (event: Event) => {
     errorMessage.value = "Please log in to upload a profile image.";
     return;
   }
-
+  imageLoading.value = true;
   try {
     // Validate file type and size
     if (!file.type.startsWith("image/")) {
@@ -128,6 +136,8 @@ const uploadProfileImage = async (event: Event) => {
     console.error("Error uploading image:", error);
     errorMessage.value =
       error instanceof Error ? error.message : "An unknown error occurred.";
+  } finally {
+    imageLoading.value = false;
   }
 };
 
@@ -219,7 +229,8 @@ const usePestStats = () => {
   });
 
   const fetchStats = async (userId: string) => {
-    state.value.loading = true;
+    if (!userId) return;
+    statsLoading.value = true;
     state.value.error = null;
     try {
       const localUserId = localStorage.getItem("user_id");
@@ -254,28 +265,30 @@ const usePestStats = () => {
       // Update state with both counts
       state.value.totalScans = scansData?.length || 0;
       state.value.totalPests = highAlertData?.length || 0; // Use high alert count for total pests
-
     } catch (error) {
       state.value.error =
         error instanceof Error ? error.message : "Failed to fetch stats";
     } finally {
-      state.value.loading = false;
+      statsLoading.value = false;
     }
   };
 
   const fetchRecentScans = async (userId: string) => {
-    state.value.loading = true;
+    if (!userId) return;
+    scansLoading.value = true;
     state.value.error = null;
     try {
       const localUserId = localStorage.getItem("user_id");
-      
+
       // First get total count for pagination
       const { count } = await supabase
-        .from('scan_history')
-        .select('*', { count: 'exact', head: true })
-        .eq('user_id', localUserId);
+        .from("scan_history")
+        .select("*", { count: "exact", head: true })
+        .eq("user_id", localUserId);
 
-      state.value.totalPages = Math.ceil((count || 0) / state.value.itemsPerPage);
+      state.value.totalPages = Math.ceil(
+        (count || 0) / state.value.itemsPerPage
+      );
 
       // Calculate offset
       const offset = (state.value.currentPage - 1) * state.value.itemsPerPage;
@@ -312,7 +325,7 @@ const usePestStats = () => {
       state.value.error =
         error instanceof Error ? error.message : "Failed to fetch recent scans";
     } finally {
-      state.value.loading = false;
+      scansLoading.value = false;
     }
   };
 
@@ -391,12 +404,11 @@ onMounted(async () => {
 });
 </script>
 
-
 <template>
   <LayoutWrapper>
     <template #content>
       <v-container class="profile-page pa-4" fluid>
-        <!-- Loading State -->
+        <!-- Main Loading State -->
         <v-overlay v-if="loading" contained class="profile-overlay">
           <v-progress-circular
             indeterminate
@@ -416,8 +428,8 @@ onMounted(async () => {
 
         <!-- Main Content -->
         <div v-else class="profile-content">
-          <!-- Profile Header -->
-          <v-sheet class="profile-header" rounded="lg">
+          <!-- Profile Header with Loading -->
+      <v-sheet class="profile-header" rounded="lg">
             <v-container class="py-2">
               <v-row align="center" no-gutters>
                 <v-col
@@ -427,7 +439,12 @@ onMounted(async () => {
                   class="text-center text-sm-start ps-sm-4"
                 >
                   <div class="avatar-wrapper d-inline-block">
-                    <v-avatar size="120" class="profile-avatar">
+                    <v-skeleton-loader
+                      v-if="profileLoading"
+                      type="avatar"
+                      size="120"
+                    ></v-skeleton-loader>
+                    <v-avatar v-else size="120" class="profile-avatar">
                       <v-img :src="profileImage" cover>
                         <template v-slot:placeholder>
                           <v-row
@@ -456,12 +473,21 @@ onMounted(async () => {
                   class="text-center text-sm-start ps-sm-2"
                 >
                   <div>
-                    <h2 class="text-h4 font-weight-bold text-white mb-1">
-                      {{ username }}
-                    </h2>
-                    <p class="text-caption text-white mb-2">
-                      {{ email }}
-                    </p>
+                    <template v-if="profileLoading">
+                      <v-list-item v-for="n in 1" :key="n">
+                        <v-skeleton-loader
+                          type="text"
+                        ></v-skeleton-loader>
+                      </v-list-item>
+                    </template>
+                    <template v-else>
+                      <h2 class="text-h4 font-weight-bold text-white mb-1">
+                        {{ username }}
+                      </h2>
+                      <p class="text-caption text-white mb-2">
+                        {{ email }}
+                      </p>
+                    </template>
                     <v-btn
                       prepend-icon="mdi-account-edit"
                       variant="tonal"
@@ -469,6 +495,7 @@ onMounted(async () => {
                       class="edit-profile-btn"
                       @click="dialog = true"
                       size="x-small"
+                      :disabled="profileLoading"
                     >
                       Edit Profile
                     </v-btn>
@@ -477,34 +504,37 @@ onMounted(async () => {
               </v-row>
             </v-container>
           </v-sheet>
-          <!-- Stats Cards -->
+
+          <!-- Stats Cards with Loading -->
           <v-container class="py-4">
             <v-row dense>
               <v-col cols="6" sm="4">
-                <v-card class="stat-card" elevation="0">
-                  <v-card-text class="text-center">
-                    <v-icon color="success" size="36" class="mb-2"
-                      >mdi-leaf</v-icon
-                    >
-                    <div class="text-h5 font-weight-bold">{{ totalScans }}</div>
-                    <div class="text-caption">Total Scans</div>
+                <v-card class="stat-card text-center" elevation="0">
+                  <v-card-text>
+                    <v-skeleton-loader v-if="statsLoading" type="paragraph"></v-skeleton-loader>
+                    <template v-else>
+                      <v-icon color="success" size="36" class="mb-2">mdi-leaf</v-icon>
+                      <div class="text-h5 font-weight-bold">{{ totalScans }}</div>
+                      <div class="text-caption">Total Scans</div>
+                    </template>
                   </v-card-text>
                 </v-card>
               </v-col>
               <v-col cols="6" sm="4">
-                <v-card class="stat-card" elevation="0">
-                  <v-card-text class="text-center">
-                    <v-icon color="warning" size="36" class="mb-2"
-                      >mdi-bug</v-icon
-                    >
-                    <div class="text-h5 font-weight-bold">{{ totalPests }}</div>
-                    <div class="text-caption">High Alert Pests</div>
+                <v-card class="stat-card text-center" elevation="0">
+                  <v-card-text>
+                    <v-skeleton-loader v-if="statsLoading" type="paragraph"></v-skeleton-loader>
+                    <template v-else>
+                      <v-icon color="warning" size="36" class="mb-2">mdi-bug</v-icon>
+                      <div class="text-h5 font-weight-bold">{{ totalPests }}</div>
+                      <div class="text-caption">High Alert Pests</div>
+                    </template>
                   </v-card-text>
                 </v-card>
               </v-col>
             </v-row>
 
-            <!-- Recent Scans -->
+            <!-- Recent Scans with Loading -->
             <v-card class="mt-4 scan-history-card" elevation="0">
               <v-card-title class="d-flex align-center py-3 px-4">
                 <v-icon color="success" class="mr-2">mdi-history</v-icon>
@@ -514,29 +544,38 @@ onMounted(async () => {
               <v-divider></v-divider>
 
               <v-list class="scan-list">
-                <v-list-item
-                  v-for="scan in recentScans"
-                  :key="scan.id"
-                  :subtitle="formatDate(scan.date)"
-                  class="scan-item"
-                >
-                  <template v-slot:prepend>
-                    <v-avatar size="40" color="success" class="mr-3">
-                      <v-icon color="white">mdi-bug</v-icon>
-                    </v-avatar>
-                  </template>
-                  <v-list-item-title class="font-weight-medium">
-                    {{ scan.pestType }}
-                    <v-chip
-                      :color="getSeverityColor(scan.Severity)"
-                      size="x-small"
-                      class="ml-2"
-                      variant="tonal"
-                    >
-                      {{ scan.Severity }}
-                    </v-chip>
-                  </v-list-item-title>
-                </v-list-item>
+                <template v-if="scansLoading">
+                  <v-list-item v-for="n in 1" :key="n">
+                    <v-skeleton-loader
+                      type="list-item-avatar"
+                    ></v-skeleton-loader>
+                  </v-list-item>
+                </template>
+                <template v-else>
+                  <v-list-item
+                    v-for="scan in recentScans"
+                    :key="scan.id"
+                    :subtitle="formatDate(scan.date)"
+                    class="scan-item"
+                  >
+                    <template v-slot:prepend>
+                      <v-avatar size="40" color="success" class="mr-3">
+                        <v-icon color="white">mdi-bug</v-icon>
+                      </v-avatar>
+                    </template>
+                    <v-list-item-title class="font-weight-medium">
+                      {{ scan.pestType }}
+                      <v-chip
+                        :color="getSeverityColor(scan.Severity)"
+                        size="x-small"
+                        class="ml-2"
+                        variant="tonal"
+                      >
+                        {{ scan.Severity }}
+                      </v-chip>
+                    </v-list-item-title>
+                  </v-list-item>
+                </template>
               </v-list>
 
               <v-divider></v-divider>
@@ -549,11 +588,13 @@ onMounted(async () => {
                   prepend-icon="mdi-history"
                   @click="$router.push('/scan-history')"
                   class="view-all-btn mr-2"
+                  :disabled="scansLoading"
                 >
                   View All Scans
                 </v-btn>
-                
+
                 <v-pagination
+                  v-if="!scansLoading"
                   v-model="currentPage"
                   :length="totalPages"
                   :total-visible="3"
@@ -572,16 +613,15 @@ onMounted(async () => {
             <v-card-title class="text-h6 pa-4">Edit Profile</v-card-title>
             <v-card-text>
               <v-form @submit.prevent="saveProfile">
-                <!-- Existing fields -->
                 <v-text-field
                   v-model="username"
                   label="Username"
                   prepend-inner-icon="mdi-account"
                   variant="outlined"
                   density="comfortable"
+                  :disabled="saving"
                 ></v-text-field>
 
-                <!-- New Password Fields -->
                 <v-text-field
                   v-model="currentPassword"
                   label="Current Password (required for password change)"
@@ -589,6 +629,7 @@ onMounted(async () => {
                   prepend-inner-icon="mdi-lock"
                   variant="outlined"
                   density="comfortable"
+                  :disabled="saving"
                 ></v-text-field>
 
                 <v-text-field
@@ -600,9 +641,9 @@ onMounted(async () => {
                   density="comfortable"
                   hint="Leave blank to keep current password"
                   persistent-hint
+                  :disabled="saving"
                 ></v-text-field>
 
-                <!-- Existing file input -->
                 <v-file-input
                   accept="image/*"
                   label="Profile Picture"
@@ -611,10 +652,10 @@ onMounted(async () => {
                   @change="uploadProfileImage"
                   density="comfortable"
                   :error-messages="errorMessage"
-                  :loading="loading"
+                  :loading="imageLoading"
+                  :disabled="saving || imageLoading"
                 ></v-file-input>
               </v-form>
-              <!-- Error Message -->
               <v-alert
                 v-if="errorMessage"
                 type="error"
@@ -626,7 +667,12 @@ onMounted(async () => {
             </v-card-text>
             <v-card-actions class="pa-4">
               <v-spacer></v-spacer>
-              <v-btn color="grey" variant="tonal" @click="dialog = false">
+              <v-btn
+                color="grey"
+                variant="tonal"
+                @click="dialog = false"
+                :disabled="saving"
+              >
                 Cancel
               </v-btn>
               <v-btn
@@ -754,9 +800,21 @@ onMounted(async () => {
     flex-direction: column;
     gap: 1rem;
   }
-  
+
   .scan-history-card .v-pagination {
     justify-content: center;
   }
+}
+
+:deep(.v-skeleton-loader__article) {
+  background: rgba(255, 255, 255, 0.1) !important;
+}
+
+:deep(.v-skeleton-loader__image) {
+  background: rgba(255, 255, 255, 0.1) !important;
+}
+
+:deep(.v-skeleton-loader__text) {
+  background: rgba(255, 255, 255, 0.1) !important;
 }
 </style>
