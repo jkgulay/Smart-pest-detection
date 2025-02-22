@@ -31,7 +31,11 @@
                   <v-avatar size="70" class="profile_avatar">
                     <v-img :src="profileImage" cover height="100%">
                       <template v-slot:placeholder>
-                        <v-row class="fill-height" align="center" justify="center">
+                        <v-row
+                          class="fill-height"
+                          align="center"
+                          justify="center"
+                        >
                           <v-progress-circular
                             indeterminate
                             color="success"
@@ -55,7 +59,13 @@
             sm="6"
             md="4"
           >
+            <v-skeleton-loader
+              v-if="statsLoading"
+              type="card"
+              class="rounded-lg dashboard-card"
+            ></v-skeleton-loader>
             <v-card
+              v-else
               class="rounded-lg dashboard-card"
               elevation="0"
               :class="stat.color"
@@ -78,7 +88,13 @@
         <!-- Time Filter -->
         <v-row>
           <v-col cols="12">
+            <v-skeleton-loader
+              v-if="statsLoading"
+              type="card"
+              class="rounded-lg dashboard-card"
+            ></v-skeleton-loader>
             <v-card
+              v-else
               class="rounded-lg dashboard-card"
               elevation="0"
               text-align="center"
@@ -110,7 +126,12 @@
         <!-- Chart Section -->
         <v-row class="mb-15">
           <v-col cols="12">
-            <v-card class="rounded-lg dashboard-card" elevation="0">
+            <v-skeleton-loader
+              v-if="statsLoading"
+              type="card"
+              class="rounded-lg dashboard-card"
+            ></v-skeleton-loader>
+            <v-card v-else class="rounded-lg dashboard-card" elevation="0">
               <v-card-title class="px-4 pt-4">
                 Scan Activity
                 <v-spacer></v-spacer>
@@ -119,9 +140,9 @@
                 </span>
               </v-card-title>
               <v-card-text>
-                <v-chart 
-                  class="chart" 
-                  :option="chartOption" 
+                <v-chart
+                  class="chart"
+                  :option="chartOption"
                   :autoresize="true"
                 />
               </v-card-text>
@@ -134,10 +155,10 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from "vue";
-import * as echarts from 'echarts/core';
-import { CanvasRenderer } from 'echarts/renderers';
-import { BarChart } from 'echarts/charts';
+import { ref, computed, onMounted } from "vue";
+import * as echarts from "echarts/core";
+import { CanvasRenderer } from "echarts/renderers";
+import { BarChart } from "echarts/charts";
 import { useScanResultStore } from "@/stores/scanResultStore";
 import { SupabaseClient } from "@supabase/supabase-js";
 import {
@@ -145,9 +166,9 @@ import {
   TooltipComponent,
   LegendComponent,
   TitleComponent,
-  DatasetComponent
-} from 'echarts/components';
-import VChart from 'vue-echarts';
+  DatasetComponent,
+} from "echarts/components";
+import VChart from "vue-echarts";
 import {
   mdiClockOutline,
   mdiCalendarMonth,
@@ -165,16 +186,16 @@ echarts.use([
   TooltipComponent,
   LegendComponent,
   TitleComponent,
-  DatasetComponent
+  DatasetComponent,
 ]);
 
 import { supabase } from "@/stores/authUser";
 
 const fetchUserInfo = async () => {
   try {
-    const { data: userData, error } = await supabase.auth.getUser();
+    const { data: userData, error } = await supabase.auth.getUser ();
     if (error) throw error;
-    if (!userData?.user) throw new Error("User not authenticated");
+    if (!userData?.user) throw new Error("User  not authenticated");
 
     const authUserId = userData.user.id;
     email.value = userData.user.email || "";
@@ -230,7 +251,9 @@ const totalScans = computed(() => {
 });
 
 const username = ref("");
-const profileImage = ref("https://touhyblbobrrtoebgkzb.supabase.co/storage/v1/object/public/profiles/avatars/user.png");
+const profileImage = ref(
+  "https://touhyblbobrrtoebgkzb.supabase.co/storage/v1/object/public/profiles/avatars/user.png"
+);
 const selectedTimeframe = ref<Timeframe>("day");
 const email = ref("");
 
@@ -253,11 +276,13 @@ const stats = ref<StatCard[]>([
   },
 ]);
 
+const statsLoading = ref(true);
+
 const loadStats = async (
   authUserId: string,
   supabaseClient: SupabaseClient
 ): Promise<void> => {
-  const statsData = await fetchUserScanStats(authUserId, supabaseClient);
+  const statsData = await fetchUserScanStats (authUserId, supabaseClient);
 
   if (statsData) {
     stats.value = [
@@ -277,6 +302,7 @@ const loadStats = async (
       },
     ];
   }
+  statsLoading.value = false; // Set loading to false after fetching stats
 };
 
 const timeframeOptions: TimeframeOption[] = [
@@ -298,62 +324,68 @@ const chartData = ref<Record<Timeframe, ChartData>>({
 
 const chartOption = computed(() => ({
   tooltip: {
-    trigger: 'axis',
+    trigger: "axis",
     axisPointer: {
-      type: 'shadow'
-    }
+      type: "shadow",
+    },
   },
   grid: {
-    left: '3%',
-    right: '4%',
-    bottom: '3%',
-    containLabel: true
+    left: "3%",
+    right: "4%",
+    bottom: "3%",
+    containLabel: true,
   },
-  xAxis: [{
-    type: 'category',
-    data: chartData.value[selectedTimeframe.value].labels,
-    axisTick: {
-      alignWithLabel: true
+  xAxis: [
+    {
+      type: "category",
+      data: chartData.value[selectedTimeframe.value].labels,
+      axisTick: {
+        alignWithLabel: true,
+      },
+      axisLabel: {
+        color: "#ffffff",
+        rotate: selectedTimeframe.value === "day" ? 0 : 30,
+        interval: selectedTimeframe.value === "hour" ? 1 : 0,
+        formatter: (value: string) => {
+          if (selectedTimeframe.value === "hour") {
+            const hour = parseInt(value);
+            return hour % 2 === 0 ? value : "";
+          }
+          return value;
+        },
+      },
     },
-    axisLabel: {
-      color: '#ffffff',
-      rotate: selectedTimeframe.value === 'day' ? 0 : 30,
-      interval: selectedTimeframe.value === 'hour' ? 1 : 0, // Show every other label for hours
-      formatter: (value: string) => {
-        if (selectedTimeframe.value === 'hour') {
-          const hour = parseInt(value);
-          return hour % 2 === 0 ? value : ''; // Only show even hours
-        }
-        return value;
-      }
-    }
-  }],
-  yAxis: [{
-    type: 'value',
-    axisLabel: {
-      color: '#ffffff'
-    }
-  }],
-  series: [{
-    name: 'Scans',
-    type: 'bar',
-    barWidth: '60%',
-    data: chartData.value[selectedTimeframe.value].data,
-    itemStyle: {
-      color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
-        { offset: 0, color: '#ffffff' },
-        { offset: 1, color: 'rgba(255, 255, 255, 0.8)' }
-      ])
+  ],
+  yAxis: [
+    {
+      type: "value",
+      axisLabel: {
+        color: "#ffffff",
+      },
     },
-    emphasis: {
+  ],
+  series: [
+    {
+      name: "Scans",
+      type: "bar",
+      barWidth: "60%",
+      data: chartData.value[selectedTimeframe.value].data,
       itemStyle: {
         color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
-          { offset: 0, color: '#ffffff' },
-          { offset: 1, color: 'rgba(255, 255, 255, 0.9)' }
-        ])
-      }
-    }
-  }]
+          { offset: 0, color: "#ffffff" },
+          { offset: 1, color: "rgba(255, 255, 255, 0.8)" },
+        ]),
+      },
+      emphasis: {
+        itemStyle: {
+          color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+            { offset: 0, color: "#ffffff" },
+            { offset: 1, color: "rgba(255, 255, 255, 0.9)" },
+          ]),
+        },
+      },
+    },
+  ],
 }));
 
 const fetchUserProfileId = async (
@@ -386,7 +418,6 @@ const fetchUserScanStats = async (
     const today = new Date();
     today.setHours(0, 0, 0, 0);
 
-    // Fetch today's scans
     const { data: todayScans, error: todayError } = await supabaseClient
       .from("scan_history")
       .select("id")
@@ -396,7 +427,6 @@ const fetchUserScanStats = async (
 
     if (todayError) throw todayError;
 
-    // Fetch recent scans with confidence
     const { data: statsData, error: statsError } = await supabaseClient
       .from("pest_scans")
       .select("confidence")
@@ -407,7 +437,7 @@ const fetchUserScanStats = async (
 
     const scansTodayCount = todayScans?.length ?? 0;
     const successRate =
-      statsData?.reduce((acc, scan) => acc + (scan.confidence || 0), 0) /
+      statsData?.reduce((acc,scan) => acc + (scan.confidence || 0), 0) /
       (statsData?.length || 1);
     const totalScans = statsData?.length ?? 0;
 
@@ -434,7 +464,7 @@ const loadChartData = async (
     const startDate = new Date();
     startDate.setMonth(startDate.getMonth() - 12);
 
-    const { data, error } = await supabaseClient
+ const { data, error } = await supabaseClient
       .from("scan_history")
       .select("created_at")
       .eq("user_id", profileId)
@@ -444,12 +474,10 @@ const loadChartData = async (
 
     if (error) throw error;
 
-    // Initialize data arrays
     const hourlyData = new Array(24).fill(0);
     const dailyData = new Array(7).fill(0);
     const monthlyData = new Array(12).fill(0);
 
-    // Process scan data
     data?.forEach((scan) => {
       const date = new Date(scan.created_at);
       hourlyData[date.getHours()]++;
@@ -457,7 +485,6 @@ const loadChartData = async (
       monthlyData[date.getMonth()]++;
     });
 
-    // Update chart data
     chartData.value = {
       hour: {
         labels: Array.from(
