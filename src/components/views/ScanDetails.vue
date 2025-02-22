@@ -43,13 +43,13 @@
                 </div>
   
                 <div class="detail-item col-span-2">
-                  <span class="text-subtitle-2 text-medium-emphasis">Analysis</span>
-                  <div class="text-body-1" v-html="scan.pest_scan.comment"></div>
+                  <span class="text-subtitle-2 text-medium-emphasis">Ai Deepthink</span>
+                  <div class="text-body-1" v-html="scan.pest_scan.recommended_action"></div>
                 </div>
-  
+
                 <div class="detail-item col-span-2">
                   <span class="text-subtitle-2 text-medium-emphasis">Recommended Action</span>
-                  <div class="text-body-1" v-html="scan.pest_scan.recommended_action"></div>
+                  <div class="text-body-1" v-html="scan.pest_scan.comment"></div>
                 </div>
               </div>
             </v-col>
