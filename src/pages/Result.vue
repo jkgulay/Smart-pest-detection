@@ -33,6 +33,7 @@ const getIssueColor = (confidence: number): string => {
 };
 
 const getOverallSeverityColor = (severity: string): string => {
+  if (severity === 'No pests detected') return "success";
   const colors: Record<string, string> = {
     High: "error",
     Medium: "warning",
@@ -45,6 +46,7 @@ const getOverallSeverity = (): string => {
   const severityLevels = recentScans.value.map(scan => scan.alert_lvl);
   if (severityLevels.includes("High")) return "High";
   if (severityLevels.includes("Medium")) return "Medium";
+  if (severityLevels.length === 0 || recentScans.value.every(scan => scan.confidence < 0.84)) return "No pests detected";
   return "Low";
 };
 
@@ -63,6 +65,10 @@ const getAIAnalysis = (): string => {
     return "Analysis shows evidence of leaf spot disease. This fungal infection can spread to other leaves and plants if not treated promptly. The affected areas may expand and eventually cause leaf drop.";
   }
 
+  if (issues.length === 0 || recentScans.value.every(scan => scan.confidence < 0.84)) {
+    return "No pests detected.";
+  }
+
   return "I've identified potential issues with your plant. Please review the detailed findings below for specific concerns and recommended actions.";
 };
 
@@ -75,6 +81,10 @@ const getRecommendedAction = (): string => {
 
   if (issues.includes("leaf-spot")) {
     return "Remove and dispose of affected leaves, improve air circulation around the plant, and avoid overhead watering. Apply an appropriate fungicide and adjust watering practices to keep leaves dry.";
+  }
+
+  if (recentScans.value.every(scan => scan.confidence < 0.84)) {
+    return "No pests detected.";
   }
 
   return "Monitor the plant closely for any changes and consider consulting a plant specialist for a detailed treatment plan.";
@@ -383,7 +393,7 @@ onMounted(async () => {
                       </div>
                       
                     </v-alert>
-                    <div class="text-body-2 pa-4 mt-2" style="background-color:#CCCCCC;" v-html="userScans?.recommended_action"></div>
+                    <div class="text-body-2 pa-4 mt-2" style="background-color:#CCCCCC;" v-html="!userScans?.recommended_action ? 'No pests detected' : userScans?.recommended_action"></div>
                   </v-card-text>
                 </v-card>
                 <v-card
@@ -397,7 +407,7 @@ onMounted(async () => {
                       <v-icon color="primary" size="24" class="mr-2">mdi-brain</v-icon>
                       <span class="text-h6">AI Detailed Analysis</span>
                     </div>
-                    <div class="text-body-1 mb-3" v-html="userScans?.comment"></div>
+                    <div class="text-body-1 mb-3" v-html="userScans?.name === 'No pests detected' || !userScans?.comment ? 'No pests detected' : userScans?.comment"></div>
                   </v-card-text>
                 </v-card>
               </v-card-text>

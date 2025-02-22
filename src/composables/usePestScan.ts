@@ -1,4 +1,3 @@
-
 import { ref } from 'vue';
 import { supabase } from '@/lib/supabase';
 import { useImageUploader } from '@/composables/useImageUploader';
@@ -81,19 +80,22 @@ export function usePestScan() {
 
       const scanResult = await useImageUploader(retrievedFile) as ScanResult;
 
-      // Get both AI responses
-      const deepSeek = useDeepSeek();
-      const llama = useLlama();
-      
-      const recommendedAction = await deepSeek.getRecommendedAction(scanResult?.class || 'Unknown Pest');
-      const detailedAnalysis = await llama.getPestAdvice(scanResult?.class || 'Unknown Pest');
+      let recommendedAction = '';
+      let detailedAnalysis = '';
+
+      if (scanResult.class !== 'No pests detected' && scanResult.confidence >= 0.84) {
+        const deepSeek = useDeepSeek();
+        const llama = useLlama();
+        recommendedAction = await deepSeek.getRecommendedAction(scanResult.class);
+        detailedAnalysis = await llama.getPestAdvice(scanResult.class);
+      }
 
       const { data: scanData, error: insertError } = await supabase
         .from('pest_scans')
         .insert([{ 
           image_path: imageUrl,
-          name: scanResult?.class || 'Unknown',
-          confidence: scanResult?.confidence || 0,
+          name: scanResult.class,
+          confidence: scanResult.confidence,
           alert_lvl: getAlertLevel(),
           comment: detailedAnalysis,
           recommended_action: recommendedAction
