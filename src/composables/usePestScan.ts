@@ -22,7 +22,8 @@ export function usePestScan() {
     return data.id;
   };
 
-  const getAlertLevel = (): string => {
+  const getAlertLevel = (confidence: number): string => {
+    if (confidence < 0.84) return "No pests detected";
     const levels = ['High', 'Medium', 'Low'];
     const randomIndex = Math.floor(Math.random() * levels.length);
     return levels[randomIndex];
@@ -96,7 +97,7 @@ export function usePestScan() {
           image_path: imageUrl,
           name: scanResult.class,
           confidence: scanResult.confidence,
-          alert_lvl: getAlertLevel(),
+          alert_lvl: getAlertLevel(scanResult.confidence),
           comment: detailedAnalysis,
           recommended_action: recommendedAction
         }])

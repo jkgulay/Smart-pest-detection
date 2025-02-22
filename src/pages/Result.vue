@@ -47,7 +47,7 @@ const getOverallSeverity = (): string => {
   if (severityLevels.includes("High")) return "High";
   if (severityLevels.includes("Medium")) return "Medium";
   if (severityLevels.length === 0 || recentScans.value.every(scan => scan.confidence < 0.84)) return "No pests detected";
-  return "Low";
+  return "";
 };
 
 const getAIAnalysis = (): string => {
