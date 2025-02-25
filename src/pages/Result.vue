@@ -3,6 +3,7 @@ import { ref, onMounted } from "vue";
 import LayoutWrapper from "@/layouts/LayoutWrapper.vue";
 import Loader from "@/components/common/Loader.vue";
 import { supabase } from "@/lib/supabase";
+import { usePestInfo } from '@/composables/usePestInfo';
 
 interface PestScan {
   id: number;
@@ -216,6 +217,8 @@ const onImageLoaded = (): void => {
   imageLoading.value = false;
 };
 
+const { formatPestInfo } = usePestInfo();
+
 onMounted(async () => {
   const data = await fetchUserScans();
   userScans.value = data;
@@ -386,7 +389,7 @@ onMounted(async () => {
                       density="comfortable"
                     >
                       <div class="text-subtitle-2 font-weight-medium">
-                        Recommended Action
+                       Pest Info
                       </div>
                       <div class="text-body-2">
                         {{ getRecommendedAction() }}
@@ -407,7 +410,11 @@ onMounted(async () => {
                       <v-icon color="primary" size="24" class="mr-2">mdi-brain</v-icon>
                       <span class="text-h6">AI Detailed Analysis</span>
                     </div>
-                    <div class="text-body-1 mb-3" v-html="userScans?.name === 'No pests detected' || !userScans?.comment ? 'No pests detected' : userScans?.comment"></div>
+                    <div class="text-body-1 mb-3" v-html="
+                      userScans?.name === 'No pests detected' || !userScans?.name
+                        ? 'No pests detected'
+                        : formatPestInfo(userScans.name)
+                    "></div>
                   </v-card-text>
                 </v-card>
               </v-card-text>
