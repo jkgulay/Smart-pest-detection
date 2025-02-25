@@ -4,8 +4,8 @@
     :location="$vuetify.display.mobile ? 'left' : 'left'"
     temporary
   >
-    <div class="text-center pt-10">
-      <v-avatar size="100">
+    <div class="profile-container pt-8">
+      <v-avatar class="profile-avatar" size="100">
         <img
           :src="profileImage"
           alt="Profile Image"
@@ -144,6 +144,7 @@
   >
     <v-app-bar-nav-icon
       variant="text"
+      size="70"
       @click.stop="drawer = !drawer"
     ></v-app-bar-nav-icon>
 
@@ -153,7 +154,7 @@
 
     <v-img
       class="logo pt-1"
-      src="@/assets/5-removebg-preview.png"
+      :src="currentLogo"
       max-width="100"
     ></v-img>
   </v-app-bar>
@@ -165,7 +166,7 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, ref } from "vue";
+import { computed, ref, onMounted } from "vue";
 import { useTheme } from "vuetify";
 import { doLogout } from "@/lib/supabase";
 import router from "@/router";
@@ -177,6 +178,12 @@ const theme = useTheme();
 const isDarkTheme = computed(() => theme.global.current.value.dark);
 const themeIcon = computed(() =>
   isDarkTheme.value ? "mdi-weather-sunny" : "mdi-weather-night"
+);
+const lightLogo = "src/assets/5-removebg-preview.png";
+const darkLogo = "src/assets/7-removebg-preview.png";
+
+const currentLogo = computed(() => 
+  isDarkTheme.value ? darkLogo : lightLogo
 );
 
 function toggleTheme() {
@@ -248,9 +255,54 @@ onMounted(async () => {
   margin-top: 9px;
 }
 
+.profile-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.profile-avatar {
+  border: 3px solid #eaeaea;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+}
+
+.profile-avatar:hover {
+  transform: scale(1.05);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+
+.large-icon {
+  font-size: 1.5rem;
+  width: 42px;
+  height: 42px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.2s ease;
+  transform: scale(1.5);
+}
+
+.large-icon:hover {
+  transform: scale(1.6);
+}
+
+.large-icon :deep(.v-icon) {
+  font-size: 28px;
+}
+
 @media (max-width: 600px) {
   .title {
     font-size: 14px;
+  }
+
+  .large-icon {
+    width: 36px;
+    height: 36px;
+  }
+  
+  .large-icon :deep(.v-icon) {
+    font-size: 24px;
   }
 }
 
