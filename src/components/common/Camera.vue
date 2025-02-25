@@ -3,12 +3,15 @@ import { ref } from "vue";
 import { Camera, CameraResultType, CameraSource } from "@capacitor/camera";
 import { usePestScan } from "@/composables/usePestScan";
 import { useRouter } from "vue-router";
+import { useTheme } from "vuetify";
 
 const selectedImage = ref<string | null>(null);
 const defaultImage = "/src/assets/default/pest1.jpg";
 const { uploadPestScan, uploadError } = usePestScan();
 const isTakingPicture = ref<boolean>(false);
 const router = useRouter();
+const theme = useTheme();
+const isDarkTheme = computed(() => theme.global.current.value.dark);
 
 const takePicture = async (): Promise<void> => {
   try {
@@ -51,16 +54,23 @@ const clearImage = (): void => {
 };
 </script>
 
-
-
 <template>
-  <v-container class="pa-4">
+  <v-container
+    :class="{
+      'pa-4': $vuetify.display.xs,
+      'dark-theme': isDarkTheme,
+    }"
+    fluid
+  >
     <v-card
       class="mx-auto scan-card"
-      :class="{
-        'elevation-8': !isTakingPicture,
-        'elevation-2': isTakingPicture,
-      }"
+      :class="[
+        {
+          'elevation-8': !isTakingPicture,
+          'elevation-2': isTakingPicture,
+        },
+        isDarkTheme ? 'dark-card' : 'light-card',
+      ]"
       max-width="500"
       rounded="lg"
     >
@@ -177,13 +187,30 @@ const clearImage = (): void => {
   </v-container>
 </template>
 
-
-
 <style scoped>
 .pest-scanner-app {
-  background: #8ca189;
   min-height: 100dvh;
   overflow: auto;
+}
+
+.dark-theme {
+  background: #1e2124 !important;
+}
+
+.light-theme {
+  background: #ffffff !important;
+}
+
+.dark-card {
+  background-color: #2d3035 !important;
+  border: 1px solid rgba(80, 80, 80, 0.7) !important;
+  color: #e0e0e0 !important;
+}
+
+.light-card {
+  background-color: #ffffff !important;
+  border: 1px solid rgba(0, 0, 0, 0.1) !important;
+  color: #000000 !important;
 }
 
 .v-container {

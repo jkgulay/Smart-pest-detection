@@ -2,6 +2,7 @@
 import { ref, onMounted, watch, toRefs } from "vue";
 import { useUserData, supabase } from "@/stores/authUser";
 import LayoutWrapper from "@/layouts/LayoutWrapper.vue";
+import { useTheme } from "vuetify";
 
 // State
 const dialog = ref(false);
@@ -14,6 +15,8 @@ const profileLoading = ref(true);
 const statsLoading = ref(true);
 const imageLoading = ref(false);
 const scansLoading = ref(true);
+const theme = useTheme();
+const isDarkTheme = computed(() => theme.global.current.value.dark);
 
 console.log(userId);
 // Profile Data
@@ -407,7 +410,13 @@ onMounted(async () => {
 <template>
   <LayoutWrapper>
     <template #content>
-      <v-container class="profile-page pa-4" fluid>
+      <v-container
+        :class="{
+          'pa-4': $vuetify.display.xs,
+          'dark-theme': isDarkTheme,
+        }"
+        fluid
+      >
         <!-- Main Loading State -->
         <v-overlay v-if="loading" contained class="profile-overlay">
           <v-progress-circular
@@ -429,7 +438,13 @@ onMounted(async () => {
         <!-- Main Content -->
         <div v-else class="profile-content">
           <!-- Profile Header with Loading -->
-      <v-sheet class="profile-header" rounded="lg">
+          <v-sheet
+            :class="[
+              'profile-header',
+              isDarkTheme ? 'dark-card' : 'light-card',
+            ]"
+            rounded="lg"
+          >
             <v-container class="py-2">
               <v-row align="center" no-gutters>
                 <v-col
@@ -475,9 +490,7 @@ onMounted(async () => {
                   <div>
                     <template v-if="profileLoading">
                       <v-list-item v-for="n in 1" :key="n">
-                        <v-skeleton-loader
-                          type="text"
-                        ></v-skeleton-loader>
+                        <v-skeleton-loader type="text"></v-skeleton-loader>
                       </v-list-item>
                     </template>
                     <template v-else>
@@ -509,24 +522,46 @@ onMounted(async () => {
           <v-container class="py-4">
             <v-row dense>
               <v-col cols="6" sm="4">
-                <v-card class="stat-card text-center" elevation="0">
+                <v-card
+                  class="stat-card text-center"
+                  elevation="0"
+                  :class="[isDarkTheme ? 'dark-card' : 'light-card']"
+                >
                   <v-card-text>
-                    <v-skeleton-loader v-if="statsLoading" type="paragraph"></v-skeleton-loader>
+                    <v-skeleton-loader
+                      v-if="statsLoading"
+                      type="paragraph"
+                    ></v-skeleton-loader>
                     <template v-else>
-                      <v-icon color="success" size="36" class="mb-2">mdi-leaf</v-icon>
-                      <div class="text-h5 font-weight-bold">{{ totalScans }}</div>
+                      <v-icon color="success" size="36" class="mb-2"
+                        >mdi-leaf</v-icon
+                      >
+                      <div class="text-h5 font-weight-bold">
+                        {{ totalScans }}
+                      </div>
                       <div class="text-caption">Total Scans</div>
                     </template>
                   </v-card-text>
                 </v-card>
               </v-col>
               <v-col cols="6" sm="4">
-                <v-card class="stat-card text-center" elevation="0">
+                <v-card
+                  class="stat-card text-center"
+                  elevation="0"
+                  :class="[isDarkTheme ? 'dark-card' : 'light-card']"
+                >
                   <v-card-text>
-                    <v-skeleton-loader v-if="statsLoading" type="paragraph"></v-skeleton-loader>
+                    <v-skeleton-loader
+                      v-if="statsLoading"
+                      type="paragraph"
+                    ></v-skeleton-loader>
                     <template v-else>
-                      <v-icon color="warning" size="36" class="mb-2">mdi-bug</v-icon>
-                      <div class="text-h5 font-weight-bold">{{ totalPests }}</div>
+                      <v-icon color="warning" size="36" class="mb-2"
+                        >mdi-bug</v-icon
+                      >
+                      <div class="text-h5 font-weight-bold">
+                        {{ totalPests }}
+                      </div>
                       <div class="text-caption">High Alert Pests</div>
                     </template>
                   </v-card-text>
@@ -535,7 +570,11 @@ onMounted(async () => {
             </v-row>
 
             <!-- Recent Scans with Loading -->
-            <v-card class="mt-4 scan-history-card" elevation="0">
+            <v-card
+              class="mt-4 scan-history-card"
+              elevation="0"
+              :class="[isDarkTheme ? 'dark-card' : 'light-card']"
+            >
               <v-card-title class="d-flex align-center py-3 px-4">
                 <v-icon color="success" class="mr-2">mdi-history</v-icon>
                 Recent Scans
@@ -587,10 +626,9 @@ onMounted(async () => {
                   block
                   prepend-icon="mdi-history"
                   @click="$router.push('/scan-history')"
-                  class="view-all-btn mr-2"
+                  class="view-all-btn"
                   :disabled="scansLoading"
-                >
-                  View All Scans
+                  >View All Scans
                 </v-btn>
 
                 <v-pagination
@@ -609,7 +647,8 @@ onMounted(async () => {
 
         <!-- Edit Profile Dialog -->
         <v-dialog v-model="dialog" max-width="500" class="profile-dialog">
-          <v-card>
+          <v-card :class="[isDarkTheme ? 'dark-card' : 'light-card']"
+            >
             <v-card-title class="text-h6 pa-4">Edit Profile</v-card-title>
             <v-card-text>
               <v-form @submit.prevent="saveProfile">
@@ -695,6 +734,16 @@ onMounted(async () => {
 .pest-scanner-app {
   min-height: 100dvh;
   overflow: auto;
+}
+
+.dark-theme {
+  background: #1e2124 !important;
+}
+
+.dark-card {
+  background-color: #2d3035 !important;
+  border: 1px solid rgba(80, 80, 80, 0.7) !important;
+  color: #e0e0e0 !important;
 }
 
 .v-container {
