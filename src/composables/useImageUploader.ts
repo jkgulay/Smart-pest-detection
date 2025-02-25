@@ -37,10 +37,15 @@ export const useImageUploader = async (imageFile: File) => {
           resolve(result);
         } else {
           const firstPrediction = predictions[0];
-          const result = {
-            class: firstPrediction.class,
-            confidence: firstPrediction.confidence
-          };
+          let result;
+          if (firstPrediction.confidence < 0.84) {
+            result = { class: "No pests detected.", confidence: firstPrediction.confidence };
+          } else {
+            result = {
+              class: firstPrediction.class,
+              confidence: firstPrediction.confidence
+            };
+          }
           scanResultStore.setScanResult([result]);
           resolve(result);
         }

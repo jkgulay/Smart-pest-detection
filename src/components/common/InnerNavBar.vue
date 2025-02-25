@@ -140,13 +140,15 @@
   <v-app-bar
     class="navbar"
     :color="isDarkTheme ? 'dark-navbar' : 'light-navbar'"
-    style="height: 63px"
+    style="height: 70px"
   >
-    <v-app-bar-nav-icon
-      variant="text"
-      size="70"
-      @click.stop="drawer = !drawer"
-    ></v-app-bar-nav-icon>
+  <v-app-bar-nav-icon
+  variant="text"
+  @click.stop="drawer = !drawer"
+  class="large-icon mx-5"
+></v-app-bar-nav-icon>
+
+
 
     <div class="title">Smart-Pest-Detection</div>
 
@@ -253,42 +255,6 @@ onMounted(async () => {
 .logo {
   margin-right: 0;
   margin-top: 9px;
-}
-
-.profile-container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.profile-avatar {
-  border: 3px solid #eaeaea;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  transition: all 0.3s ease;
-}
-
-.profile-avatar:hover {
-  transform: scale(1.05);
-  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
-}
-
-.large-icon {
-  font-size: 1.5rem;
-  width: 42px;
-  height: 42px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: transform 0.2s ease;
-  transform: scale(1.5);
-}
-
-.large-icon:hover {
-  transform: scale(1.6);
-}
-
-.large-icon :deep(.v-icon) {
-  font-size: 28px;
 }
 
 @media (max-width: 600px) {

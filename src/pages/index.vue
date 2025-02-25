@@ -1,4 +1,5 @@
 <template>
+   
   <div id="welcome">
     <v-container>
       <!-- Heading -->
@@ -35,6 +36,7 @@
 import { ref } from 'vue';
 import LoginForm from '@/components/auth/LoginForm.vue';
 import RegisterForm from '@/components/auth/RegisterForm.vue';
+
 
 const showLoginDialog = ref(false);
 const showRegisterDialog = ref(false);

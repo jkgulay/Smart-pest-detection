@@ -7,6 +7,7 @@ export {}
 /* prettier-ignore */
 declare module 'vue' {
   export interface GlobalComponents {
+    3dContainer: typeof import('./components/common/3dContainer.vue')['default']
     AlertNotification: typeof import('./components/common/AlertNotification.vue')['default']
     AppFooter: typeof import('./components/AppFooter.vue')['default']
     BottomBar: typeof import('./components/common/BottomBar.vue')['default']
