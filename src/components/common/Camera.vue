@@ -52,6 +52,12 @@ const takePicture = async (): Promise<void> => {
 const clearImage = (): void => {
   selectedImage.value = null;
 };
+
+const tips = [
+  { icon: 'mdi-light-flood-up', title: 'Good Lighting', subtitle: 'Ensure the plant is well-lit and avoid shadows' },
+  { icon: 'mdi-image-filter-center-focus', title: 'Clear Focus', subtitle: 'Keep the camera steady and close to the affected area' },
+  { icon: 'mdi-leaf', title: 'Affected Areas', subtitle: 'Include both healthy and damaged parts of the plant' }
+];
 </script>
 
 <template>
@@ -124,7 +130,7 @@ const clearImage = (): void => {
           <v-icon start size="24" class="mr-2">
             {{ selectedImage ? "mdi-camera-retake" : "mdi-camera" }}
           </v-icon>
-          {{ selectedImage ? "Scan Again" : "Scan Plant" }}
+          {{ selectedImage ? "Scan Again" : "Scan Pest" }}
         </v-btn>
 
         <v-btn
@@ -154,34 +160,24 @@ const clearImage = (): void => {
       </v-card-actions>
     </v-card>
 
-    <v-card
-      class="mt-4 mx-auto tips-card"
-      max-width="500"
-      variant="outlined"
-      rounded="lg"
-    >
-      <v-list lines="two">
-        <v-list-subheader class="text-primary font-weight-medium">
+    <v-card class="mt-4 mx-auto tips-card" max-width="500" variant="outlined" rounded="lg">
+      <v-list density="compact">
+        <v-list-subheader class="text-primary text-caption font-weight-medium">
           Tips for Best Results
         </v-list-subheader>
 
         <v-list-item
-          prepend-icon="mdi-light-flood-up"
-          title="Good Lighting"
-          subtitle="Ensure the plant is well-lit and avoid shadows"
-        ></v-list-item>
-
-        <v-list-item
-          prepend-icon="mdi-image-filter-center-focus"
-          title="Clear Focus"
-          subtitle="Keep the camera steady and close to the affected area"
-        ></v-list-item>
-
-        <v-list-item
-          prepend-icon="mdi-leaf"
-          title="Affected Areas"
-          subtitle="Include both healthy and damaged parts of the plant"
-        ></v-list-item>
+          v-for="(tip, i) in tips"
+          :key="i"
+          :prepend-icon="tip.icon"
+          :title="tip.title"
+          :subtitle="tip.subtitle"
+          class="text-caption"
+        >
+          <template v-slot:prepend>
+            <v-icon :icon="tip.icon" size="small"></v-icon>
+          </template>
+        </v-list-item>
       </v-list>
     </v-card>
   </v-container>
