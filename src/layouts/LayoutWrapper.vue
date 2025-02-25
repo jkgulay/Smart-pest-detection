@@ -1,6 +1,7 @@
 <template>
   <v-app>
     <InnerNavBar />
+   
     <v-main>
       <slot name="content"></slot>
     </v-main>
@@ -11,6 +12,7 @@
 <script lang="ts" setup>
 import InnerNavBar from "@/components/common/InnerNavBar.vue";
 import BottomBar from "@/components/common/BottomBar.vue";
+// import Animate from "@/components/common/3dContainer.vue";
 </script>
 
 <style scoped>
