@@ -4,8 +4,8 @@
     :location="$vuetify.display.mobile ? 'left' : 'left'"
     temporary
   >
-    <div class="profile-container pt-8">
-      <v-avatar class="profile-avatar" size="100">
+    <div class="text-center pt-8">
+      <v-avatar size="100">
         <img
           :src="profileImage"
           alt="Profile Image"

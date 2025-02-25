@@ -1,12 +1,19 @@
 <template>
   <LayoutWrapper>
     <template #content>
-      <v-container class="pa-4">
+      <v-container
+        :class="{
+          'pa-4': $vuetify.display.xs,
+          'dark-theme': isDarkTheme,
+        }"
+        fluid
+      >
         <!-- Search and Filter Section -->
         <v-card
           class="mx-auto mb-4 search-filter-card"
           max-width="500"
           rounded="lg"
+          :class="[isDarkTheme ? 'dark-card' : 'light-card']"
         >
           <v-card-text>
             <v-text-field
@@ -55,7 +62,7 @@
                   </v-btn>
                 </template>
 
-                <v-card min-width="300" class="filter-menu">
+                <v-card min-width="300" class="filter-menu" :class="[isDarkTheme ? 'dark-card' : 'light-card']">
                   <v-card-title class="text-subtitle-1">Filters</v-card-title>
                   <v-card-text>
                     <v-select
@@ -95,6 +102,7 @@
           max-width="500"
           rounded="lg"
           :loading="loading"
+          :class="[isDarkTheme ? 'dark-card' : 'light-card']"
         >
           <v-list class="py-2 history-list">
             <template v-if="filteredScans.length > 0">
@@ -102,7 +110,9 @@
                 v-for="scan in filteredScans"
                 :key="scan.id"
                 :title="scan.pest_scan.name"
-                :subtitle="`${formatDate(scan.created_at)} - by ${scan.user?.username || 'Unknown User'}`"
+                :subtitle="`${formatDate(scan.created_at)} - by ${
+                  scan.user?.username || 'Unknown User'
+                }`"
                 class="history-item"
                 link
                 @click="viewScanDetails(scan)"
@@ -180,6 +190,7 @@ import { ref, computed, onMounted, onUnmounted } from "vue";
 import ScanDetailsDialog from "./ScanDetails.vue";
 import LayoutWrapper from "@/layouts/LayoutWrapper.vue";
 import { supabase } from "@/lib/supabase";
+import { useTheme } from "vuetify";
 
 interface PestScan {
   id: number;
@@ -217,6 +228,9 @@ const isDialogOpen = ref(false);
 const filterMenu = ref(false);
 const currentPage = ref(1);
 const totalPages = ref(1);
+
+const theme = useTheme();
+const isDarkTheme = computed(() => theme.global.current.value.dark);
 
 // Replace the static itemsPerPage with a computed property
 const itemsPerPage = computed(() => {
@@ -260,33 +274,35 @@ const fetchScanHistory = async () => {
   try {
     // Get total count of all scans
     const { count } = await supabase
-      .from('scan_history')
-      .select('*', { count: 'exact', head: true });
+      .from("scan_history")
+      .select("*", { count: "exact", head: true });
 
     totalPages.value = Math.ceil((count || 0) / itemsPerPage.value); // Update to use .value
 
     // Fetch paginated data with both pest_scans and users data
     const { data, error } = await supabase
-      .from('scan_history')
-      .select(`
+      .from("scan_history")
+      .select(
+        `
         *,
         pest_scan:pest_scans (*),
         user:users (username)
-      `)
-      .order('created_at', { ascending: false })
+      `
+      )
+      .order("created_at", { ascending: false })
       .range(
         (currentPage.value - 1) * itemsPerPage.value, // Update to use .value
-        currentPage.value * itemsPerPage.value - 1    // Update to use .value
+        currentPage.value * itemsPerPage.value - 1 // Update to use .value
       );
 
     if (error) {
-      console.error('Error fetching scan history:', error);
+      console.error("Error fetching scan history:", error);
       return;
     }
 
     scans.value = data || [];
   } catch (error) {
-    console.error('Error:', error);
+    console.error("Error:", error);
   } finally {
     loading.value = false;
   }
@@ -294,7 +310,7 @@ const fetchScanHistory = async () => {
 
 const loadMore = async () => {
   if (loadingMore.value || !hasMore.value) return;
-  
+
   loadingMore.value = true;
   currentPage.value++;
   await fetchScanHistory();
@@ -316,9 +332,8 @@ const filteredScans = computed(() => {
   // Apply search filter
   if (searchQuery.value) {
     const query = searchQuery.value.toLowerCase();
-    result = result.filter(
-      (scan) =>
-        scan.pest_scan.name.toLowerCase().includes(query)
+    result = result.filter((scan) =>
+      scan.pest_scan.name.toLowerCase().includes(query)
     );
   }
 
@@ -326,7 +341,8 @@ const filteredScans = computed(() => {
   if (filters.value.severity !== "all") {
     result = result.filter(
       (scan) =>
-        scan.pest_scan.alert_lvl.toLowerCase() === filters.value.severity.toLowerCase()
+        scan.pest_scan.alert_lvl.toLowerCase() ===
+        filters.value.severity.toLowerCase()
     );
   }
 
@@ -342,7 +358,9 @@ const filteredScans = computed(() => {
   result.sort((a, b) => {
     switch (sortBy.value) {
       case "date":
-        return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+        return (
+          new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+        );
       case "severity":
         return b.pest_scan.alert_lvl.localeCompare(a.pest_scan.alert_lvl);
       case "name":
@@ -357,12 +375,12 @@ const filteredScans = computed(() => {
 
 onMounted(() => {
   fetchScanHistory();
-  window.addEventListener('resize', handleResize);
+  window.addEventListener("resize", handleResize);
 });
 
 // Clean up the event listener
 onUnmounted(() => {
-  window.removeEventListener('resize', handleResize);
+  window.removeEventListener("resize", handleResize);
 });
 
 // Methods
@@ -421,6 +439,15 @@ const handleResize = () => {
 .history-card {
   background: rgba(255, 255, 255, 0.95);
   border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.dark-theme {
+  background: #1e2124 !important;
+}
+.dark-card {
+  background-color: #2d3035 !important;
+  border: 1px solid rgba(80, 80, 80, 0.7) !important;
+  color: #e0e0e0 !important;
 }
 
 .history-list {

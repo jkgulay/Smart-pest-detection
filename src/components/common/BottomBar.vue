@@ -4,6 +4,9 @@
     color="#526E48"
     grow
     class="custom-nav"
+    :class="{
+          'dark-theme': isDarkTheme
+        }"
   >
     <v-btn class="nav-button" :class="{ active: activeTab === 0 }" to="/home">
       <template v-slot:default>
@@ -35,7 +38,10 @@
 
 <script setup lang="ts">
 import { ref } from 'vue';
+import { useTheme } from 'vuetify';
 
+const theme = useTheme();
+const isDarkTheme = computed(() => theme.global.current.value.dark);
 const activeTab = ref(0);
 const isScanActive = ref(false);
 
