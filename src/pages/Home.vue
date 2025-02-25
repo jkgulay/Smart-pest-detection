@@ -4,15 +4,21 @@
       <!-- Main Container -->
       <v-container
         :class="{
-          'pa-2': $vuetify.display.xs,
-          'pa-4': !$vuetify.display.xs,
+          'pa-4': $vuetify.display.xs,
+          'dark-theme': isDarkTheme
         }"
         fluid
       >
         <!-- Welcome Section -->
-        <v-row>
+        <v-row class="">
           <v-col cols="12">
-            <v-card class="dashboard-card rounded-xl" elevation="1">
+            <v-card 
+              :class="[
+                'dashboard-card rounded-xl', 
+                isDarkTheme ? 'dark-card' : 'light-card'
+              ]" 
+              elevation="1"
+            >
               <v-card-item>
                 <div>
                   <div class="welcome-title mb-1">Welcome back</div>
@@ -68,7 +74,7 @@
               v-else
               class="rounded-lg dashboard-card"
               elevation="0"
-              :class="stat.color"
+              :class="[stat.color, isDarkTheme ? 'dark-card' : 'light-card']"
             >
               <v-card-item>
                 <template v-slot:prepend>
@@ -79,7 +85,7 @@
                   />
                 </template>
                 <v-card-title class="text-h4">{{ stat.value }}</v-card-title>
-                <v-card-subtitle>{{ stat.title }}</v-card-subtitle>
+                <v-card-subtitle :class="{ 'dark-text': isDarkTheme }">{{ stat.title }}</v-card-subtitle>
               </v-card-item>
             </v-card>
           </v-col>
@@ -99,6 +105,7 @@
               elevation="0"
               text-align="center"
               justify-content="center"
+              :class="isDarkTheme ? 'dark-card' : 'light-card'"
             >
               <v-card-text>
                 <v-btn-toggle
@@ -131,11 +138,16 @@
               type="card"
               class="rounded-lg dashboard-card"
             ></v-skeleton-loader>
-            <v-card v-else class="rounded-lg dashboard-card" elevation="0">
+            <v-card 
+              v-else 
+              class="rounded-lg dashboard-card" 
+              elevation="0"
+              :class="isDarkTheme ? 'dark-card' : 'light-card'"
+            >
               <v-card-title class="px-4 pt-4">
                 Scan Activity
                 <v-spacer></v-spacer>
-                <span class="text-caption" style="color: #d3e5f1">
+                <span class="text-caption">
                   Total scans: {{ totalScans }}
                 </span>
               </v-card-title>
@@ -170,6 +182,7 @@ import {
 } from "echarts/components";
 import VChart from "vue-echarts";
 import LayoutWrapper from "@/layouts/LayoutWrapper.vue";
+import { useTheme } from "vuetify";
 
 // Register necessary ECharts components
 echarts.use([
@@ -183,6 +196,9 @@ echarts.use([
 ]);
 
 import { supabase } from "@/stores/authUser";
+const theme = useTheme();
+const isDarkTheme = computed(() => theme.global.current.value.dark);
+
 
 const fetchUserInfo = async () => {
   try {
@@ -529,6 +545,15 @@ onMounted(async () => {
 .pest-scanner-app {
   background: #8ca189;
   min-height: 100dvh;
+}
+
+.dark-theme {
+  background: #1e2124 !important;
+}
+.dark-card {
+  background-color: #2d3035 !important;
+  border: 1px solid rgba(80, 80, 80, 0.7) !important;
+  color: #e0e0e0 !important;
 }
 
 .v-main {

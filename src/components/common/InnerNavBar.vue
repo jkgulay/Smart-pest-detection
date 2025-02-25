@@ -4,7 +4,7 @@
     :location="$vuetify.display.mobile ? 'left' : 'left'"
     temporary
   >
-    <div class="text-center pt-10">
+    <div class="text-center pt-8">
       <v-avatar size="100">
         <img
           :src="profileImage"
@@ -156,7 +156,7 @@
 
     <v-img
       class="logo pt-1"
-      src="@/assets/5-removebg-preview.png"
+      :src="currentLogo"
       max-width="100"
     ></v-img>
   </v-app-bar>
@@ -168,7 +168,7 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, ref } from "vue";
+import { computed, ref, onMounted } from "vue";
 import { useTheme } from "vuetify";
 import { doLogout } from "@/lib/supabase";
 import router from "@/router";
@@ -180,6 +180,12 @@ const theme = useTheme();
 const isDarkTheme = computed(() => theme.global.current.value.dark);
 const themeIcon = computed(() =>
   isDarkTheme.value ? "mdi-weather-sunny" : "mdi-weather-night"
+);
+const lightLogo = "src/assets/5-removebg-preview.png";
+const darkLogo = "src/assets/7-removebg-preview.png";
+
+const currentLogo = computed(() => 
+  isDarkTheme.value ? darkLogo : lightLogo
 );
 
 function toggleTheme() {
@@ -249,26 +255,6 @@ onMounted(async () => {
 .logo {
   margin-right: 0;
   margin-top: 9px;
-}
-
-/* Custom style for the large navigation icon */
-.large-icon {
-  font-size: 1.5rem;
-  width: 42px;
-  height: 42px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: transform 0.2s ease;
-  transform: scale(1.5);
-}
-
-.large-icon:hover {
-  transform: scale(1.6);
-}
-
-.large-icon :deep(.v-icon) {
-  font-size: 28px;
 }
 
 @media (max-width: 600px) {
