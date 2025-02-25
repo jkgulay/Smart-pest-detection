@@ -4,16 +4,6 @@
       mdi-close
     </v-icon>
 
-    <v-container class="d-flex justify-center align-center logo-container">
-      <v-img
-        class="mx-auto"
-        src="@/assets/5-removebg-preview.png"
-        max-width="400px"
-        max-height="400px"
-        contain
-      ></v-img>
-    </v-container>
-
     <v-form @submit.prevent="onFormSubmit">
       <v-row class="welcome justify-center align-center">
         <h2 class="text-font">Register</h2>
@@ -45,7 +35,7 @@
         </v-col>
 
         <v-row
-          ><v-col cols="6">
+          ><v-col cols="12">
             <div class="text-subtitle-1 text-mediumemphasis-">Password</div>
             <v-text-field
               v-model="formData.password"
@@ -61,10 +51,8 @@
             ></v-text-field>
           </v-col>
 
-          <v-col cols="6">
-            <div class="text-subtitle-1 text-mediumemphasis-">
-              Repeat Password
-            </div>
+          <v-col cols="12">
+           
             <v-text-field
               v-model="formData.password_confirmation"
               label="Password Confirmation"
@@ -86,8 +74,9 @@
                 ),
               ]"
               :error-messages="passwordConfirmErrorMessages"
-            ></v-text-field> </v-col
-        ></v-row>
+            ></v-text-field> 
+          </v-col>
+      </v-row>
 
         <v-col cols="auto">
           <v-btn
@@ -107,6 +96,15 @@
       </v-row>
     </v-form>
   </v-card>
+  <div class="mt-10">
+
+  </div>
+  <div class="mt-10">
+
+</div>
+<div class="mt-10">
+
+</div>
 </template>
 
 <script lang="ts" setup>
@@ -201,7 +199,7 @@ async function onFormSubmit() {
 .logo-container {
   margin-top: 20px;
   margin-bottom: -20px;
-  height: 120px;
+
 }
 
 .v-btn {

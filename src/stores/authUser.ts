@@ -150,7 +150,7 @@ export async function fetchUserData() {
       profile_image: profile?.profile_image || null,
     };
   } catch (e) {
-    console.error("Error fetching user info:", e);
+   /*  console.error("Error fetching user info:", e); */
     error.value = e instanceof Error ? e : new Error("Unknown error occurred");
   } finally {
     loading.value = false;
