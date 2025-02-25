@@ -75,7 +75,7 @@
                   <v-icon
                     :icon="stat.icon"
                     :color="stat.iconColor"
-                    size="small"
+                    :size="stat.iconSize"
                   />
                 </template>
                 <v-card-title class="text-h4">{{ stat.value }}</v-card-title>
@@ -169,13 +169,6 @@ import {
   DatasetComponent,
 } from "echarts/components";
 import VChart from "vue-echarts";
-import {
-  mdiClockOutline,
-  mdiCalendarMonth,
-  mdiCalendarWeek,
-  mdiBugOutline,
-  mdiPercent,
-} from "@mdi/js";
 import LayoutWrapper from "@/layouts/LayoutWrapper.vue";
 
 // Register necessary ECharts components
@@ -236,6 +229,7 @@ interface StatCard {
   value: number | string;
   icon: string;
   iconColor: string;
+  iconSize: string | number;
   color: string;
 }
 
@@ -263,15 +257,17 @@ const stats = ref<StatCard[]>([
   {
     title: "Scans Today",
     value: "Loading",
-    icon: mdiBugOutline,
-    iconColor: "primary",
-    color: "bg-primary-lighten-4",
+    icon: "mdi-bug-outline",
+    iconColor: "success",
+    iconSize: "large", 
+    color: "bg-success-lighten-4",
   },
   {
     title: "Success Rate",
     value: "Loading",
-    icon: mdiPercent,
+    icon: "mdi-percent",
     iconColor: "success",
+    iconSize: "large",
     color: "bg-success-lighten-4",
   },
 ]);
@@ -289,15 +285,17 @@ const loadStats = async (
       {
         title: "Scans Today",
         value: statsData.scansTodayCount,
-        icon: mdiBugOutline,
+        icon: "mdi-bug-outline",
         iconColor: "primary",
+        iconSize: "large", // Added icon size
         color: "bg-primary-lighten-4",
       },
       {
         title: "Success Rate",
         value: `${(statsData.successRate * 100).toFixed(1)}%`,
-        icon: mdiPercent,
+        icon: "mdi-percent",
         iconColor: "success",
+        iconSize: "large", // Added icon size
         color: "bg-success-lighten-4",
       },
     ];
@@ -306,9 +304,9 @@ const loadStats = async (
 };
 
 const timeframeOptions: TimeframeOption[] = [
-  { label: "Hours", value: "hour", icon: mdiClockOutline },
-  { label: "Days", value: "day", icon: mdiCalendarWeek },
-  { label: "Months", value: "month", icon: mdiCalendarMonth },
+  { label: "Hours", value: "hour", icon: "mdi-clock-outline" },
+  { label: "Days", value: "day", icon: "mdi-calendar-week" },
+  { label: "Months", value: "month", icon: "mdi-calendar-month" },
 ];
 
 interface ChartData {
