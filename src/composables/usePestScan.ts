@@ -3,8 +3,16 @@ import { supabase } from '@/lib/supabase';
 import { useImageUploader } from '@/composables/useImageUploader';
 import { useScanResultStore } from '@/stores/scanResultStore';
 import { Response as useDeepSeek } from '@/lib/deepSeek';
-import { Response as useLlama } from '@/lib/llama';
 
+type PestAdviceKey = 'Green Leaf Hopper' | 'Brown Planthopper' | 'Rice Black Bug' | 'Rice Bug' | 'White Yellow Stemborer';
+
+const PEST_ADVICE: Record<PestAdviceKey, string> = {
+  'Green Leaf Hopper': "This pest requires immediate attention as it can spread viral diseases...",
+  'Brown Planthopper': "Monitor the base of tillers for signs of infestation...",
+  'Rice Black Bug': "Check for signs of damage near the base of the plant...",
+  'Rice Bug': "Inspect grains for feeding damage and discoloration...",
+  'White Yellow Stemborer': "Look for deadhearts and whiteheads in the crop..."
+};
 
 export function usePestScan() {
   const uploadError = ref<string | null>(null);
@@ -86,9 +94,8 @@ export function usePestScan() {
 
       if (scanResult.class !== 'No pests detected' && scanResult.confidence >= 0.84) {
         const deepSeek = useDeepSeek();
-        const llama = useLlama();
         recommendedAction = await deepSeek.getRecommendedAction(scanResult.class);
-        detailedAnalysis = await llama.getPestAdvice(scanResult.class);
+        detailedAnalysis = PEST_ADVICE[scanResult.class as PestAdviceKey] || 'Please consult with an agricultural expert for detailed advice.';
       }
 
       const { data: scanData, error: insertError } = await supabase

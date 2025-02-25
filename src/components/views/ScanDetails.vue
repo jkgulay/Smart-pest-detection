@@ -48,8 +48,12 @@
                 </div>
 
                 <div class="detail-item col-span-2">
-                  <span class="text-subtitle-2 text-medium-emphasis">Recommended Action</span>
-                  <div class="text-body-1" v-html="scan.pest_scan.comment"></div>
+                  <span class="text-subtitle-2 text-medium-emphasis">Pest Info</span>
+                  <div class="text-body-1" v-html="
+                    scan.pest_scan.name === 'No pests detected' || !scan.pest_scan.name
+                      ? 'No pests detected'
+                      : formatPestInfo(scan.pest_scan.name)
+                  "></div>
                 </div>
               </div>
             </v-col>
@@ -72,6 +76,7 @@
   
   <script setup lang="ts">
   import { computed } from 'vue';
+  import { usePestInfo } from '@/composables/usePestInfo';
 
   interface PestScan {
     id: number;
@@ -99,6 +104,7 @@
   
   const props = defineProps<Props>();
   const emit = defineEmits(['update:modelValue']);
+  const { formatPestInfo } = usePestInfo();
   
   const isOpen = computed({
     get: () => props.modelValue,
