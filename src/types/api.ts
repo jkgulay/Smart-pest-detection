@@ -23,14 +23,6 @@ interface PredictionResponse {
 interface OutputImage {
   type: string;
   value: string;
-  video_metadata: {
-    video_identifier: string;
-    frame_number: number;
-    frame_timestamp: string;
-    fps: number;
-    measured_fps: number | null;
-    comes_from_video_file: boolean | null;
-  };
 }
 
 interface ScanResult {
@@ -41,4 +33,18 @@ interface ScanResult {
   output_image: OutputImage;
 }
 
-export type { PredictionResponse, OutputImage, ScanResult };
+interface ProcessedImage {
+  output_image: {
+    type: string;
+    value: string;
+  };
+  predictions: {
+    image: any;
+    predictions: Array<{
+      class: string;
+      confidence: number;
+    }>;
+  };
+}
+
+export type { PredictionResponse, OutputImage, ScanResult, ProcessedImage };
