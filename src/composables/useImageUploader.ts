@@ -1,52 +1,58 @@
 import axios from 'axios';
 import { useScanResultStore } from '../stores/scanResultStore';
+import type { PredictionResponse, ScanResult } from '../types/api';
 
-const ROBOFLOW_API_KEY = import.meta.env.VITE_ROBOFLOW_API_KEY;
+const ROBOFLOW_API_KEY = 'Zub42A5wGM8poDgcI18Q';
 
-export const useImageUploader = async (imageFile: File) => {
+export const useImageUploader = async (imageFile: File): Promise<ScanResult | null> => {
   if (!(imageFile instanceof Blob)) {
     console.error("Provided parameter is not a File or Blob");
     return null;
   }
 
   try {
-    return new Promise((resolve) => {
+    return new Promise<ScanResult | null>((resolve) => {
       const reader = new FileReader();
 
       reader.onloadend = async () => {
         const base64Image = reader.result as string;
 
-        const response = await axios({
+        const response = await axios<PredictionResponse>({
           method: 'POST',
-          url: 'https://detect.roboflow.com/pest-detection-pcs9q/1',
-          params: {
-            api_key: ROBOFLOW_API_KEY
-          },
-          data: base64Image,
+          url: 'https://detect.roboflow.com/infer/workflows/test-cmoub/detect-and-classify',
           headers: {
-            "Content-Type": "application/x-www-form-urlencoded",
+            'Content-Type': 'application/json'
           },
+          data: {
+            api_key: ROBOFLOW_API_KEY,
+            inputs: {
+              "image": {"type": "base64", "value": base64Image}
+            }
+          }
         });
 
-        const predictions = response.data.predictions;
+        const output = response.data.outputs[0];
+        const predictions = output.predictions.predictions;
         const scanResultStore = useScanResultStore();
         
         if (predictions.length === 0) {
-          const result = { class: "No pests detected", confidence: 0 };
-          scanResultStore.setScanResult([result]);
+          const result = { 
+            prediction: { class: "No pests detected", confidence: 0 },
+            output_image: output.output_image
+          };
+          scanResultStore.setScanResult([result.prediction]);
+          scanResultStore.setSelectedImage(result.output_image);
           resolve(result);
         } else {
           const firstPrediction = predictions[0];
-          let result;
-          if (firstPrediction.confidence < 0.84) {
-            result = { class: "No pests detected.", confidence: firstPrediction.confidence };
-          } else {
-            result = {
-              class: firstPrediction.class,
-              confidence: firstPrediction.confidence
-            };
-          }
-          scanResultStore.setScanResult([result]);
+          let result = {
+            prediction: firstPrediction.confidence < 0.70 
+              ? { class: "No pests detected.", confidence: firstPrediction.confidence }
+              : { class: firstPrediction.class, confidence: firstPrediction.confidence },
+            output_image: output.output_image
+          };
+          scanResultStore.setScanResult([result.prediction]);
+          scanResultStore.setSelectedImage(result.output_image);
           resolve(result);
         }
       };
