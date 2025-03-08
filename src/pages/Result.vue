@@ -430,7 +430,7 @@ onMounted(async () => {
                   class="scan-button text-none"
                 >
                   <v-icon start>mdi-camera</v-icon>
-                  Scan Another Plant
+                  Scan Another Pest
                 </v-btn>
 
                 <v-btn

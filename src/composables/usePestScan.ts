@@ -3,6 +3,7 @@ import { supabase } from '@/lib/supabase';
 import { useImageUploader } from '@/composables/useImageUploader';
 import { useScanResultStore } from '@/stores/scanResultStore';
 import { Response as useDeepSeek } from '@/lib/deepSeek';
+import type { ScanResult } from '@/types/api';
 
 type PestAdviceKey = 'Green Leaf Hopper' | 'Brown Planthopper' | 'Rice Black Bug' | 'Rice Bug' | 'White Yellow Stemborer';
 
@@ -82,31 +83,67 @@ export function usePestScan() {
       }
 
       const retrievedFile = new File([fileData], fileName, { type: file.type });
-      interface ScanResult {
-        class: string;
-        confidence: number;
-      }
 
       const scanResult = await useImageUploader(retrievedFile) as ScanResult;
+      
+      if (!scanResult) {
+        uploadError.value = 'Scan failed';
+        isLoading.value = false;
+        return;
+      }
+
+      // Convert base64 to blob and upload processed image
+      let processedBlob: Blob;
+      try {
+        const base64Data = scanResult.output_image.value.replace(/^data:image\/\w+;base64,/, '');
+        const blobData = atob(base64Data);
+        const arrayBuffer = new Uint8Array(blobData.length);
+        for (let i = 0; i < blobData.length; i++) {
+          arrayBuffer[i] = blobData.charCodeAt(i);
+        }
+        processedBlob = new Blob([arrayBuffer], { type: 'image/jpeg' });
+      } catch (error) {
+        uploadError.value = 'Failed to process image data';
+        isLoading.value = false;
+        return;
+      }
+      
+      const processedFileName = `processed_${Date.now()}_${file.name}`;
+      const { error: processedUploadErr } = await supabase.storage
+        .from('store')
+        .upload(processedFileName, processedBlob);
+
+      if (processedUploadErr) {
+        uploadError.value = processedUploadErr.message;
+        isLoading.value = false;
+        return;
+      }
+
+      // Create a local URL for the decoded image
+      const processedImageUrl = URL.createObjectURL(processedBlob);
+      // You can use this URL directly in img tags or store it
+      // The Supabase URL will still be used for storage
+      const storedImageUrl = `https://touhyblbobrrtoebgkzb.supabase.co/storage/v1/object/public/store/${processedFileName}`;
 
       let recommendedAction = '';
       let detailedAnalysis = '';
 
-      if (scanResult.class !== 'No pests detected' && scanResult.confidence >= 0.84) {
+      if (scanResult.prediction.class !== 'No pests detected' && scanResult.prediction.confidence >= 0.84) {
         const deepSeek = useDeepSeek();
-        recommendedAction = await deepSeek.getRecommendedAction(scanResult.class);
-        detailedAnalysis = PEST_ADVICE[scanResult.class as PestAdviceKey] || 'Please consult with an agricultural expert for detailed advice.';
+        recommendedAction = await deepSeek.getRecommendedAction(scanResult.prediction.class);
+        detailedAnalysis = PEST_ADVICE[scanResult.prediction.class as PestAdviceKey] || 'Please consult with an agricultural expert for detailed advice.';
       }
 
+      // Insert scan data with processed image URL
       const { data: scanData, error: insertError } = await supabase
         .from('pest_scans')
         .insert([{ 
-          image_path: imageUrl,
-          name: scanResult.class,
-          confidence: scanResult.confidence,
-          alert_lvl: getAlertLevel(scanResult.confidence),
+          image_path: storedImageUrl,
+          name: scanResult.prediction.class,
+          confidence: scanResult.prediction.confidence,
+          alert_lvl: getAlertLevel(scanResult.prediction.confidence),
           comment: detailedAnalysis,
-          recommended_action: recommendedAction
+          recommended_action: recommendedAction,
         }])
         .select()
         .single();
