@@ -138,7 +138,7 @@ export function usePestScan() {
       const { data: scanData, error: insertError } = await supabase
         .from('pest_scans')
         .insert([{ 
-          image_path: processedImageUrl,
+          image_path: storedImageUrl,
           name: scanResult.prediction.class,
           confidence: scanResult.prediction.confidence,
           alert_lvl: getAlertLevel(scanResult.prediction.confidence),
