@@ -22,5 +22,6 @@ declare module 'vue' {
     ScanDetails: typeof import('./components/views/ScanDetails.vue')['default']
     ScanHistory: typeof import('./components/views/ScanHistory.vue')['default']
     ScrollDown: typeof import('./components/common/ScrollDown.vue')['default']
+    UserHistory: typeof import('./components/views/UserHistory.vue')['default']
   }
 }

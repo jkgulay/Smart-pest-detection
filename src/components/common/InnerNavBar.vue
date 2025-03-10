@@ -67,7 +67,7 @@
             <v-col cols="auto">
               <v-icon class="me-3" left style="font-size: 1.5rem">mdi-history</v-icon>
             </v-col>
-            <v-col> Scan History </v-col>
+            <v-col> History </v-col>
           </v-row>
         </v-btn>
       </v-list-item>

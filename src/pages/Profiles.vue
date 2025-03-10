@@ -209,7 +209,7 @@ interface Scan {
 interface StatsState {
   totalScans: number;
   totalPests: number;
-  highAlertPests: number; // Add this new property
+  highAlertPests: number; 
   recentScans: Scan[];
   loading: boolean;
   error: string | null;
