@@ -5,18 +5,18 @@
       <v-container
         :class="{
           'pa-4': $vuetify.display.xs,
-          'dark-theme': isDarkTheme
+          'dark-theme': isDarkTheme,
         }"
         fluid
       >
         <!-- Welcome Section -->
         <v-row class="">
           <v-col cols="12">
-            <v-card 
+            <v-card
               :class="[
-                'dashboard-card rounded-xl', 
-                isDarkTheme ? 'dark-card' : 'light-card'
-              ]" 
+                'dashboard-card rounded-xl',
+                isDarkTheme ? 'dark-card' : 'light-card',
+              ]"
               elevation="1"
             >
               <v-card-item>
@@ -85,7 +85,9 @@
                   />
                 </template>
                 <v-card-title class="text-h4">{{ stat.value }}</v-card-title>
-                <v-card-subtitle :class="{ 'dark-text': isDarkTheme }">{{ stat.title }}</v-card-subtitle>
+                <v-card-subtitle :class="{ 'dark-text': isDarkTheme }">{{
+                  stat.title
+                }}</v-card-subtitle>
               </v-card-item>
             </v-card>
           </v-col>
@@ -138,9 +140,9 @@
               type="card"
               class="rounded-lg dashboard-card"
             ></v-skeleton-loader>
-            <v-card 
-              v-else 
-              class="rounded-lg dashboard-card" 
+            <v-card
+              v-else
+              class="rounded-lg dashboard-card"
               elevation="0"
               :class="isDarkTheme ? 'dark-card' : 'light-card'"
             >
@@ -199,10 +201,9 @@ import { supabase } from "@/stores/authUser";
 const theme = useTheme();
 const isDarkTheme = computed(() => theme.global.current.value.dark);
 
-
 const fetchUserInfo = async () => {
   try {
-    const { data: userData, error } = await supabase.auth.getUser ();
+    const { data: userData, error } = await supabase.auth.getUser();
     if (error) throw error;
     if (!userData?.user) throw new Error("User  not authenticated");
 
@@ -275,7 +276,7 @@ const stats = ref<StatCard[]>([
     value: "Loading",
     icon: "mdi-bug-outline",
     iconColor: "success",
-    iconSize: "large", 
+    iconSize: "large",
     color: "bg-success-lighten-4",
   },
   {
@@ -294,7 +295,7 @@ const loadStats = async (
   authUserId: string,
   supabaseClient: SupabaseClient
 ): Promise<void> => {
-  const statsData = await fetchUserScanStats (authUserId, supabaseClient);
+  const statsData = await fetchUserScanStats(authUserId, supabaseClient);
 
   if (statsData) {
     stats.value = [
@@ -451,7 +452,7 @@ const fetchUserScanStats = async (
 
     const scansTodayCount = todayScans?.length ?? 0;
     const successRate =
-      statsData?.reduce((acc,scan) => acc + (scan.confidence || 0), 0) /
+      statsData?.reduce((acc, scan) => acc + (scan.confidence || 0), 0) /
       (statsData?.length || 1);
     const totalScans = statsData?.length ?? 0;
 
@@ -478,7 +479,7 @@ const loadChartData = async (
     const startDate = new Date();
     startDate.setMonth(startDate.getMonth() - 12);
 
- const { data, error } = await supabaseClient
+    const { data, error } = await supabaseClient
       .from("scan_history")
       .select("created_at")
       .eq("user_id", profileId)

@@ -437,7 +437,7 @@ onMounted(async () => {
                   block
                   color="black"
                   variant="text"
-                  @click="$router.push('/scan-history')"
+                  @click="$router.push('/user-history')"
                 >
                   <v-icon start>mdi-history</v-icon>
                   View Scan History

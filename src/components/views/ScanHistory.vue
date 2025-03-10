@@ -8,6 +8,20 @@
         }"
         fluid
       >
+        <v-card
+          class="mx-auto mb-4 header-card"
+          max-width="500"
+          rounded="lg"
+          :class="[isDarkTheme ? 'dark-card' : 'light-card']"
+        >
+          <v-card-text class="pa-4 text-center">
+            <div class="align-center mb-3">
+                <h2 class="text-h5 font-weight-bold mb-0">
+                  Community Scan History
+                </h2>
+            </div>
+          </v-card-text>
+        </v-card>
         <!-- Search and Filter Section -->
         <v-card
           class="mx-auto mb-4 search-filter-card"
@@ -62,7 +76,11 @@
                   </v-btn>
                 </template>
 
-                <v-card min-width="300" class="filter-menu" :class="[isDarkTheme ? 'dark-card' : 'light-card']">
+                <v-card
+                  min-width="300"
+                  class="filter-menu"
+                  :class="[isDarkTheme ? 'dark-card' : 'light-card']"
+                >
                   <v-card-title class="text-subtitle-1">Filters</v-card-title>
                   <v-card-text>
                     <v-select
@@ -98,7 +116,7 @@
 
         <!-- History Lists -->
         <v-card
-          class="mx-auto history-card"
+          class="mx-auto mb-10 history-card"
           max-width="500"
           rounded="lg"
           :loading="loading"
@@ -167,16 +185,27 @@
           </v-list>
 
           <!-- Add Pagination -->
-          <v-card-actions class="d-flex justify-center pa-4">
+          <div class="d-flex align-center justify-space-between pa-4">
+            <v-btn
+              variant="tonal"
+              color="success"
+              block
+              prepend-icon="mdi-history"
+              @click="$router.push('/user-history')"
+              class="view-all-btn"
+              >View Your Scans
+            </v-btn>
             <v-pagination
               v-if="totalPages > 1"
               v-model="currentPage"
               :length="totalPages"
               :total-visible="5"
+              density="comfortable"
               rounded="circle"
+              class="ml-2"
               @update:model-value="handlePageChange"
             ></v-pagination>
-          </v-card-actions>
+          </div>
         </v-card>
 
         <ScanDetailsDialog v-model="isDialogOpen" :scan="selectedScan" />
@@ -220,7 +249,6 @@ interface ScanHistoryItem {
 // State
 const scans = ref<ScanHistoryItem[]>([]);
 const loading = ref(true);
-const loadingMore = ref(false);
 const hasMore = ref(false);
 const searchQuery = ref("");
 const selectedScan = ref<ScanHistoryItem | undefined>(undefined);
@@ -228,6 +256,7 @@ const isDialogOpen = ref(false);
 const filterMenu = ref(false);
 const currentPage = ref(1);
 const totalPages = ref(1);
+const loadingMore = ref(false);
 
 const theme = useTheme();
 const isDarkTheme = computed(() => theme.global.current.value.dark);
@@ -441,6 +470,11 @@ const handleResize = () => {
   border: 1px solid rgba(0, 0, 0, 0.1);
 }
 
+.history-card .d-flex {
+  flex-direction: column;
+  gap: 1rem;
+}
+
 .dark-theme {
   background: #1e2124 !important;
 }
@@ -452,7 +486,7 @@ const handleResize = () => {
 
 .history-list {
   max-height: calc(100vh - 380px);
-  overflow-y: auto;
+  overflow-y: hidden;
 }
 
 .history-item {

@@ -203,13 +203,14 @@ interface Scan {
   id: string;
   pestType: string;
   date: string;
+  image_path: string;
   Severity: "High" | "Medium" | "Low";
 }
 
 interface StatsState {
   totalScans: number;
   totalPests: number;
-  highAlertPests: number; 
+  highAlertPests: number;
   recentScans: Scan[];
   loading: boolean;
   error: string | null;
@@ -228,7 +229,7 @@ const usePestStats = () => {
     error: null,
     currentPage: 1,
     totalPages: 1,
-    itemsPerPage: 5,
+    itemsPerPage: 3,
   });
 
   const fetchStats = async (userId: string) => {
@@ -293,15 +294,13 @@ const usePestStats = () => {
         (count || 0) / state.value.itemsPerPage
       );
 
-      // Calculate offset
       const offset = (state.value.currentPage - 1) * state.value.itemsPerPage;
 
-      // Fetch paginated scan history
       const { data: scanHistoryData, error: scanHistoryError } = await supabase
         .from("scan_history")
         .select("scan_id, created_at")
         .eq("user_id", localUserId)
-        .order("created_at", { ascending: false })
+        .order("created_at", { ascending: false }) 
         .range(offset, offset + state.value.itemsPerPage - 1);
 
       if (scanHistoryError) throw scanHistoryError;
@@ -312,7 +311,7 @@ const usePestStats = () => {
       // Fetch details from pest_scans using the scan IDs
       const { data: pestScansData, error: pestScansError } = await supabase
         .from("pest_scans")
-        .select("id, name, created_at, alert_lvl")
+        .select("id, name, created_at, alert_lvl, image_path")
         .in("id", scanIds);
 
       if (pestScansError) throw pestScansError;
@@ -321,6 +320,7 @@ const usePestStats = () => {
       state.value.recentScans = pestScansData.map((scan) => ({
         id: scan.id,
         pestType: scan.name,
+        image_path: scan.image_path,
         date: scan.created_at,
         Severity: scan.alert_lvl,
       }));
@@ -598,8 +598,8 @@ onMounted(async () => {
                     class="scan-item"
                   >
                     <template v-slot:prepend>
-                      <v-avatar size="40" color="success" class="mr-3">
-                        <v-icon color="white">mdi-bug</v-icon>
+                      <v-avatar size="56" rounded="lg" class="mr-3">
+                        <v-img :src="scan.image_path" cover></v-img>
                       </v-avatar>
                     </template>
                     <v-list-item-title class="font-weight-medium">
@@ -625,7 +625,7 @@ onMounted(async () => {
                   color="success"
                   block
                   prepend-icon="mdi-history"
-                  @click="$router.push('/scan-history')"
+                  @click="$router.push('/user-history')"
                   class="view-all-btn"
                   :disabled="scansLoading"
                   >View All Scans
@@ -647,8 +647,7 @@ onMounted(async () => {
 
         <!-- Edit Profile Dialog -->
         <v-dialog v-model="dialog" max-width="500" class="profile-dialog">
-          <v-card :class="[isDarkTheme ? 'dark-card' : 'light-card']"
-            >
+          <v-card :class="[isDarkTheme ? 'dark-card' : 'light-card']">
             <v-card-title class="text-h6 pa-4">Edit Profile</v-card-title>
             <v-card-text>
               <v-form @submit.prevent="saveProfile">

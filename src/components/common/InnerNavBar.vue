@@ -60,7 +60,7 @@
           variant="text"
           size="large"
           block
-          to="/scan-history"
+          to="/user-history"
           style="text-transform: none; font-size: 1rem"
         >
           <v-row align="center" no-gutters>
