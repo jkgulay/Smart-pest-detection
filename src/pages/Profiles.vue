@@ -519,7 +519,7 @@ onMounted(async () => {
           </v-sheet>
 
           <!-- Stats Cards with Loading -->
-          <v-container class="py-4">
+          <v-container class="py-2">
             <v-row dense>
               <v-col cols="6" sm="4">
                 <v-card
@@ -571,7 +571,7 @@ onMounted(async () => {
 
             <!-- Recent Scans with Loading -->
             <v-card
-              class="mt-4 scan-history-card"
+              class="mt-2 scan-history-card"
               elevation="0"
               :class="[isDarkTheme ? 'dark-card' : 'light-card']"
             >
@@ -735,6 +735,7 @@ onMounted(async () => {
   overflow: auto;
 }
 
+
 .dark-theme {
   background: #1e2124 !important;
 }
@@ -748,6 +749,7 @@ onMounted(async () => {
 .v-container {
   overflow-y: auto;
   max-height: calc(100vh - 64px);
+  
 }
 
 .profile-header {

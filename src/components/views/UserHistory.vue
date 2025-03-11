@@ -10,7 +10,7 @@
       >
         <!-- Header Card with User Info and Stats -->
         <v-card
-          class="mx-auto mb-4 header-card"
+          class="mx-auto mb-2 header-card"
           max-width="500"
           rounded="lg"
           :class="[isDarkTheme ? 'dark-card' : 'light-card']"
@@ -100,7 +100,7 @@
 
         <!-- Search and Filter Section -->
         <v-card
-          class="mx-auto mb-4 search-filter-card"
+          class="mx-auto mb-2 search-filter-card"
           max-width="500"
           rounded="lg"
           :class="[isDarkTheme ? 'dark-card' : 'light-card']"
@@ -324,15 +324,13 @@ interface ScanHistoryItem {
 }
 
 interface ScanStats {
-  id: number;
+  id: string;
   created_at: string;
   pest_scan: {
-    id: number;
-    alert_lvl: string;
+    id: string;
+    alert_lvl: "High" | "Medium" | "Low";
   };
 }
-
-
 // State
 const scans = ref<ScanHistoryItem[]>([]);
 const userStats = ref<ScanStats[]>([]);
@@ -403,8 +401,7 @@ const totalScans = computed(() => userStats.value.length);
 
 const highSeverityCount = computed(
   () =>
-  userStats.value.filter((scan) => scan.pest_scan.alert_lvl === "High")
-      .length
+    userStats.value.filter((scan) => scan.pest_scan.alert_lvl === "High").length
 );
 
 const highSeverityColor = computed(() =>
@@ -482,7 +479,6 @@ const fetchUserProfile = async (userId: string) => {
   }
 };
 
-
 const fetchUserStats = async () => {
   try {
     // Get the authenticated user
@@ -499,10 +495,10 @@ const fetchUserStats = async () => {
       .from("scan_history")
       .select(
         `
-        id,
-        created_at,
-        pest_scan:pest_scans (id, alert_lvl)
-      `
+    id,
+    created_at,
+    pest_scan:pest_scans!inner (id, alert_lvl)
+  `
       )
       .eq("user_id", localUserId);
 
@@ -511,8 +507,14 @@ const fetchUserStats = async () => {
       return;
     }
 
-    userStats.value = data || [];
-    
+    userStats.value = (data || []).map((item) => ({
+      id: item.id,
+      created_at: item.created_at,
+      pest_scan: Array.isArray(item.pest_scan)
+        ? item.pest_scan[0]
+        : item.pest_scan, 
+    }));
+
     // Update last activity date if there are scans
     if (data && data.length > 0) {
       lastActivity.value = new Date(data[0].created_at);
@@ -521,7 +523,6 @@ const fetchUserStats = async () => {
     console.error("Error fetching all user scans:", error);
   }
 };
-
 
 const fetchScanHistory = async () => {
   loading.value = true;
@@ -732,7 +733,7 @@ const handleResize = () => {
   transition: all 0.3s ease;
 }
 
-.history-card .d-flex{
+.history-card .d-flex {
   flex-direction: column;
   gap: 1rem;
 }

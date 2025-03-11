@@ -10,15 +10,16 @@
         fluid
       >
         <!-- Welcome Section -->
-        <v-row class="">
-          <v-col cols="12">
-            <v-card
-              :class="[
-                'dashboard-card rounded-xl',
-                isDarkTheme ? 'dark-card' : 'light-card',
-              ]"
-              elevation="1"
-            >
+        <v-card
+          :class="[
+            'dashboard-card rounded-xl',
+            isDarkTheme ? 'dark-card' : 'light-card',
+          ]"
+          elevation="1"
+          class="mb-2"
+        >
+          <v-row class="">
+            <v-col cols="12">
               <v-card-item>
                 <div>
                   <div class="welcome-title mb-1">Welcome back</div>
@@ -52,9 +53,9 @@
                   </v-avatar>
                 </template>
               </v-card-item>
-            </v-card>
-          </v-col>
-        </v-row>
+            </v-col>
+          </v-row>
+        </v-card>
 
         <!-- Stats Section -->
         <v-row>
@@ -94,21 +95,21 @@
         </v-row>
 
         <!-- Time Filter -->
-        <v-row>
-          <v-col cols="12">
-            <v-skeleton-loader
-              v-if="statsLoading"
-              type="card"
-              class="rounded-lg dashboard-card"
-            ></v-skeleton-loader>
-            <v-card
-              v-else
-              class="rounded-lg dashboard-card"
-              elevation="0"
-              text-align="center"
-              justify-content="center"
-              :class="isDarkTheme ? 'dark-card' : 'light-card'"
-            >
+        <v-skeleton-loader
+          v-if="statsLoading"
+          type="card"
+          class="rounded-lg dashboard-card mt-2"
+        ></v-skeleton-loader>
+        <v-card
+          v-else
+          class="rounded-lg dashboard-card mb-2 mt-2"
+          elevation="0"
+          text-align="center"
+          justify-content="center"
+          :class="isDarkTheme ? 'dark-card' : 'light-card'"
+        >
+          <v-row>
+            <v-col cols="12">
               <v-card-text>
                 <v-btn-toggle
                   v-model="selectedTimeframe"
@@ -128,24 +129,24 @@
                   </v-btn>
                 </v-btn-toggle>
               </v-card-text>
-            </v-card>
-          </v-col>
-        </v-row>
+            </v-col>
+          </v-row>
+        </v-card>
 
         <!-- Chart Section -->
-        <v-row class="mb-15">
-          <v-col cols="12">
-            <v-skeleton-loader
-              v-if="statsLoading"
-              type="card"
-              class="rounded-lg dashboard-card"
-            ></v-skeleton-loader>
-            <v-card
-              v-else
-              class="rounded-lg dashboard-card"
-              elevation="0"
-              :class="isDarkTheme ? 'dark-card' : 'light-card'"
-            >
+        <v-skeleton-loader
+          v-if="statsLoading"
+          type="card"
+          class="rounded-lg dashboard-card mt-2 mb-15"
+        ></v-skeleton-loader>
+        <v-card
+          v-else
+          class="rounded-lg dashboard-card mb-15"
+          elevation="0"
+          :class="isDarkTheme ? 'dark-card' : 'light-card'"
+        >
+          <v-row>
+            <v-col cols="12">
               <v-card-title class="px-4 pt-4">
                 Scan Activity
                 <v-spacer></v-spacer>
@@ -160,9 +161,9 @@
                   :autoresize="true"
                 />
               </v-card-text>
-            </v-card>
-          </v-col>
-        </v-row>
+            </v-col>
+          </v-row>
+        </v-card>
       </v-container>
     </template>
   </LayoutWrapper>
@@ -572,6 +573,8 @@ onMounted(async () => {
   overflow-y: auto;
   max-height: calc(100vh - 64px);
 }
+
+
 
 .dashboard-card {
   background-color: #5e7962;

@@ -67,7 +67,7 @@
             <v-col cols="auto">
               <v-icon class="me-3" left style="font-size: 1.5rem">mdi-history</v-icon>
             </v-col>
-            <v-col> History </v-col>
+            <v-col> My Scans </v-col>
           </v-row>
         </v-btn>
       </v-list-item>
@@ -84,9 +84,9 @@
         >
           <v-row align="center" no-gutters>
             <v-col cols="auto">
-              <v-icon class="me-3" left style="font-size: 1.5rem">mdi-history</v-icon>
+              <v-icon class="me-3" left style="font-size: 1.5rem">mdi-account-group</v-icon>
             </v-col>
-            <v-col> My Scans </v-col>
+            <v-col> Community Scans </v-col>
             
           </v-row>
         </v-btn>

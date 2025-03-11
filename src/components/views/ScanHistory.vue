@@ -9,22 +9,33 @@
         fluid
       >
         <v-card
-          class="mx-auto mb-4 header-card"
+          class="mx-auto mb-2 header-card"
           max-width="500"
           rounded="lg"
+          elevation="3"
           :class="[isDarkTheme ? 'dark-card' : 'light-card']"
         >
-          <v-card-text class="pa-4 text-center">
-            <div class="align-center mb-3">
-                <h2 class="text-h5 font-weight-bold mb-0">
-                  Community Scan History
-                </h2>
+          <v-card-text class="pa-4">
+            <div class="d-flex flex-column align-center">
+              <v-icon size="32" color="primary" class="mb-2">
+                mdi-account-group
+              </v-icon>
+              <h2 class="text-h5 font-weight-bold mb-1">
+                Community Scan History
+              </h2>
+              <div class="text-subtitle-2 text-medium-emphasis">
+                View and manage previous scan results
+              </div>
+              <v-divider class="mt-3 mb-1 mx-auto" width="100"></v-divider>
+              <div class="text-caption text-medium-emphasis">
+                {{ currentDate  }}
+              </div>
             </div>
           </v-card-text>
         </v-card>
         <!-- Search and Filter Section -->
         <v-card
-          class="mx-auto mb-4 search-filter-card"
+          class="mx-auto mb-2 search-filter-card"
           max-width="500"
           rounded="lg"
           :class="[isDarkTheme ? 'dark-card' : 'light-card']"
@@ -221,6 +232,14 @@ import LayoutWrapper from "@/layouts/LayoutWrapper.vue";
 import { supabase } from "@/lib/supabase";
 import { useTheme } from "vuetify";
 
+const currentDate = computed(() => {
+  return new Intl.DateTimeFormat("en-US", {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+  }).format(new Date());
+});
+
 interface PestScan {
   id: number;
   created_at: string;
@@ -257,7 +276,6 @@ const filterMenu = ref(false);
 const currentPage = ref(1);
 const totalPages = ref(1);
 const loadingMore = ref(false);
-
 const theme = useTheme();
 const isDarkTheme = computed(() => theme.global.current.value.dark);
 
@@ -473,6 +491,11 @@ const handleResize = () => {
 .history-card .d-flex {
   flex-direction: column;
   gap: 1rem;
+}
+
+.header-card {
+  transition: all 0.3s ease;
+  border-left: 4px solid var(--v-primary-base);
 }
 
 .dark-theme {
