@@ -46,7 +46,7 @@ export const useImageUploader = async (imageFile: File): Promise<ScanResult | nu
         } else {
           const firstPrediction = predictions[0];
           let result = {
-            prediction: firstPrediction.confidence < 0.70 
+            prediction: firstPrediction.confidence < 0.30 
               ? { class: "No pests detected.", confidence: firstPrediction.confidence }
               : { class: firstPrediction.class, confidence: firstPrediction.confidence },
             output_image: output.output_image

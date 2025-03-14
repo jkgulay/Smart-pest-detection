@@ -32,7 +32,7 @@ export function usePestScan() {
   };
 
   const getAlertLevel = (confidence: number): string => {
-    if (confidence < 0.84) return "No pests detected";
+    if (confidence < 0.30) return "No pests detected";
     const levels = ['High', 'Medium', 'Low'];
     const randomIndex = Math.floor(Math.random() * levels.length);
     return levels[randomIndex];
@@ -128,7 +128,7 @@ export function usePestScan() {
       let recommendedAction = '';
       let detailedAnalysis = '';
 
-      if (scanResult.prediction.class !== 'No pests detected' && scanResult.prediction.confidence >= 0.84) {
+      if (scanResult.prediction.class !== 'No pests detected' && scanResult.prediction.confidence >= 0.30) {
         const deepSeek = useDeepSeek();
         recommendedAction = await deepSeek.getRecommendedAction(scanResult.prediction.class);
         detailedAnalysis = PEST_ADVICE[scanResult.prediction.class as PestAdviceKey] || 'Please consult with an agricultural expert for detailed advice.';
