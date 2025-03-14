@@ -20,6 +20,7 @@ const userScans = ref<PestScan | null>(null);
 const recentScans = ref<PestScan[]>([]);
 const isLoading = ref<boolean>(true);
 const imageLoading = ref<boolean>(true);
+const showNoPestsDialog = ref<boolean>(false);
 
 const getConfidenceColor = (confidence: number): string => {
   if (confidence >= 0.8) return "success";
@@ -47,7 +48,7 @@ const getOverallSeverity = (): string => {
   const severityLevels = recentScans.value.map(scan => scan.alert_lvl);
   if (severityLevels.includes("High")) return "High";
   if (severityLevels.includes("Medium")) return "Medium";
-  if (severityLevels.length === 0 || recentScans.value.every(scan => scan.confidence < 0.84)) return "No pests detected";
+  if (severityLevels.length === 0 || recentScans.value.every(scan => scan.confidence < 0.30)) return "No pests detected";
   return "";
 };
 
@@ -66,7 +67,7 @@ const getAIAnalysis = (): string => {
     return "Analysis shows evidence of leaf spot disease. This fungal infection can spread to other leaves and plants if not treated promptly. The affected areas may expand and eventually cause leaf drop.";
   }
 
-  if (issues.length === 0 || recentScans.value.every(scan => scan.confidence < 0.84)) {
+  if (issues.length === 0 || recentScans.value.every(scan => scan.confidence < 0.30)) {
     return "No pests detected.";
   }
 
@@ -84,7 +85,7 @@ const getRecommendedAction = (): string => {
     return "Remove and dispose of affected leaves, improve air circulation around the plant, and avoid overhead watering. Apply an appropriate fungicide and adjust watering practices to keep leaves dry.";
   }
 
-  if (recentScans.value.every(scan => scan.confidence < 0.84)) {
+  if (recentScans.value.every(scan => scan.confidence < 0.30)) {
     return "No pests detected.";
   }
 
@@ -217,6 +218,15 @@ const onImageLoaded = (): void => {
   imageLoading.value = false;
 };
 
+const isPestDetected = (): boolean => {
+  if (recentScans.value.length === 0) return false;
+  return !recentScans.value.every(scan => scan.confidence < 0.30);
+};
+
+const closeDialog = () => {
+  showNoPestsDialog.value = false;
+};
+
 const { formatPestInfo } = usePestInfo();
 
 onMounted(async () => {
@@ -227,6 +237,11 @@ onMounted(async () => {
   const recentScansData = await fetchRecentScans();
   recentScans.value = recentScansData;
   console.log('Recent Scans:', recentScansData);
+  
+  // Show dialog if no pests were detected
+  if (!isPestDetected()) {
+    showNoPestsDialog.value = true;
+  }
 });
 </script>
 
@@ -446,6 +461,44 @@ onMounted(async () => {
             </div>
           </v-card>
         </div>
+
+        <!-- No Pests Dialog -->
+        <v-dialog v-model="showNoPestsDialog" max-width="500">
+          <v-card rounded="lg">
+            <v-card-title class="text-h5 pa-4">
+              <v-icon color="info" class="mr-2">mdi-information-outline</v-icon>
+              No Pests Detected
+            </v-card-title>
+            <v-card-text class="pa-4">
+              <p class="mb-3">To improve scan results, try the following:</p>
+              <v-list density="compact">
+                <v-list-item prepend-icon="mdi-crop">
+                  <v-list-item-title>Crop your image to focus on the affected area</v-list-item-title>
+                </v-list-item>
+                <v-list-item prepend-icon="mdi-image-filter-center-focus">
+                  <v-list-item-title>Take a clearer, well-focused photo</v-list-item-title>
+                </v-list-item>
+                <v-list-item prepend-icon="mdi-white-balance-sunny">
+                  <v-list-item-title>Ensure good lighting when taking photos</v-list-item-title>
+                </v-list-item>
+                <v-list-item prepend-icon="mdi-magnify-plus-outline">
+                  <v-list-item-title>Get closer to the affected plant part</v-list-item-title>
+                </v-list-item>
+                <v-list-item prepend-icon="mdi-leaf">
+                  <v-list-item-title>Include both healthy and affected areas for comparison</v-list-item-title>
+                </v-list-item>
+              </v-list>
+            </v-card-text>
+            <v-card-actions class="pa-4">
+              <v-spacer></v-spacer>
+              <v-btn color="primary" variant="tonal" @click="closeDialog">Got it</v-btn>
+              <v-btn color="primary" prepend-icon="mdi-camera" @click="$router.push('/scan')">
+                Try Again
+              </v-btn>
+            </v-card-actions>
+          </v-card>
+        </v-dialog>
+
       </v-container>
     </template>
   </LayoutWrapper>
