@@ -1,6 +1,16 @@
 # Smart Pest Detection
 
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/7e0f7b1e-5a89-4148-9312-88443c0ae462" alt="image">
+  <img src="https://github.com/user-attachments/assets/5d9b23b5-a3ef-4b01-931d-2d5df670bb9e" alt="image">
+  <img src="https://github.com/user-attachments/assets/e5ed8094-c746-4ce5-9aff-d2e52f096242" alt="image">
+  <img src="https://github.com/user-attachments/assets/f36f16b3-0e44-45a0-9e16-aa1d92826fef" alt="image">
+  <img src="https://github.com/user-attachments/assets/ed9d4142-63ba-46c2-ab70-7f65111e867e" alt="image">
+  <img src="https://github.com/user-attachments/assets/8e3d3c3e-805f-4e36-a6b9-f9463a2fd594" alt="image">
+</p>
+
 ## Project Structure
+
 
 ```
 Smart-Pest-Detection/
