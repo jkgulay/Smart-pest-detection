@@ -42,10 +42,10 @@
                   <span class="text-body-1">{{ formatDate(scan.created_at) }}</span>
                 </div>
   
-                <div class="detail-item col-span-2">
+              <!--   <div class="detail-item col-span-2">
                   <span class="text-subtitle-2 text-medium-emphasis">Ai Deepthink</span>
                   <div class="text-body-1" v-html="scan.pest_scan.recommended_action"></div>
-                </div>
+                </div> -->
 
                 <div class="detail-item col-span-2">
                   <span class="text-subtitle-2 text-medium-emphasis">Pest Info</span>
