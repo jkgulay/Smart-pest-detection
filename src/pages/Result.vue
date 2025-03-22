@@ -377,7 +377,7 @@ onMounted(async () => {
                       <v-icon color="primary" size="24" class="mr-2"
                         >mdi-brain</v-icon
                       >
-                      <span class="text-h6">Deep Think</span>
+                      <span class="text-h6">Ai Result</span>
                     </div>
 
                     <div class="d-flex align-center justify-space-between mb-3">
@@ -411,7 +411,7 @@ onMounted(async () => {
                       </div>
                       
                     </v-alert>
-                    <div class="text-body-2 pa-4 mt-2" style="background-color:#CCCCCC;" v-html="!userScans?.recommended_action ? 'No pests detected' : userScans?.recommended_action"></div>
+                   <!--  <div class="text-body-2 pa-4 mt-2" style="background-color:#CCCCCC;" v-html="!userScans?.recommended_action ? 'No pests detected' : userScans?.recommended_action"></div> -->
                   </v-card-text>
                 </v-card>
                 <v-card

@@ -129,8 +129,8 @@ export function usePestScan() {
       let detailedAnalysis = '';
 
       if (scanResult.prediction.class !== 'No pests detected' && scanResult.prediction.confidence >= 0.30) {
-        const deepSeek = useDeepSeek();
-        recommendedAction = await deepSeek.getRecommendedAction(scanResult.prediction.class);
+   /*      const deepSeek = useDeepSeek();
+        recommendedAction = await deepSeek.getRecommendedAction(scanResult.prediction.class); */
         detailedAnalysis = PEST_ADVICE[scanResult.prediction.class as PestAdviceKey] || 'Please consult with an agricultural expert for detailed advice.';
       }
 
